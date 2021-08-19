@@ -105,6 +105,8 @@ import org.apache.hadoop.hive.metastore.events.PreAlterPartitionEvent;
 import org.apache.hadoop.hive.metastore.events.PreAlterTableEvent;
 import org.apache.hadoop.hive.metastore.events.PreAuthorizationCallEvent;
 import org.apache.hadoop.hive.metastore.events.PreCreateDatabaseEvent;
+import org.apache.hadoop.hive.metastore.events.PreCreateFunctionEvent;
+import org.apache.hadoop.hive.metastore.events.PreDropFunctionEvent;
 import org.apache.hadoop.hive.metastore.events.PreCreateTableEvent;
 import org.apache.hadoop.hive.metastore.events.PreDropDatabaseEvent;
 import org.apache.hadoop.hive.metastore.events.PreDropIndexEvent;
@@ -119,6 +121,7 @@ import org.apache.hadoop.hive.metastore.messaging.EventMessage.EventType;
 import org.apache.hadoop.hive.metastore.partition.spec.PartitionSpecProxy;
 import org.apache.hadoop.hive.metastore.txn.TxnStore;
 import org.apache.hadoop.hive.metastore.txn.TxnUtils;
+import org.apache.hadoop.hive.metastore.utils.SecurityUtils;
 import org.apache.hadoop.hive.serde2.Deserializer;
 import org.apache.hadoop.hive.serde2.SerDeException;
 import org.apache.hadoop.hive.shims.HadoopShims;
@@ -6174,6 +6177,14 @@ public class HiveMetaStore extends ThriftHiveMetastore {
       RawStore ms = getMS();
       Map<String, String> transactionalListenerResponses = Collections.emptyMap();
       try {
+        if (!func.isSetOwnerName()) {
+          try {
+            func.setOwnerName(SecurityUtils.getUGI().getShortUserName());
+          } catch (Exception ex) {
+            LOG.error("Cannot obtain username from the session to create a function", ex);
+            throw new TException(ex);
+          }
+        }
         ms.openTransaction();
         Database db = ms.getDatabase(func.getDbName());
         if (db == null) {
@@ -6185,7 +6196,7 @@ public class HiveMetaStore extends ThriftHiveMetastore {
           throw new AlreadyExistsException(
               "Function " + func.getFunctionName() + " already exists");
         }
-
+        firePreEvent(new PreCreateFunctionEvent(func, this));
         long time = System.currentTimeMillis() / 1000;
         func.setCreateTime((int) time);
         ms.createFunction(func);
@@ -6227,6 +6238,8 @@ public class HiveMetaStore extends ThriftHiveMetastore {
           throw new NoSuchObjectException("Function " + funcName + " does not exist");
         }
 
+        firePreEvent(new PreDropFunctionEvent(func, this));
+
         ms.dropFunction(dbName, funcName);
         if (transactionalListeners.size() > 0) {
           transactionalListenerResponses =
@@ -6259,6 +6272,7 @@ public class HiveMetaStore extends ThriftHiveMetastore {
       RawStore ms = getMS();
       try {
         ms.openTransaction();
+        firePreEvent(new PreCreateFunctionEvent(newFunc, this));
         ms.alterFunction(dbName, funcName, newFunc);
         success = ms.commitTransaction();
       } finally {
