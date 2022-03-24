@@ -28,12 +28,10 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -50,7 +48,6 @@ import com.google.common.base.Strings;
 import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Lists;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
@@ -99,7 +96,6 @@ import org.apache.hadoop.hive.ql.lockmgr.LockException;
 import org.apache.hadoop.hive.ql.metadata.HiveStorageHandler;
 import org.apache.hadoop.hive.ql.metadata.Partition;
 import org.apache.hadoop.hive.ql.metadata.Table;
-import org.apache.hadoop.hive.ql.metadata.VirtualColumn;
 import org.apache.hadoop.hive.ql.parse.ASTNode;
 import org.apache.hadoop.hive.ql.parse.HiveParser;
 import org.apache.hadoop.hive.ql.parse.LoadSemanticAnalyzer;
@@ -1327,7 +1323,7 @@ public class AcidUtils {
    * @return the state of the directory
    * @throws IOException on filesystem errors
    */
-  public static AcidDirectory getAcidState(FileSystem fileSystem, Path candidateDirectory, Configuration conf,
+  private static AcidDirectory getAcidState(FileSystem fileSystem, Path candidateDirectory, Configuration conf,
       ValidWriteIdList writeIdList, Ref<Boolean> useFileIds, boolean ignoreEmptyFiles, Map<Path,
       HdfsDirSnapshot> dirSnapshots) throws IOException {
     ValidTxnList validTxnList = getValidTxnList(conf);
@@ -1484,54 +1480,6 @@ public class AcidUtils {
     return validTxnList;
   }
 
-
-  /**
-   * In case of the cleaner, we don't need to go into file level, it is enough to collect base/delta/deletedelta directories.
-   *
-   * @param fs the filesystem used for the directory lookup
-   * @param path the path of the table or partition needs to be cleaned
-   * @return The listed directory snapshot needs to be checked for cleaning
-   * @throws IOException on filesystem errors
-   */
-  public static Map<Path, HdfsDirSnapshot> getHdfsDirSnapshotsForCleaner(final FileSystem fs, final Path path)
-          throws IOException {
-    Map<Path, HdfsDirSnapshot> dirToSnapshots = new HashMap<>();
-    Deque<RemoteIterator<FileStatus>> stack = new ArrayDeque<>();
-    stack.push(fs.listStatusIterator(path));
-    while (!stack.isEmpty()) {
-      RemoteIterator<FileStatus> itr = stack.pop();
-      while (itr.hasNext()) {
-        FileStatus fStatus = itr.next();
-        Path fPath = fStatus.getPath();
-        if (acidHiddenFileFilter.accept(fPath)) {
-          if (baseFileFilter.accept(fPath) ||
-                  deltaFileFilter.accept(fPath) ||
-                  deleteEventDeltaDirFilter.accept(fPath)) {
-            addToSnapshoot(dirToSnapshots, fPath);
-          } else {
-            if (fStatus.isDirectory()) {
-              stack.push(fs.listStatusIterator(fPath));
-            } else {
-              // Found an original file
-              HdfsDirSnapshot hdfsDirSnapshot = addToSnapshoot(dirToSnapshots, fPath.getParent());
-              hdfsDirSnapshot.addFile(fStatus);
-            }
-          }
-        }
-      }
-    }
-    return dirToSnapshots;
-  }
-
-  private static HdfsDirSnapshot addToSnapshoot(Map<Path, HdfsDirSnapshot> dirToSnapshots, Path fPath) {
-    HdfsDirSnapshot dirSnapshot = dirToSnapshots.get(fPath);
-    if (dirSnapshot == null) {
-      dirSnapshot = new HdfsDirSnapshotImpl(fPath);
-      dirToSnapshots.put(fPath, dirSnapshot);
-    }
-    return dirSnapshot;
-  }
-
   public static Map<Path, HdfsDirSnapshot> getHdfsDirSnapshots(final FileSystem fs, final Path path)
       throws IOException {
     Map<Path, HdfsDirSnapshot> dirToSnapshots = new HashMap<>();
@@ -1541,7 +1489,11 @@ public class AcidUtils {
       Path fPath = fStatus.getPath();
       if (acidHiddenFileFilter.accept(fPath)) {
         if (fStatus.isDirectory() && acidTempDirFilter.accept(fPath)) {
-          addToSnapshoot(dirToSnapshots, fPath);
+          HdfsDirSnapshot dirSnapshot = dirToSnapshots.get(fPath);
+          if (dirSnapshot == null) {
+            dirSnapshot = new HdfsDirSnapshotImpl(fPath);
+            dirToSnapshots.put(fPath, dirSnapshot);
+          }
         } else {
           Path parentDirPath = fPath.getParent();
           if (acidTempDirFilter.accept(parentDirPath)) {
@@ -1552,7 +1504,11 @@ public class AcidUtils {
               // So build the snapshot with the files inside the delta directory
               parentDirPath = parentDirPath.getParent();
             }
-            HdfsDirSnapshot dirSnapshot = addToSnapshoot(dirToSnapshots, parentDirPath);
+            HdfsDirSnapshot dirSnapshot = dirToSnapshots.get(parentDirPath);
+            if (dirSnapshot == null) {
+              dirSnapshot = new HdfsDirSnapshotImpl(parentDirPath);
+              dirToSnapshots.put(parentDirPath, dirSnapshot);
+            }
             // We're not filtering out the metadata file and acid format file,
             // as they represent parts of a valid snapshot
             // We're not using the cached values downstream, but we can potentially optimize more in a follow-up task
@@ -1871,11 +1827,11 @@ public class AcidUtils {
       return;
     }
     if (directory.getBase() == null || directory.getBase().getWriteId() < writeId
-      // If there are two competing versions of a particular write-id, one from the compactor and another from IOW,
+      // If there are two competing versions of a particular write-id, one from the compactor and another from IOW, 
       // always pick the compactor one once it is committed.
-      || directory.getBase().getWriteId() == writeId &&
+      || directory.getBase().getWriteId() == writeId && 
           isCompactedBase && validTxnList.isTxnValid(parsedBase.getVisibilityTxnId())) {
-
+      
       if (isValidBase(parsedBase, writeIdList, directory.getFs(), dirSnapshot)) {
         List<HdfsFileStatusWithId> files = null;
         if (dirSnapshot != null) {
@@ -2573,9 +2529,6 @@ public class AcidUtils {
         LOG.debug("isRawFormat() called on " + dataFile + " which is not an ORC file: " +
             ex.getMessage());
         return true;
-      } catch (FileNotFoundException ex) {
-        //Fallback in case file was already removed and used Snapshot is outdated
-        return false;
       }
     }
   }
@@ -3011,15 +2964,11 @@ public class AcidUtils {
       case INSERT_OVERWRITE:
         t = AcidUtils.getTable(output);
         if (AcidUtils.isTransactionalTable(t)) {
-          if (conf.getBoolVar(HiveConf.ConfVars.TXN_OVERWRITE_X_LOCK) && !sharedWrite
-                  && !isLocklessReadsEnabled) {
+          if (conf.getBoolVar(HiveConf.ConfVars.TXN_OVERWRITE_X_LOCK) && !sharedWrite) {
             compBuilder.setExclusive();
           } else {
             compBuilder.setExclWrite();
           }
-          compBuilder.setOperationType(DataOperationType.UPDATE);
-        } else if (MetaStoreUtils.isNonNativeTable(t.getTTable())) {
-          compBuilder.setLock(getLockTypeFromStorageHandler(output, t));
           compBuilder.setOperationType(DataOperationType.UPDATE);
         } else {
           compBuilder.setExclusive();
@@ -3045,7 +2994,15 @@ public class AcidUtils {
             break;
           }
         } else if (MetaStoreUtils.isNonNativeTable(t.getTTable())) {
-          compBuilder.setLock(getLockTypeFromStorageHandler(output, t));
+          final HiveStorageHandler storageHandler = Preconditions.checkNotNull(t.getStorageHandler(),
+              "Thought all the non native tables have an instance of storage handler");
+          LockType lockType = storageHandler.getLockType(output);
+          if (null == LockType.findByValue(lockType.getValue())) {
+            throw new IllegalArgumentException(String
+                .format("Lock type [%s] for Database.Table [%s.%s] is unknown", lockType, t.getDbName(),
+                    t.getTableName()));
+          }
+          compBuilder.setLock(lockType);
         } else {
           if (conf.getBoolVar(HiveConf.ConfVars.HIVE_TXN_STRICT_LOCKING_MODE)) {
             compBuilder.setExclusive();
@@ -3094,25 +3051,6 @@ public class AcidUtils {
       lockComponents.add(comp);
     }
     return lockComponents;
-  }
-
-  private static LockType getLockTypeFromStorageHandler(WriteEntity output, Table t) {
-    final HiveStorageHandler storageHandler = Preconditions.checkNotNull(t.getStorageHandler(),
-        "Non-native tables must have an instance of storage handler.");
-    LockType lockType = storageHandler.getLockType(output);
-    if (null == lockType) {
-      throw new IllegalArgumentException(
-              String.format("Lock type for Database.Table [%s.%s] is null", t.getDbName(), t.getTableName()));
-    }
-    return lockType;
-  }
-
-  public static boolean isExclusiveCTASEnabled(Configuration conf) {
-    return HiveConf.getBoolVar(conf, ConfVars.TXN_CTAS_X_LOCK);
-  }
-  
-  public static boolean isExclusiveCTAS(Set<WriteEntity> outputs, HiveConf conf) {
-    return outputs.stream().anyMatch(we -> we.getWriteType().equals(WriteType.CTAS) && isExclusiveCTASEnabled(conf));
   }
 
   private static Set<Table> getFullTableLock(List<ReadEntity> readEntities, HiveConf conf) {
@@ -3190,8 +3128,15 @@ public class AcidUtils {
     if (tree.getFirstChildWithType(HiveParser.TOK_ALTERTABLE_COMPACT) != null){
       return TxnType.COMPACTION;
     }
-    // check if soft delete txn
-    if (isSoftDeleteTxn(conf, tree))  {
+    // check if soft delete
+    if ((tree.getToken().getType() == HiveParser.TOK_DROPTABLE || tree.getToken().getType() == HiveParser.TOK_DROP_MATERIALIZED_VIEW)
+      && (HiveConf.getBoolVar(conf, ConfVars.HIVE_ACID_CREATE_TABLE_USE_SUFFIX)
+        || HiveConf.getBoolVar(conf, ConfVars.HIVE_ACID_LOCKLESS_READS_ENABLED))){
+      return TxnType.SOFT_DELETE;
+    }
+    if (tree.getToken().getType() == HiveParser.TOK_ALTERTABLE_DROPPARTS
+        && (HiveConf.getBoolVar(conf, ConfVars.HIVE_ACID_DROP_PARTITION_USE_BASE)
+        || HiveConf.getBoolVar(conf, ConfVars.HIVE_ACID_LOCKLESS_READS_ENABLED))) {
       return TxnType.SOFT_DELETE;
     }
     return TxnType.DEFAULT;
@@ -3206,29 +3151,7 @@ public class AcidUtils {
       .noneMatch(pattern -> astSearcher.simpleBreadthFirstSearch(tree, pattern) != null));
   }
 
-  private static boolean isSoftDeleteTxn(Configuration conf, ASTNode tree) {
-    boolean locklessReadsEnabled = HiveConf.getBoolVar(conf, ConfVars.HIVE_ACID_LOCKLESS_READS_ENABLED);
-
-    switch (tree.getToken().getType()) {
-      case HiveParser.TOK_DROPTABLE:
-      case HiveParser.TOK_DROP_MATERIALIZED_VIEW:
-        return locklessReadsEnabled
-          || HiveConf.getBoolVar(conf, ConfVars.HIVE_ACID_CREATE_TABLE_USE_SUFFIX);
-
-      case HiveParser.TOK_ALTERTABLE_DROPPARTS:
-        return locklessReadsEnabled
-          || HiveConf.getBoolVar(conf, ConfVars.HIVE_ACID_DROP_PARTITION_USE_BASE);
-
-      case HiveParser.TOK_ALTERTABLE_RENAMEPART:
-        return locklessReadsEnabled
-          || HiveConf.getBoolVar(conf, ConfVars.HIVE_ACID_RENAME_PARTITION_MAKE_COPY);
-      default:
-        return false;
-    }
-  }
-
-  @VisibleForTesting
-  public static void initDirCache(int durationInMts) {
+  private static void initDirCache(int durationInMts) {
     if (dirCacheInited.get()) {
       LOG.debug("DirCache got initialized already");
       return;
@@ -3326,48 +3249,6 @@ public class AcidUtils {
       printDirCacheEntries();
     }
     return value.getDirInfo();
-  }
-
-  public static void tryInvalidateDirCache(org.apache.hadoop.hive.metastore.api.Table table) {
-    if (dirCacheInited.get()) {
-      String key = getFullTableName(table.getDbName(), table.getTableName()) + "_" + table.getSd().getLocation();
-      boolean partitioned = table.getPartitionKeys() != null && !table.getPartitionKeys().isEmpty();
-      if (!partitioned) {
-        dirCache.invalidate(key);
-      } else {
-        // Invalidate all partitions as the difference in the key is only the partition part at the end of the path.
-        dirCache.invalidateAll(
-          dirCache.asMap().keySet().stream().filter(k -> k.startsWith(key)).collect(Collectors.toSet()));
-      }
-    }
-  }
-
-  public static boolean isNonNativeAcidTable(Table table, boolean isWriteOperation) {
-    return table != null && table.getStorageHandler() != null &&
-        table.getStorageHandler().supportsAcidOperations(table, isWriteOperation) != HiveStorageHandler.AcidSupportType.NONE;
-  }
-
-  /**
-   * Returns the virtual columns needed for update queries. For ACID queries it is a single ROW__ID, for non-native
-   * tables the list is provided by the {@link HiveStorageHandler#acidVirtualColumns()}.
-   * @param table The table for which we run the query
-   * @return The list of virtual columns used
-   */
-  public static List<VirtualColumn> getAcidVirtualColumns(Table table) {
-    if (isTransactionalTable(table)) {
-      return Lists.newArrayList(VirtualColumn.ROWID);
-    } else {
-      if (isNonNativeAcidTable(table, false)) {
-        return table.getStorageHandler().acidVirtualColumns();
-      }
-    }
-    return Collections.emptyList();
-  }
-
-  public static boolean acidTableWithoutTransactions(Table table) {
-    return table != null && table.getStorageHandler() != null &&
-        table.getStorageHandler().supportsAcidOperations(table, true) ==
-            HiveStorageHandler.AcidSupportType.WITHOUT_TRANSACTIONS;
   }
 
   static class DirInfoValue {
