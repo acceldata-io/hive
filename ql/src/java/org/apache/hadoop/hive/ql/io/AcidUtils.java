@@ -3128,20 +3128,13 @@ public class AcidUtils {
     if (tree.getFirstChildWithType(HiveParser.TOK_ALTERTABLE_COMPACT) != null){
       return TxnType.COMPACTION;
     }
-    // check if soft delete
-    if ((tree.getToken().getType() == HiveParser.TOK_DROPTABLE || tree.getToken().getType() == HiveParser.TOK_DROP_MATERIALIZED_VIEW)
-      && (HiveConf.getBoolVar(conf, ConfVars.HIVE_ACID_CREATE_TABLE_USE_SUFFIX)
-        || HiveConf.getBoolVar(conf, ConfVars.HIVE_ACID_LOCKLESS_READS_ENABLED))){
-      return TxnType.SOFT_DELETE;
-    }
-    if (tree.getToken().getType() == HiveParser.TOK_ALTERTABLE_DROPPARTS
-        && (HiveConf.getBoolVar(conf, ConfVars.HIVE_ACID_DROP_PARTITION_USE_BASE)
-        || HiveConf.getBoolVar(conf, ConfVars.HIVE_ACID_LOCKLESS_READS_ENABLED))) {
+    // check if soft delete txn
+    if (isSoftDeleteTxn(conf, tree))  {
       return TxnType.SOFT_DELETE;
     }
     return TxnType.DEFAULT;
   }
-
+  
   private static boolean isReadOnlyTxn(ASTNode tree) {
     final ASTSearcher astSearcher = new ASTSearcher();
     return READ_TXN_TOKENS.contains(tree.getToken().getType())
@@ -3149,6 +3142,27 @@ public class AcidUtils {
           new int[]{HiveParser.TOK_INSERT_INTO},
           new int[]{HiveParser.TOK_INSERT, HiveParser.TOK_TAB})
       .noneMatch(pattern -> astSearcher.simpleBreadthFirstSearch(tree, pattern) != null));
+  }
+  
+  private static boolean isSoftDeleteTxn(Configuration conf, ASTNode tree) {
+    boolean locklessReadsEnabled = HiveConf.getBoolVar(conf, ConfVars.HIVE_ACID_LOCKLESS_READS_ENABLED);
+    
+    switch (tree.getToken().getType()) {
+      case HiveParser.TOK_DROPTABLE:
+      case HiveParser.TOK_DROP_MATERIALIZED_VIEW:
+        return locklessReadsEnabled 
+          || HiveConf.getBoolVar(conf, ConfVars.HIVE_ACID_CREATE_TABLE_USE_SUFFIX);
+        
+      case HiveParser.TOK_ALTERTABLE_DROPPARTS:
+        return locklessReadsEnabled 
+          || HiveConf.getBoolVar(conf, ConfVars.HIVE_ACID_DROP_PARTITION_USE_BASE);
+        
+      case HiveParser.TOK_ALTERTABLE_RENAMEPART:
+        return locklessReadsEnabled 
+          || HiveConf.getBoolVar(conf, ConfVars.HIVE_ACID_RENAME_PARTITION_MAKE_COPY);
+      default:
+        return false;
+    }
   }
 
   private static void initDirCache(int durationInMts) {

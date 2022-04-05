@@ -44438,6 +44438,16 @@ void RenamePartitionRequest::__set_validWriteIdList(const std::string& val) {
   this->validWriteIdList = val;
 __isset.validWriteIdList = true;
 }
+
+void RenamePartitionRequest::__set_txnId(const int64_t val) {
+  this->txnId = val;
+__isset.txnId = true;
+}
+
+void RenamePartitionRequest::__set_clonePart(const bool val) {
+  this->clonePart = val;
+__isset.clonePart = true;
+}
 std::ostream& operator<<(std::ostream& out, const RenamePartitionRequest& obj)
 {
   obj.printTo(out);
@@ -44530,6 +44540,22 @@ uint32_t RenamePartitionRequest::read(::apache::thrift::protocol::TProtocol* ipr
           xfer += iprot->skip(ftype);
         }
         break;
+      case 7:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->txnId);
+          this->__isset.txnId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 8:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->clonePart);
+          this->__isset.clonePart = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -44589,6 +44615,16 @@ uint32_t RenamePartitionRequest::write(::apache::thrift::protocol::TProtocol* op
     xfer += oprot->writeString(this->validWriteIdList);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.txnId) {
+    xfer += oprot->writeFieldBegin("txnId", ::apache::thrift::protocol::T_I64, 7);
+    xfer += oprot->writeI64(this->txnId);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.clonePart) {
+    xfer += oprot->writeFieldBegin("clonePart", ::apache::thrift::protocol::T_BOOL, 8);
+    xfer += oprot->writeBool(this->clonePart);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -44602,6 +44638,8 @@ void swap(RenamePartitionRequest &a, RenamePartitionRequest &b) {
   swap(a.partVals, b.partVals);
   swap(a.newPart, b.newPart);
   swap(a.validWriteIdList, b.validWriteIdList);
+  swap(a.txnId, b.txnId);
+  swap(a.clonePart, b.clonePart);
   swap(a.__isset, b.__isset);
 }
 
@@ -44612,6 +44650,8 @@ RenamePartitionRequest::RenamePartitionRequest(const RenamePartitionRequest& oth
   partVals = other1560.partVals;
   newPart = other1560.newPart;
   validWriteIdList = other1560.validWriteIdList;
+  txnId = other1560.txnId;
+  clonePart = other1560.clonePart;
   __isset = other1560.__isset;
 }
 RenamePartitionRequest& RenamePartitionRequest::operator=(const RenamePartitionRequest& other1561) {
@@ -44621,6 +44661,8 @@ RenamePartitionRequest& RenamePartitionRequest::operator=(const RenamePartitionR
   partVals = other1561.partVals;
   newPart = other1561.newPart;
   validWriteIdList = other1561.validWriteIdList;
+  txnId = other1561.txnId;
+  clonePart = other1561.clonePart;
   __isset = other1561.__isset;
   return *this;
 }
@@ -44633,6 +44675,8 @@ void RenamePartitionRequest::printTo(std::ostream& out) const {
   out << ", " << "partVals=" << to_string(partVals);
   out << ", " << "newPart=" << to_string(newPart);
   out << ", " << "validWriteIdList="; (__isset.validWriteIdList ? (out << to_string(validWriteIdList)) : (out << "<null>"));
+  out << ", " << "txnId="; (__isset.txnId ? (out << to_string(txnId)) : (out << "<null>"));
+  out << ", " << "clonePart="; (__isset.clonePart ? (out << to_string(clonePart)) : (out << "<null>"));
   out << ")";
 }
 
