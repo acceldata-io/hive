@@ -32,6 +32,7 @@ import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.metastore.api.LockType;
 import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.apache.hadoop.hive.metastore.api.Table;
+import org.apache.hadoop.hive.ql.Context.Operation;
 import org.apache.hadoop.hive.ql.ddl.table.AlterTableType;
 import org.apache.hadoop.hive.ql.hooks.WriteEntity;
 import org.apache.hadoop.hive.ql.parse.PartitionTransformSpec;
@@ -316,9 +317,10 @@ public interface HiveStorageHandler extends Configurable {
    * other NONE.
    *
    * @param table the table which is being deleted/updated/merged into
+   * @param operation the operation type we are executing
    * @return the list of columns that should be projected in the rewritten ACID query
    */
-  default List<FieldSchema> acidSelectColumns(org.apache.hadoop.hive.ql.metadata.Table table) {
+  default List<FieldSchema> acidSelectColumns(org.apache.hadoop.hive.ql.metadata.Table table, Operation operation) {
     return Collections.emptyList();
   }
 
@@ -333,9 +335,10 @@ public interface HiveStorageHandler extends Configurable {
    * other NONE.
    *
    * @param table the table which is being deleted/updated/merged into
+   * @param operation the operation type we are executing
    * @return the list of columns that should be used as sort columns in the rewritten ACID query
    */
-  default List<FieldSchema> acidSortColumns(org.apache.hadoop.hive.ql.metadata.Table table) {
+  default List<FieldSchema> acidSortColumns(org.apache.hadoop.hive.ql.metadata.Table table, Operation operation) {
     return Collections.emptyList();
   }
 
