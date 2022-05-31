@@ -142,6 +142,7 @@
     <dropwizard.version>3.1.0</dropwizard.version>
     <dropwizard-metrics-hadoop-metrics2-reporter.version>0.1.2</dropwizard-metrics-hadoop-metrics2-reporter.version>
     <druid.version>27.0.1</druid.version>
+    <esri.version>2.2.4</esri.version>
     <flatbuffers.version>1.6.0.1</flatbuffers.version>
     <guava.version>32.0.1-jre</guava.version>
     <groovy.version>2.4.11</groovy.version>
@@ -1758,6 +1759,7 @@
             <exclude>**/*.q.out_*</exclude>
             <exclude>**/*.xml</exclude>
             <exclude>**/*.yml</exclude>
+            <exclude>**/*json</exclude>
             <exclude>**/gen/**</exclude>
             <exclude>**/target/**</exclude>
             <exclude>**/scripts/**</exclude>
