@@ -330,7 +330,7 @@ public class TestTxnCommands2 extends TxnCommandsBaseForTests {
         {"{\"writeid\":0,\"bucketid\":536936448,\"rowid\":2}\t0\t13",  "bucket_00001"},
         {"{\"writeid\":10000001,\"bucketid\":536936448,\"rowid\":0}\t0\t15", "bucket_00001"},
         {"{\"writeid\":10000003,\"bucketid\":536936448,\"rowid\":0}\t0\t17", "bucket_00001"},
-        {"{\"writeid\":10000002,\"bucketid\":536936448,\"rowid\":0}\t0\t120", "bucket_00001"},
+        {"{\"writeid\":10000002,\"bucketid\":536936449,\"rowid\":0}\t0\t120", "bucket_00001"},
         {"{\"writeid\":0,\"bucketid\":536936448,\"rowid\":1}\t1\t2",   "bucket_00001"},
         {"{\"writeid\":0,\"bucketid\":536936448,\"rowid\":5}\t1\t4",   "bucket_00001"},
         {"{\"writeid\":0,\"bucketid\":536936448,\"rowid\":4}\t1\t5",   "bucket_00001"},
@@ -725,7 +725,7 @@ public class TestTxnCommands2 extends TxnCommandsBaseForTests {
         FileStatus[] buckets = fs.listStatus(status[i].getPath(), FileUtils.HIDDEN_FILES_PATH_FILTER);
         Arrays.sort(buckets);
         if (numDelta == 1) {
-          Assert.assertEquals("delta_10000002_10000002_0000", status[i].getPath().getName());
+          Assert.assertEquals("delta_10000001_10000001_0001", status[i].getPath().getName());
           Assert.assertEquals(BUCKET_COUNT - 1, buckets.length);
           Assert.assertEquals("bucket_00001_0", buckets[0].getPath().getName());
         } else if (numDelta == 2) {
@@ -823,6 +823,210 @@ public class TestTxnCommands2 extends TxnCommandsBaseForTests {
     rs = runStatementOnDriver("select count(*) from " + Table.NONACIDORCTBL);
     resultCount = 2;
     Assert.assertEquals(resultCount, Integer.parseInt(rs.get(0)));
+  }
+
+  /**
+   * Test the query correctness and directory layout for ACID table conversion
+   * 1. Insert a row to Non-ACID table
+   * 2. Convert Non-ACID to ACID table
+   * 3. Perform Major compaction
+   * 4. Insert a new row to ACID table
+   * 5. Perform another Major compaction
+   * 6. Clean
+   * @throws Exception
+   */
+  @Test
+  public void testNonAcidToAcidConversion4() throws Exception {
+    FileSystem fs = FileSystem.get(hiveConf);
+    FileStatus[] status;
+
+    // 1. Insert a row to Non-ACID nested partitioned table
+    int[][] targetVals = {{1,2}};
+    runStatementOnDriver("insert into " + Table.NONACIDNESTEDPART + " partition(p='p1',q='q1') " + makeValuesClause(targetVals));
+    status = listFilesByTable(fs, Table.NONACIDNESTEDPART);
+
+    // There should be 2 original bucket files in the location (000000_0 and 000001_0)
+    Assert.assertEquals(BUCKET_COUNT, status.length);
+    for (int i = 0; i < status.length; i++) {
+      Assert.assertTrue(status[i].getPath().getName().matches("00000[01]_0"));
+    }
+    List<String> rs = runStatementOnDriver("select a,b from " + Table.NONACIDNESTEDPART);
+    Assert.assertEquals(stringifyValues(targetVals), rs);
+    rs = runStatementOnDriver("select count(*) from " + Table.NONACIDNESTEDPART);
+    int resultCount = 1;
+    Assert.assertEquals(resultCount, Integer.parseInt(rs.get(0)));
+
+    // 2. Convert NONACIDNESTEDPART to ACID table
+    runStatementOnDriver("alter table " + Table.NONACIDNESTEDPART + " SET TBLPROPERTIES ('transactional'='true')");
+    status = listFilesByTable(fs, Table.NONACIDNESTEDPART);
+    // Everything should be same as before
+    Assert.assertEquals(BUCKET_COUNT, status.length);
+    for (int i = 0; i < status.length; i++) {
+      Assert.assertTrue(status[i].getPath().getName().matches("00000[01]_0"));
+    }
+    rs = runStatementOnDriver("select a,b from " + Table.NONACIDNESTEDPART);
+    Assert.assertEquals(stringifyValues(targetVals), rs);
+    rs = runStatementOnDriver("select count(*) from " + Table.NONACIDNESTEDPART);
+    resultCount = 1;
+    Assert.assertEquals(resultCount, Integer.parseInt(rs.get(0)));
+
+    // 3. Perform a major compaction
+    runStatementOnDriver("alter table "+ Table.NONACIDNESTEDPART + " partition(p='p1',q='q1') compact 'MAJOR'");
+    runWorker(hiveConf);
+    // There should be 1 new directory: base_-9223372036854775808
+    // Original bucket files should stay until Cleaner kicks in.
+    status = listFilesByTable(fs, Table.NONACIDNESTEDPART);
+    Assert.assertEquals(3, status.length);
+    boolean sawNewBase = false;
+    for (int i = 0; i < status.length; i++) {
+      Path parent = status[i].getPath().getParent();
+      if (parent.getName().matches("base_.*")) {
+        //should be base_-9223372036854775808_v0000023 but 23 is a txn id not write id so it makes
+        //the tests fragile
+        Assert.assertTrue(parent.getName().startsWith("base_-9223372036854775808_v0000023"));
+        sawNewBase = true;
+        FileStatus[] buckets = fs.listStatus(parent, FileUtils.HIDDEN_FILES_PATH_FILTER);
+        Assert.assertEquals(BUCKET_COUNT - 1, buckets.length);
+        Assert.assertEquals("bucket_00001", buckets[0].getPath().getName());
+      }
+    }
+    Assert.assertTrue(sawNewBase);
+    rs = runStatementOnDriver("select a,b from " + Table.NONACIDNESTEDPART);
+    Assert.assertEquals(stringifyValues(targetVals), rs);
+    rs = runStatementOnDriver("select count(*) from " + Table.NONACIDNESTEDPART);
+    resultCount = 1;
+    Assert.assertEquals(resultCount, Integer.parseInt(rs.get(0)));
+
+    // 4. Update the existing row, and insert another row to newly-converted ACID table
+    runStatementOnDriver("update " + Table.NONACIDNESTEDPART + " set b=3 where a=1");
+    runStatementOnDriver("insert into " + Table.NONACIDNESTEDPART + "(a,b,p,q) values(3,4,'p1','q1')");
+    status = listFilesByTable(fs, Table.NONACIDNESTEDPART);
+    Arrays.sort(status);  // make sure delta_0000001_0000001_0000 appears before delta_0000002_0000002_0000
+    // There should be 2 original bucket files (000000_0 and 000001_0), a base directory,
+    // plus two new delta directories and one delete_delta directory that would be created due to
+    // the update statement (remember split-update U=D+I)!
+    Assert.assertEquals(6, status.length);
+    int numDelta = 0;
+    int numDeleteDelta = 0;
+    sawNewBase = false;
+    for (int i = 0; i < status.length; i++) {
+      Path parent = status[i].getPath().getParent();
+      if (parent.getName().matches("delta_.*")) {
+        numDelta++;
+        FileStatus[] buckets = fs.listStatus(parent, FileUtils.HIDDEN_FILES_PATH_FILTER);
+        Arrays.sort(buckets);
+        if (numDelta == 1) {
+          Assert.assertEquals("delta_10000001_10000001_0001", parent.getName());
+          Assert.assertEquals(BUCKET_COUNT - 1, buckets.length);
+          Assert.assertEquals("bucket_00001_0", buckets[0].getPath().getName());
+        } else if (numDelta == 2) {
+          Assert.assertEquals("delta_10000002_10000002_0000", parent.getName());
+          Assert.assertEquals(1, buckets.length);
+          Assert.assertEquals("bucket_00000_0", buckets[0].getPath().getName());
+        }
+      } else if (parent.getName().matches("delete_delta_.*")) {
+        numDeleteDelta++;
+        FileStatus[] buckets = fs.listStatus(parent, FileUtils.HIDDEN_FILES_PATH_FILTER);
+        Arrays.sort(buckets);
+        if (numDeleteDelta == 1) {
+          Assert.assertEquals("delete_delta_10000001_10000001_0000", parent.getName());
+          Assert.assertEquals(BUCKET_COUNT - 1, buckets.length);
+          Assert.assertEquals("bucket_00001_0", buckets[0].getPath().getName());
+        }
+      } else if (parent.getName().matches("base_.*")) {
+        Assert.assertTrue("base_-9223372036854775808", parent.getName().startsWith("base_-9223372036854775808_v0000023"));//_v0000023
+        sawNewBase = true;
+        FileStatus[] buckets = fs.listStatus(parent, FileUtils.HIDDEN_FILES_PATH_FILTER);
+        Assert.assertEquals(BUCKET_COUNT - 1, buckets.length);
+        Assert.assertEquals("bucket_00001", buckets[0].getPath().getName());
+      }
+    }
+    Assert.assertEquals(2, numDelta);
+    Assert.assertEquals(1, numDeleteDelta);
+    Assert.assertTrue(sawNewBase);
+
+    rs = runStatementOnDriver("select a,b from " + Table.NONACIDNESTEDPART);
+    targetVals = new int[][] {{1, 3}, {3, 4}};
+    Assert.assertEquals(stringifyValues(targetVals), rs);
+    rs = runStatementOnDriver("select count(*) from " + Table.NONACIDNESTEDPART);
+    resultCount = 2;
+    Assert.assertEquals(resultCount, Integer.parseInt(rs.get(0)));
+
+    // 5. Perform another major compaction
+    runStatementOnDriver("alter table "+ Table.NONACIDNESTEDPART + " partition(p='p1',q='q1') compact 'MAJOR'");
+    runWorker(hiveConf);
+    // There should be 1 new base directory: base_0000001
+    // Original bucket files, delta directories, delete_delta directories and the
+    // previous base directory should stay until Cleaner kicks in.
+    status = listFilesByTable(fs, Table.NONACIDNESTEDPART);
+    Arrays.sort(status);
+    Assert.assertEquals(8, status.length);
+    int numBase = 0;
+    Set<Path> bases = new HashSet<>();
+    for (int i = 0; i < status.length; i++) {
+      Path parent = status[i].getPath().getParent();
+      if (parent.getName().matches("base_.*")) {
+        numBase++;
+        bases.add(parent);
+        FileStatus[] buckets = fs.listStatus(parent, FileUtils.HIDDEN_FILES_PATH_FILTER);
+        Arrays.sort(buckets);
+        if (numBase == 1) {
+          Assert.assertEquals("base_-9223372036854775808_v0000023", parent.getName());
+          Assert.assertEquals(BUCKET_COUNT - 1, buckets.length);
+          Assert.assertEquals("bucket_00001", buckets[0].getPath().getName());
+        } else if (numBase == 2) {
+          // The new base dir now has two bucket files, since the delta dir has two bucket files
+          Assert.assertEquals("base_10000002_v0000031", parent.getName());
+          Assert.assertEquals(2, buckets.length);
+          Assert.assertEquals("bucket_00000", buckets[0].getPath().getName());
+        }
+      }
+    }
+    Assert.assertEquals(2,  bases.size());
+    rs = runStatementOnDriver("select a,b from " + Table.NONACIDNESTEDPART);
+    targetVals = new int[][] {{3, 4}, {1, 3}};
+    Assert.assertEquals(stringifyValuesNoSort(targetVals), rs);
+    rs = runStatementOnDriver("select count(*) from " + Table.NONACIDNESTEDPART);
+    resultCount = 2;
+    Assert.assertEquals(resultCount, Integer.parseInt(rs.get(0)));
+
+    // 6. Let Cleaner delete obsolete files/dirs
+    status = listFilesByTable(fs, Table.NONACIDNESTEDPART);
+    // Before Cleaner, there should be 8 items:
+    // 2 original files, 2 delta directories (1 files each), 1 delete_delta directory (1 file) and 2 base directories (with one and two files respectively)
+
+    Assert.assertEquals(8, status.length);
+    runCleaner(hiveConf);
+    runCleaner(hiveConf);
+    // There should be only 1 directory left: base_0000001.
+    // Original bucket files, delta directories and previous base directory should have been cleaned up. Only one base with 2 files.
+    status = listFilesByTable(fs, Table.NONACIDNESTEDPART);
+    Assert.assertEquals(2, status.length);
+    Assert.assertEquals("base_10000002_v0000031", status[0].getPath().getParent().getName());
+    FileStatus[] buckets = fs.listStatus(status[0].getPath().getParent(), FileUtils.HIDDEN_FILES_PATH_FILTER);
+    Arrays.sort(buckets);
+    Assert.assertEquals(2, buckets.length);
+    Assert.assertEquals("bucket_00000", buckets[0].getPath().getName());
+    rs = runStatementOnDriver("select a,b from " + Table.NONACIDNESTEDPART);
+    targetVals = new int[][] {{3, 4}, {1, 3}};
+    Assert.assertEquals(stringifyValuesNoSort(targetVals), rs);
+    rs = runStatementOnDriver("select count(*) from " + Table.NONACIDNESTEDPART);
+    resultCount = 2;
+    Assert.assertEquals(resultCount, Integer.parseInt(rs.get(0)));
+  }
+
+  private FileStatus[] listFilesByTable(FileSystem fs, Table t) throws IOException {
+    List<FileStatus> tmp = new ArrayList<>();
+    RemoteIterator<LocatedFileStatus> f = fs.listFiles(new Path(getWarehouseDir() + "/" +
+            t.toString().toLowerCase()), true);
+
+    while (f.hasNext()) {
+      LocatedFileStatus file = f.next();
+      if (FileUtils.HIDDEN_FILES_PATH_FILTER.accept(file.getPath())) {
+        tmp.add(file);
+      }
+    }
+    return tmp.toArray(new FileStatus[0]);
   }
 
   @Test
@@ -2504,7 +2708,7 @@ public class TestTxnCommands2 extends TxnCommandsBaseForTests {
     hiveConf.setBoolVar(HiveConf.ConfVars.HIVETESTMODEFAILLOADDYNAMICPARTITION, true);
     runStatementOnDriverWithAbort("update " + Table.ACIDTBLPART + " set b=a+2 where a<5");
     hiveConf.setBoolVar(HiveConf.ConfVars.HIVETESTMODEFAILLOADDYNAMICPARTITION, false);
-    verifyDeltaDirAndResult(3, Table.ACIDTBLPART.toString(), "p=p1", resultData1);
+    verifyDeltaDirAndResult(2, Table.ACIDTBLPART.toString(), "p=p1", resultData1);
     verifyDeleteDeltaDir(1, Table.ACIDTBLPART.toString(), "p=p1");
 
     int count = TestTxnDbUtil
