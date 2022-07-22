@@ -477,7 +477,12 @@ public enum ErrorMsg {
   TIME_TRAVEL_NOT_ALLOWED(10429, "Time travel is not allowed for {0}. Please choose a storage format which supports the feature.", true),
   INVALID_METADATA_TABLE_NAME(10430, "Invalid metadata table name {0}.", true),
   METADATA_TABLE_NOT_SUPPORTED(10431, "Metadata tables are not supported for table {0}.", true),
-
+  COMPACTION_REFUSED(10432, "Compaction request for {0}.{1}{2} is refused, details: {3}.", true),
+  CBO_IS_REQUIRED(10433,
+          "The following functionality requires CBO (" + HiveConf.ConfVars.HIVE_CBO_ENABLED.varname + "): {0}", true),
+  CTLF_UNSUPPORTED_FORMAT(10434, "CREATE TABLE LIKE FILE is not supported by the ''{0}'' file format", true),
+  NON_NATIVE_ACID_UPDATE(10435, "Update and Merge into non-native ACID table is only supported when " +
+          HiveConf.ConfVars.SPLIT_UPDATE.varname + " is true."),
 
   //========================== 20000 range starts here ========================//
 
