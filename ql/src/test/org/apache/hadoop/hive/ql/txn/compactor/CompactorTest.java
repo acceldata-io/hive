@@ -17,7 +17,6 @@
  */
 package org.apache.hadoop.hive.ql.txn.compactor;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
@@ -77,16 +76,15 @@ import org.apache.hadoop.mapred.RecordReader;
 import org.apache.hadoop.mapred.RecordWriter;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.hadoop.util.Progressable;
+import org.apache.hive.common.util.HiveVersionInfo;
 import org.apache.thrift.TException;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.EOFException;
-import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -98,6 +96,7 @@ import java.util.Stack;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.hadoop.hive.ql.txn.compactor.CompactorTestUtilities.CompactorThreadType;
 
@@ -112,33 +111,39 @@ import javax.management.ObjectName;
 public abstract class CompactorTest {
   static final private String CLASS_NAME = CompactorTest.class.getName();
   static final private Logger LOG = LoggerFactory.getLogger(CLASS_NAME);
-  public static final String WORKER_VERSION = "3.1.4";
+  public static final String WORKER_VERSION = HiveVersionInfo.getShortVersion();
+  private static final AtomicInteger TMP_DIR_ID = new AtomicInteger();
 
   protected TxnStore txnHandler;
   protected IMetaStoreClient ms;
   protected HiveConf conf;
 
   private final AtomicBoolean stop = new AtomicBoolean();
-  protected File tmpdir;
+  private Path tmpdir;
+  FileSystem fs;
 
   @Before
   public void setup() throws Exception {
     setup(new HiveConf());
   }
 
-  protected void setup(HiveConf conf) throws Exception {
+  protected final void setup(HiveConf conf) throws Exception {
     this.conf = conf;
+    fs = FileSystem.get(conf);
     MetastoreConf.setTimeVar(conf, MetastoreConf.ConfVars.TXN_OPENTXN_TIMEOUT, 2, TimeUnit.SECONDS);
+    MetastoreConf.setBoolVar(conf, MetastoreConf.ConfVars.COMPACTOR_INITIATOR_ON, true);
     TestTxnDbUtil.setConfValues(conf);
     TestTxnDbUtil.cleanDb(conf);
     TestTxnDbUtil.prepDb(conf);
     ms = new HiveMetaStoreClient(conf);
     txnHandler = TxnUtils.getTxnStore(conf);
-    tmpdir = new File(Files.createTempDirectory("compactor_test_table_").toString());
+    Path tmpPath = new Path(System.getProperty("test.tmp.dir"), "compactor_test_table_" + TMP_DIR_ID.getAndIncrement());
+    fs.mkdirs(tmpPath);
+    tmpdir = fs.resolvePath(tmpPath);
   }
 
   protected void compactorTestCleanup() throws IOException {
-    FileUtils.deleteDirectory(tmpdir);
+    fs.delete(tmpdir, true);
   }
 
   protected void startInitiator() throws Exception {
@@ -378,12 +383,11 @@ public abstract class CompactorTest {
   }
 
   private String getLocation(String tableName, String partValue) {
-    String location =  tmpdir.getAbsolutePath() +
-      System.getProperty("file.separator") + tableName;
+    Path tblLocation = new Path(tmpdir, tableName);
     if (partValue != null) {
-      location += System.getProperty("file.separator") + "ds=" + partValue;
+      tblLocation = new Path(tblLocation, "ds=" + partValue);
     }
-    return location;
+    return tblLocation.toString();
   }
 
   private enum FileType {BASE, DELTA, LEGACY, LENGTH_FILE}
@@ -399,9 +403,9 @@ public abstract class CompactorTest {
     Path location = new Path(getLocation(t.getTableName(), partValue));
     String filename = null;
     switch (type) {
-      case BASE: filename = AcidUtils.BASE_PREFIX + maxTxn + (visibilityId > 0 ? AcidUtils.VISIBILITY_PREFIX + visibilityId : ""); break;
+      case BASE: filename = AcidUtils.addVisibilitySuffix(AcidUtils.BASE_PREFIX + maxTxn, visibilityId); break;
       case LENGTH_FILE: // Fall through to delta
-      case DELTA: filename = makeDeltaDirName(minTxn, maxTxn); break;
+      case DELTA: filename = AcidUtils.addVisibilitySuffix(makeDeltaDirName(minTxn, maxTxn),visibilityId); break;
       case LEGACY: break; // handled below
     }
 
@@ -671,7 +675,7 @@ public abstract class CompactorTest {
     findNextCompactRequest.setWorkerId("fred");
     findNextCompactRequest.setWorkerVersion(WORKER_VERSION);
     CompactionInfo ci = txnHandler.findNextToCompact(findNextCompactRequest);
-    ci.runAs = System.getProperty("user.name");
+    ci.runAs = rqst.getRunas() == null ? System.getProperty("user.name") : rqst.getRunas();
     long compactorTxnId = openTxn(TxnType.COMPACTION);
     // Need to create a valid writeIdList to set the highestWriteId in ci
     ValidTxnList validTxnList = TxnCommonUtils.createValidReadTxnList(txnHandler.getOpenTxns(), compactorTxnId);
