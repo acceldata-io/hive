@@ -23,6 +23,7 @@ import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.DYNAMICPARTITIONCONV
 import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.HIVEARCHIVEENABLED;
 import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.HIVE_DEFAULT_STORAGE_HANDLER;
 import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.HIVESTATSDBCLASS;
+import static org.apache.hadoop.hive.metastore.api.hive_metastoreConstants.META_TABLE_STORAGE;
 import static org.apache.hadoop.hive.metastore.api.hive_metastoreConstants.TABLE_IS_CTAS;
 import static org.apache.hadoop.hive.ql.ddl.view.create.AbstractCreateViewAnalyzer.validateTablesUsed;
 import static org.apache.hadoop.hive.ql.optimizer.calcite.translator.ASTConverter.NON_FK_FILTERED;
@@ -13871,6 +13872,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
       try {
         storageHandler = (HiveStorageHandler) ReflectionUtils.newInstance(
                 conf.getClassByName(storageFormat.getStorageHandler()), SessionState.get().getConf());
+        t.setProperty(META_TABLE_STORAGE, storageHandler.getClass().getName());
       } catch (ClassNotFoundException ex) {
         LOG.error("Class not found. Storage handler will be set to null: "+ex.getMessage() , ex);
       }
