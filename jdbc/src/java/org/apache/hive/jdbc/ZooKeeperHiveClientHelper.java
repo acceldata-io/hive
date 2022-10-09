@@ -19,10 +19,7 @@
 package org.apache.hive.jdbc;
 
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -96,6 +93,15 @@ class ZooKeeperHiveClientHelper {
   private static List<String> getServerHosts(JdbcConnectionParams connParams, CuratorFramework
       zooKeeperClient) throws Exception {
     List<String> serverHosts = zooKeeperClient.getChildren().forPath("/" + getZooKeeperNamespace(connParams));
+
+    //remove nodes that are not hivesesrver2 connection info
+    Iterator<String> serverHostsIterator = serverHosts.iterator();
+    while (serverHostsIterator.hasNext()) {
+      String serverHost = serverHostsIterator.next();
+      if (!serverHost.startsWith("serverUri=")) {
+        serverHostsIterator.remove();
+      }
+    }
     // Remove the znodes we've already tried from this list
     serverHosts.removeAll(connParams.getRejectedHostZnodePaths());
     if (serverHosts.isEmpty()) {
