@@ -98,7 +98,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.apache.hadoop.hive.common.AcidConstants.SOFT_DELETE_PATH_SUFFIX;
@@ -509,10 +508,10 @@ public abstract class TaskCompiler {
     } else {
       CreateMaterializedViewDesc cmv = pCtx.getCreateViewDesc();
       dataSink = cmv.getAndUnsetWriter();
-      txnId = cmv.getInitialMmWriteId();
+      txnId = cmv.getInitialWriteId();
       loc = cmv.getLocation();
     }
-    Path location = (loc == null) ? getDefaultCtasLocation(pCtx) : new Path(loc);
+    Path location = (loc == null) ? getDefaultCtasOrCMVLocation(pCtx) : new Path(loc);
     if (pCtx.getQueryProperties().isCTAS()) {
       CreateTableDesc ctd = pCtx.getCreateTable();
       if (HiveConf.getBoolVar(conf, HiveConf.ConfVars.CREATE_TABLE_AS_EXTERNAL)) {
@@ -547,7 +546,7 @@ public abstract class TaskCompiler {
     lfd.setTargetDir(location);
   }
 
-  private Path getDefaultCtasLocation(final ParseContext pCtx) throws SemanticException {
+  private Path getDefaultCtasOrCMVLocation(final ParseContext pCtx) throws SemanticException {
     try {
       String protoName = null, suffix = "";
       boolean isExternal = false;
@@ -555,17 +554,12 @@ public abstract class TaskCompiler {
       if (pCtx.getQueryProperties().isCTAS()) {
         protoName = pCtx.getCreateTable().getDbTableName();
         isExternal = pCtx.getCreateTable().isExternal();
-      
+        createTableOrMVUseSuffix &= AcidUtils.isTransactionalTable(pCtx.getCreateTable());
+        suffix = Utilities.getTableOrMVSuffix(pCtx.getContext(), createTableOrMVUseSuffix);
       } else if (pCtx.getQueryProperties().isMaterializedView()) {
         protoName = pCtx.getCreateViewDesc().getViewName();
-        boolean createMVUseSuffix = HiveConf.getBoolVar(conf, HiveConf.ConfVars.HIVE_ACID_CREATE_TABLE_USE_SUFFIX)
-          || HiveConf.getBoolVar(conf, HiveConf.ConfVars.HIVE_ACID_LOCKLESS_READS_ENABLED);
-
-        if (createMVUseSuffix) {
-          long txnId = Optional.ofNullable(pCtx.getContext())
-            .map(ctx -> ctx.getHiveTxnManager().getCurrentTxnId()).orElse(0L);
-          suffix = SOFT_DELETE_PATH_SUFFIX + String.format(DELTA_DIGITS, txnId);
-        }
+        createTableOrMVUseSuffix &= AcidUtils.isTransactionalView(pCtx.getCreateViewDesc());
+        suffix = Utilities.getTableOrMVSuffix(pCtx.getContext(), createTableOrMVUseSuffix);
       }
       String[] names = Utilities.getDbTableName(protoName);
       if (!db.databaseExists(names[0])) {
