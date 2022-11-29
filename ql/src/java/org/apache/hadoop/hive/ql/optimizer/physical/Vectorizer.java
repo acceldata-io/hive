@@ -1259,7 +1259,7 @@ public class Vectorizer implements PhysicalPlanResolver {
     }
 
     private Support[] getVectorizedInputFormatSupports(Class<? extends InputFormat> inputFileFormatClass,
-        Properties properties) {
+        TableDesc properties) {
 
       try {
         InputFormat inputFormat = FetchOperator.getInputFormatFromCache(inputFileFormatClass, hiveConf);
@@ -1277,11 +1277,11 @@ public class Vectorizer implements PhysicalPlanResolver {
      * Add the support of the VectorizedInputFileFormatInterface.
      */
     private void addVectorizedInputFileFormatSupport(Set<Support> newSupportSet, boolean isInputFileFormatVectorized,
-        Class<? extends InputFormat> inputFileFormatClass, Properties properties) {
+        Class<? extends InputFormat> inputFileFormatClass, TableDesc tableDesc) {
 
       final Support[] supports;
       if (isInputFileFormatVectorized) {
-        supports = getVectorizedInputFormatSupports(inputFileFormatClass, properties);
+        supports = getVectorizedInputFormatSupports(inputFileFormatClass, tableDesc);
       } else {
         supports = null;
       }
@@ -1373,7 +1373,7 @@ public class Vectorizer implements PhysicalPlanResolver {
         }
 
         addVectorizedInputFileFormatSupport(
-            newSupportSet, isInputFileFormatVectorized, inputFileFormatClass, pd.getTableDesc().getProperties());
+            newSupportSet, isInputFileFormatVectorized, inputFileFormatClass, pd.getTableDesc());
 
         addVectorPartitionDesc(
             pd,
@@ -1401,7 +1401,7 @@ public class Vectorizer implements PhysicalPlanResolver {
                 allTypeInfoList)) {
 
           addVectorizedInputFileFormatSupport(
-              newSupportSet, isInputFileFormatVectorized, inputFileFormatClass, pd.getTableDesc().getProperties());
+              newSupportSet, isInputFileFormatVectorized, inputFileFormatClass, pd.getTableDesc());
 
           addVectorPartitionDesc(
               pd,
