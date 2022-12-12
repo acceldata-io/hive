@@ -7692,6 +7692,9 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
       try {
         if (tblDesc == null) {
           if (viewDesc != null) {
+            if (viewDesc.getStorageHandler() != null) {
+              viewDesc.setLocation(getCtasOrCMVLocation(tblDesc, viewDesc, createTableUseSuffix).toString());
+            }
             tableDescriptor = PlanUtils.getTableDesc(viewDesc, cols, colTypes);
           } else if (qb.getIsQuery()) {
             Class<? extends Deserializer> serdeClass = LazySimpleSerDe.class;
@@ -7720,13 +7723,6 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
         }
       } catch (HiveException e) {
         throw new SemanticException(e);
-      }
-
-
-      // if available, set location in table desc properties
-      if (tblDesc != null && tblDesc.getLocation() != null && tableDescriptor != null &&
-          !tableDescriptor.getProperties().containsKey(META_TABLE_LOCATION)) {
-        tableDescriptor.getProperties().setProperty(META_TABLE_LOCATION, tblDesc.getLocation());
       }
 
       // We need a specific rowObjectInspector in this case
@@ -14037,6 +14033,10 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
       }
       tblProps = convertToAcidByDefault(storageFormat, dbDotTable, null, tblProps);
     }
+    if (tblProps == null) {
+      tblProps = new HashMap<>();
+    }
+    tblProps.put(hive_metastoreConstants.TABLE_IS_CTAS, "true");
 
     createVwDesc = new CreateMaterializedViewDesc(
         dbDotTable, cols, comment, tblProps, partColNames, sortColNames, distributeColNames,
