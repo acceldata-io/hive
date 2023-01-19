@@ -3011,11 +3011,15 @@ public class AcidUtils {
       case INSERT_OVERWRITE:
         t = AcidUtils.getTable(output);
         if (AcidUtils.isTransactionalTable(t)) {
-          if (conf.getBoolVar(HiveConf.ConfVars.TXN_OVERWRITE_X_LOCK) && !sharedWrite) {
+          if (conf.getBoolVar(HiveConf.ConfVars.TXN_OVERWRITE_X_LOCK) && !sharedWrite
+                  && !isLocklessReadsEnabled) {
             compBuilder.setExclusive();
           } else {
             compBuilder.setExclWrite();
           }
+          compBuilder.setOperationType(DataOperationType.UPDATE);
+        } else if (MetaStoreUtils.isNonNativeTable(t.getTTable())) {
+          compBuilder.setLock(getLockTypeFromStorageHandler(output, t));
           compBuilder.setOperationType(DataOperationType.UPDATE);
         } else {
           compBuilder.setExclusive();
@@ -3041,15 +3045,7 @@ public class AcidUtils {
             break;
           }
         } else if (MetaStoreUtils.isNonNativeTable(t.getTTable())) {
-          final HiveStorageHandler storageHandler = Preconditions.checkNotNull(t.getStorageHandler(),
-              "Thought all the non native tables have an instance of storage handler");
-          LockType lockType = storageHandler.getLockType(output);
-          if (null == LockType.findByValue(lockType.getValue())) {
-            throw new IllegalArgumentException(String
-                .format("Lock type [%s] for Database.Table [%s.%s] is unknown", lockType, t.getDbName(),
-                    t.getTableName()));
-          }
-          compBuilder.setLock(lockType);
+          compBuilder.setLock(getLockTypeFromStorageHandler(output, t));
         } else {
           if (conf.getBoolVar(HiveConf.ConfVars.HIVE_TXN_STRICT_LOCKING_MODE)) {
             compBuilder.setExclusive();
@@ -3098,6 +3094,25 @@ public class AcidUtils {
       lockComponents.add(comp);
     }
     return lockComponents;
+  }
+
+  private static LockType getLockTypeFromStorageHandler(WriteEntity output, Table t) {
+    final HiveStorageHandler storageHandler = Preconditions.checkNotNull(t.getStorageHandler(),
+        "Non-native tables must have an instance of storage handler.");
+    LockType lockType = storageHandler.getLockType(output);
+    if (null == lockType) {
+      throw new IllegalArgumentException(
+              String.format("Lock type for Database.Table [%s.%s] is null", t.getDbName(), t.getTableName()));
+    }
+    return lockType;
+  }
+
+  public static boolean isExclusiveCTASEnabled(Configuration conf) {
+    return HiveConf.getBoolVar(conf, ConfVars.TXN_CTAS_X_LOCK);
+  }
+  
+  public static boolean isExclusiveCTAS(Set<WriteEntity> outputs, HiveConf conf) {
+    return outputs.stream().anyMatch(we -> we.getWriteType().equals(WriteType.CTAS) && isExclusiveCTASEnabled(conf));
   }
 
   private static Set<Table> getFullTableLock(List<ReadEntity> readEntities, HiveConf conf) {
