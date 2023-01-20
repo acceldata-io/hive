@@ -533,4 +533,9 @@ public class LlapIoImpl implements LlapIo<VectorizedRowBatch>, LlapIoDebugDump {
     }
   }
 
+  @Override
+  public boolean usingLowLevelCache() {
+    return useLowLevelCache;
+  }
+
 }
