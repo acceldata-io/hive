@@ -1154,6 +1154,7 @@
                   <include>org.apache.datasketches:*</include>
                   <include>org.apache.calcite:*</include>
                   <include>org.apache.calcite.avatica:avatica</include>
+                  <include>com.github.luben:zstd-jni</include>
                 </includes>
               </artifactSet>
               <filters>
