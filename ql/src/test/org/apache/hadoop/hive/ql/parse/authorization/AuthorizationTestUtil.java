@@ -20,7 +20,7 @@ package org.apache.hadoop.hive.ql.parse.authorization;
 import java.io.Serializable;
 import java.util.List;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.hadoop.hive.ql.Context;
 import org.apache.hadoop.hive.ql.QueryState;
