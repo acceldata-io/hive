@@ -352,6 +352,7 @@ public class TestVectorStringUnary {
         " targetTypeInfo " + targetTypeInfo.toString() +
         " stringUnaryTestMode " + stringUnaryTestMode +
         " vectorExpression " + vectorExpression.getClass().getSimpleName());
+    */
 
     batchSource.resetBatchIteration();
     int rowIndex = 0;

@@ -21,7 +21,6 @@ package org.apache.hadoop.hive.ql.exec.vector;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -29,7 +28,6 @@ import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-
 import org.apache.hadoop.hive.common.type.DataTypePhysicalVariation;
 import org.apache.hadoop.hive.common.type.Date;
 import org.apache.hadoop.hive.common.type.HiveChar;
@@ -86,6 +84,7 @@ import org.apache.hadoop.hive.serde2.typeinfo.UnionTypeInfo;
 import org.apache.hadoop.hive.serde2.typeinfo.VarcharTypeInfo;
 import org.apache.hive.common.util.DateUtils;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.BooleanWritable;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.LongWritable;
 
@@ -129,6 +128,10 @@ public class VectorRandomRowSource {
 
   private boolean addEscapables;
   private String needsEscapeStr;
+
+  public boolean getAllowNull() {
+    return allowNull;
+  }
 
   public static class StringGenerationOption {
 
@@ -1021,63 +1024,301 @@ public class VectorRandomRowSource {
 
     switch (primitiveTypeInfo.getPrimitiveCategory()) {
     case BOOLEAN:
-      return ((WritableBooleanObjectInspector) objectInspector).create((boolean) object);
+      {
+        WritableBooleanObjectInspector writableOI = (WritableBooleanObjectInspector) objectInspector;
+        if (object instanceof Boolean) {
+          return writableOI.create((boolean) object);
+        } else {
+          return writableOI.copyObject(object);
+        }
+      }
     case BYTE:
-      return ((WritableByteObjectInspector) objectInspector).create((byte) object);
+      {
+        WritableByteObjectInspector writableOI = (WritableByteObjectInspector) objectInspector;
+        if (object instanceof Byte) {
+          return writableOI.create((byte) object);
+        } else {
+          return writableOI.copyObject(object);
+        }
+      }
     case SHORT:
-      return ((WritableShortObjectInspector) objectInspector).create((short) object);
+      {
+        WritableShortObjectInspector writableOI = (WritableShortObjectInspector) objectInspector;
+        if (object instanceof Short) {
+          return writableOI.create((short) object);
+        } else {
+          return writableOI.copyObject(object);
+        }
+      }
     case INT:
-      return ((WritableIntObjectInspector) objectInspector).create((int) object);
+      {
+        WritableIntObjectInspector writableOI = (WritableIntObjectInspector) objectInspector;
+        if (object instanceof Integer) {
+          return writableOI.create((int) object);
+        } else {
+          return writableOI.copyObject(object);
+        }
+      }
     case LONG:
-      return ((WritableLongObjectInspector) objectInspector).create((long) object);
+      {
+        WritableLongObjectInspector writableOI = (WritableLongObjectInspector) objectInspector;
+        if (object instanceof Long) {
+          return writableOI.create((long) object);
+        } else {
+          return writableOI.copyObject(object);
+        }
+      }
     case DATE:
-      return ((WritableDateObjectInspector) objectInspector).create((Date) object);
+      {
+        WritableDateObjectInspector writableOI = (WritableDateObjectInspector) objectInspector;
+        if (object instanceof Date) {
+          return writableOI.create((Date) object);
+        } else {
+          return writableOI.copyObject(object);
+        }
+      }
     case FLOAT:
-      return ((WritableFloatObjectInspector) objectInspector).create((float) object);
+      {
+        WritableFloatObjectInspector writableOI = (WritableFloatObjectInspector) objectInspector;
+        if (object instanceof Float) {
+          return writableOI.create((float) object);
+        } else {
+          return writableOI.copyObject(object);
+        }
+      }
     case DOUBLE:
-      return ((WritableDoubleObjectInspector) objectInspector).create((double) object);
+      {
+        WritableDoubleObjectInspector writableOI = (WritableDoubleObjectInspector) objectInspector;
+        if (object instanceof Double) {
+          return writableOI.create((double) object);
+        } else {
+          return writableOI.copyObject(object);
+        }
+      }
     case STRING:
-      return ((WritableStringObjectInspector) objectInspector).create((String) object);
+      {
+        WritableStringObjectInspector writableOI = (WritableStringObjectInspector) objectInspector;
+        if (object instanceof String) {
+          return writableOI.create((String) object);
+        } else {
+          return writableOI.copyObject(object);
+        }
+      }
     case CHAR:
       {
         WritableHiveCharObjectInspector writableCharObjectInspector =
             new WritableHiveCharObjectInspector( (CharTypeInfo) primitiveTypeInfo);
-        return writableCharObjectInspector.create((HiveChar) object);
+        if (object instanceof HiveChar) {
+          return writableCharObjectInspector.create((HiveChar) object);
+        } else {
+          return writableCharObjectInspector.copyObject(object);
+        }
       }
     case VARCHAR:
       {
         WritableHiveVarcharObjectInspector writableVarcharObjectInspector =
             new WritableHiveVarcharObjectInspector( (VarcharTypeInfo) primitiveTypeInfo);
-        return writableVarcharObjectInspector.create((HiveVarchar) object);
+        if (object instanceof HiveVarchar) {
+          return writableVarcharObjectInspector.create((HiveVarchar) object);
+        } else {
+          return writableVarcharObjectInspector.copyObject(object);
+        }
       }
     case BINARY:
-      return PrimitiveObjectInspectorFactory.writableBinaryObjectInspector.create((byte[]) object);
+      {
+        if (object instanceof byte[]) {
+          return PrimitiveObjectInspectorFactory.writableBinaryObjectInspector.create((byte[]) object);
+        } else {
+          return PrimitiveObjectInspectorFactory.writableBinaryObjectInspector.copyObject(object);
+        }
+      }
     case TIMESTAMP:
-      return ((WritableTimestampObjectInspector) objectInspector).create((Timestamp) object);
+    {
+      WritableTimestampObjectInspector writableOI = (WritableTimestampObjectInspector) objectInspector;
+      if (object instanceof Timestamp) {
+        return writableOI.create((Timestamp) object);
+      } else {
+        return writableOI.copyObject(object);
+      }
+    }
     case INTERVAL_YEAR_MONTH:
-      return ((WritableHiveIntervalYearMonthObjectInspector) objectInspector).create((HiveIntervalYearMonth) object);
+      {
+        WritableHiveIntervalYearMonthObjectInspector writableOI = (WritableHiveIntervalYearMonthObjectInspector) objectInspector;
+        if (object instanceof HiveIntervalYearMonth) {
+          return writableOI.create((HiveIntervalYearMonth) object);
+        } else {
+          return writableOI.copyObject(object);
+        }
+      }
     case INTERVAL_DAY_TIME:
-      return ((WritableHiveIntervalDayTimeObjectInspector) objectInspector).create((HiveIntervalDayTime) object);
+      {
+        WritableHiveIntervalDayTimeObjectInspector writableOI = (WritableHiveIntervalDayTimeObjectInspector) objectInspector;
+        if (object instanceof HiveIntervalDayTime) {
+          return writableOI.create((HiveIntervalDayTime) object);
+        } else {
+          return writableOI.copyObject(object);
+        }
+      }
     case DECIMAL:
       {
-        if (dataTypePhysicalVariation == dataTypePhysicalVariation.DECIMAL_64) {
-          final long value;
-          if (object instanceof HiveDecimal) {
-            DecimalTypeInfo decimalTypeInfo = (DecimalTypeInfo) primitiveTypeInfo;
-            value = new HiveDecimalWritable((HiveDecimal) object).serialize64(
-                decimalTypeInfo.getScale());
-          } else {
-            value = (long) object;
-          }
-          return ((WritableLongObjectInspector) objectInspector).create(value);
+        // Do not represent DECIMAL_64 to make ROW mode tests easier --
+        // make the VECTOR mode tests convert into the VectorizedRowBatch.
+        WritableHiveDecimalObjectInspector writableOI =
+            new WritableHiveDecimalObjectInspector((DecimalTypeInfo) primitiveTypeInfo);
+        if (object instanceof HiveDecimal) {
+          return writableOI.create((HiveDecimal) object);
         } else {
-          WritableHiveDecimalObjectInspector writableDecimalObjectInspector =
-              new WritableHiveDecimalObjectInspector((DecimalTypeInfo) primitiveTypeInfo);
-          return writableDecimalObjectInspector.create((HiveDecimal) object);
+          return writableOI.copyObject(object);
         }
       }
     default:
       throw new Error("Unknown primitive category " + primitiveTypeInfo.getPrimitiveCategory());
+    }
+  }
+
+  public static Object getWritableObject(TypeInfo typeInfo,
+      ObjectInspector objectInspector, Object object) {
+
+    final Category category = typeInfo.getCategory();
+    switch (category) {
+    case PRIMITIVE:
+      return
+          getWritablePrimitiveObject(
+              (PrimitiveTypeInfo) typeInfo,
+              objectInspector, DataTypePhysicalVariation.NONE, object);
+    case STRUCT:
+      {
+        final StructTypeInfo structTypeInfo = (StructTypeInfo) typeInfo;
+        final StandardStructObjectInspector structInspector =
+            (StandardStructObjectInspector) objectInspector;
+        final List<TypeInfo> fieldTypeInfos = structTypeInfo.getAllStructFieldTypeInfos();
+        final int size = fieldTypeInfos.size();
+        final List<? extends StructField> structFields =
+            structInspector.getAllStructFieldRefs();
+
+        List<Object> input = (ArrayList<Object>) object;
+        List<Object> result = new ArrayList<Object>(size);
+        for (int i = 0; i < size; i++) {
+          final StructField structField = structFields.get(i);
+          final TypeInfo fieldTypeInfo = fieldTypeInfos.get(i);
+          result.add(
+              getWritableObject(
+                  fieldTypeInfo, structField.getFieldObjectInspector(), input.get(i)));
+        }
+        return result;
+      }
+    default:
+      throw new RuntimeException("Unexpected category " + category);
+    }
+  }
+
+  public static Object getNonWritablePrimitiveObject(Object object, TypeInfo typeInfo,
+      ObjectInspector objectInspector) {
+
+    PrimitiveTypeInfo primitiveTypeInfo = (PrimitiveTypeInfo) typeInfo;
+    switch (primitiveTypeInfo.getPrimitiveCategory()) {
+    case BOOLEAN:
+      if (object instanceof Boolean) {
+        return object;
+      } else {
+        return ((WritableBooleanObjectInspector) objectInspector).get(object);
+      }
+    case BYTE:
+      if (object instanceof Byte) {
+        return object;
+      } else {
+        return ((WritableByteObjectInspector) objectInspector).get(object);
+      }
+    case SHORT:
+      if (object instanceof Short) {
+        return object;
+      } else {
+        return ((WritableShortObjectInspector) objectInspector).get(object);
+      }
+    case INT:
+      if (object instanceof Integer) {
+        return object;
+      } else {
+        return ((WritableIntObjectInspector) objectInspector).get(object);
+      }
+    case LONG:
+      if (object instanceof Long) {
+        return object;
+      } else {
+        return ((WritableLongObjectInspector) objectInspector).get(object);
+      }
+    case FLOAT:
+      if (object instanceof Float) {
+        return object;
+      } else {
+        return ((WritableFloatObjectInspector) objectInspector).get(object);
+      }
+    case DOUBLE:
+      if (object instanceof Double) {
+        return object;
+      } else {
+        return ((WritableDoubleObjectInspector) objectInspector).get(object);
+      }
+    case STRING:
+      if (object instanceof String) {
+        return object;
+      } else {
+        return ((WritableStringObjectInspector) objectInspector).getPrimitiveJavaObject(object);
+      }
+    case DATE:
+      if (object instanceof Date) {
+        return object;
+      } else {
+        return ((WritableDateObjectInspector) objectInspector).getPrimitiveJavaObject(object);
+      }
+    case TIMESTAMP:
+      if (object instanceof Timestamp) {
+        return object;
+      } else if (object instanceof org.apache.hadoop.hive.common.type.Timestamp) {
+        return object;
+      } else {
+        return ((WritableTimestampObjectInspector) objectInspector).getPrimitiveJavaObject(object);
+      }
+    case DECIMAL:
+      if (object instanceof HiveDecimal) {
+        return object;
+      } else {
+        WritableHiveDecimalObjectInspector writableDecimalObjectInspector =
+            new WritableHiveDecimalObjectInspector((DecimalTypeInfo) primitiveTypeInfo);
+        return writableDecimalObjectInspector.getPrimitiveJavaObject(object);
+      }
+    case VARCHAR:
+      if (object instanceof HiveVarchar) {
+        return object;
+      } else {
+        WritableHiveVarcharObjectInspector writableVarcharObjectInspector =
+            new WritableHiveVarcharObjectInspector( (VarcharTypeInfo) primitiveTypeInfo);
+        return writableVarcharObjectInspector.getPrimitiveJavaObject(object);
+      }
+    case CHAR:
+      if (object instanceof HiveChar) {
+        return object;
+      } else {
+        WritableHiveCharObjectInspector writableCharObjectInspector =
+            new WritableHiveCharObjectInspector( (CharTypeInfo) primitiveTypeInfo);
+        return writableCharObjectInspector.getPrimitiveJavaObject(object);
+      }
+    case INTERVAL_YEAR_MONTH:
+      if (object instanceof HiveIntervalYearMonth) {
+        return object;
+      } else {
+        return ((WritableHiveIntervalYearMonthObjectInspector) objectInspector).getPrimitiveJavaObject(object);
+      }
+    case INTERVAL_DAY_TIME:
+      if (object instanceof HiveIntervalDayTime) {
+        return object;
+      } else {
+        return ((WritableHiveIntervalDayTimeObjectInspector) objectInspector).getPrimitiveJavaObject(object);
+      }
+    case BINARY:
+    default:
+      throw new RuntimeException(
+          "Unexpected primitive category " + primitiveTypeInfo.getPrimitiveCategory());
     }
   }
 

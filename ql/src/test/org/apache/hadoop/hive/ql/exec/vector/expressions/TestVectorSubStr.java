@@ -331,6 +331,7 @@ public class TestVectorSubStr {
         " targetTypeInfo " + targetTypeInfo.toString() +
         " subStrTestMode " + subStrTestMode +
         " vectorExpression " + vectorExpression.getClass().getSimpleName());
+    */
 
     batchSource.resetBatchIteration();
     int rowIndex = 0;

@@ -305,12 +305,14 @@ public class TestVectorStringConcat {
       ObjectInspector rowInspector,
       GenericUDF genericUdf, Object[] resultObjects) throws Exception {
 
+    /*
     System.out.println(
         "*DEBUG* stringTypeInfo " + stringTypeInfo.toString() +
         " integerTypeInfo " + integerTypeInfo +
         " stringConcatTestMode ROW_MODE" +
         " columnScalarMode " + columnScalarMode +
         " genericUdf " + genericUdf.toString());
+    */
 
     ExprNodeGenericFuncDesc exprDesc =
         new ExprNodeGenericFuncDesc(TypeInfoFactory.stringTypeInfo, genericUdf, children);
@@ -411,6 +413,7 @@ public class TestVectorStringConcat {
         " stringConcatTestMode " + stringConcatTestMode +
         " columnScalarMode " + columnScalarMode +
         " vectorExpression " + vectorExpression.toString());
+    */
 
     batchSource.resetBatchIteration();
     int rowIndex = 0;

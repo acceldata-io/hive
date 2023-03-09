@@ -199,10 +199,12 @@ public class TestVectorIfStatement {
       boolean isNullScalar1, boolean isNullScalar2)
           throws Exception {
 
+    /*
     System.out.println("*DEBUG* typeName " + typeName +
         " columnScalarMode " + columnScalarMode +
         " isNullScalar1 " + isNullScalar1 +
         " isNullScalar2 " + isNullScalar2);
+    */
 
     TypeInfo typeInfo = TypeInfoUtils.getTypeInfoFromTypeString(typeName);
 
@@ -461,7 +463,8 @@ public class TestVectorIfStatement {
         "*DEBUG* typeInfo " + typeInfo.toString() +
         " ifStmtTestMode " + ifStmtTestMode +
         " columnScalarMode " + columnScalarMode +
-        " vectorExpression " + vectorExpression.getClass().getSimpleName());
+        " vectorExpression " + vectorExpression.toString());
+    */
 
     batchSource.resetBatchIteration();
     int rowIndex = 0;
