@@ -16,33 +16,43 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.hive.ql.exec.vector.expressions;
+package org.apache.hadoop.hive.ql.exec.vector.expressions.gen;
 
 import java.util.Arrays;
 
+import org.apache.hadoop.hive.ql.exec.vector.expressions.VectorExpression;
 import org.apache.hadoop.hive.ql.exec.vector.LongColumnVector;
+import org.apache.hadoop.hive.ql.exec.vector.<InputColumnVectorType>;
 import org.apache.hadoop.hive.ql.exec.vector.VectorizedRowBatch;
 import org.apache.hadoop.hive.ql.exec.vector.VectorExpressionDescriptor;
 import org.apache.hadoop.hive.ql.metadata.HiveException;
 
-public class LongScalarGreaterEqualLongColumn extends VectorExpression {
+/**
+ * Output a boolean value indicating if a column is [NOT] BETWEEN two constants.
+ */
+public class <ClassName> extends VectorExpression {
+
   private static final long serialVersionUID = 1L;
 
-  protected final int colNum;
-  protected final long value;
+  protected int colNum;
 
-  public LongScalarGreaterEqualLongColumn(long value, int colNum, int outputColumnNum) {
+  protected final <OperandType> leftValue;
+  protected final <OperandType> rightValue;
+
+  public <ClassName>(int colNum, <OperandType> leftValue, <OperandType> rightValue, int outputColumnNum) {
     super(outputColumnNum);
     this.colNum = colNum;
-    this.value = value;
+    this.leftValue = leftValue;
+    this.rightValue = rightValue;
   }
 
-  public LongScalarGreaterEqualLongColumn() {
+  public <ClassName>() {
     super();
 
     // Dummy final assignments.
     colNum = -1;
-    value = 0;
+    leftValue = 0;
+    rightValue = 0;
   }
 
   @Override
@@ -52,13 +62,13 @@ public class LongScalarGreaterEqualLongColumn extends VectorExpression {
       super.evaluateChildren(batch);
     }
 
-    LongColumnVector inputColVector = (LongColumnVector) batch.cols[colNum];
+    <InputColumnVectorType> inputColVector = (<InputColumnVectorType>) batch.cols[colNum];
     LongColumnVector outputColVector = (LongColumnVector) batch.cols[outputColumnNum];
     int[] sel = batch.selected;
     boolean[] inputIsNull = inputColVector.isNull;
     boolean[] outputIsNull = outputColVector.isNull;
     int n = batch.size;
-    long[] vector = inputColVector.vector;
+    <OperandType>[] vector = inputColVector.vector;
     long[] outputVector = outputColVector.vector;
 
     // return immediately if batch is empty
@@ -71,8 +81,10 @@ public class LongScalarGreaterEqualLongColumn extends VectorExpression {
 
     if (inputColVector.isRepeating) {
       if (inputColVector.noNulls || !inputIsNull[0]) {
+        // Set isNull before call in case it changes it mind.
         outputIsNull[0] = false;
-        outputVector[0] = value >= vector[0] ? 1 : 0;
+        final <OperandType> repeatValue = vector[0];
+        outputVector[0] = <OptionalNot>(repeatValue < leftValue || repeatValue > rightValue) ? 0 : 1;
       } else {
         outputIsNull[0] = true;
         outputColVector.noNulls = false;
@@ -91,14 +103,14 @@ public class LongScalarGreaterEqualLongColumn extends VectorExpression {
            final int i = sel[j];
            // Set isNull before call in case it changes it mind.
            outputIsNull[i] = false;
-           // The SIMD optimized form of "a >= b" is "((a - b) >>> 63) ^ 1"
-           outputVector[i] = ((value - vector[i]) >>> 63) ^ 1;
+           final <OperandType> value = vector[i];
+           outputVector[i] = <OptionalNot>(value < leftValue || value > rightValue) ? 0 : 1;
          }
         } else {
           for(int j = 0; j != n; j++) {
             final int i = sel[j];
-            // The SIMD optimized form of "a >= b" is "((a - b) >>> 63) ^ 1"
-            outputVector[i] = ((value - vector[i]) >>> 63) ^ 1;
+            final <OperandType> value = vector[i];
+            outputVector[i] = <OptionalNot>(value < leftValue || value > rightValue) ? 0 : 1;
           }
         }
       } else {
@@ -110,30 +122,27 @@ public class LongScalarGreaterEqualLongColumn extends VectorExpression {
           outputColVector.noNulls = true;
         }
         for(int i = 0; i != n; i++) {
-          // The SIMD optimized form of "a >= b" is "((a - b) >>> 63) ^ 1"
-          outputVector[i] = ((value - vector[i]) >>> 63) ^ 1;
+          final <OperandType> value = vector[i];
+          outputVector[i] = <OptionalNot>(value < leftValue || value > rightValue) ? 0 : 1;
         }
       }
     } else /* there are nulls in the inputColVector */ {
 
       // Carefully handle NULLs...
-
-      /*
-       * For better performance on LONG/DOUBLE we don't want the conditional
-       * statements inside the for loop.
-       */
       outputColVector.noNulls = false;
 
       if (batch.selectedInUse) {
-        for(int j=0; j != n; j++) {
+        for(int j = 0; j != n; j++) {
           int i = sel[j];
           outputIsNull[i] = inputIsNull[i];
-          outputVector[i] = ((value - vector[i]) >>> 63) ^ 1;
+          final <OperandType> value = vector[i];
+          outputVector[i] = <OptionalNot>(value < leftValue || value > rightValue) ? 0 : 1;
         }
       } else {
         System.arraycopy(inputIsNull, 0, outputIsNull, 0, n);
         for(int i = 0; i != n; i++) {
-          outputVector[i] = ((value - vector[i]) >>> 63) ^ 1;
+          final <OperandType> value = vector[i];
+          outputVector[i] = <OptionalNot>(value < leftValue || value > rightValue) ? 0 : 1;
         }
       }
     }
@@ -141,20 +150,13 @@ public class LongScalarGreaterEqualLongColumn extends VectorExpression {
 
   @Override
   public String vectorExpressionParameters() {
-    return "val " + value + ", " + getColumnParamString(1, colNum);
+    return getColumnParamString(0, colNum) + ", left " + leftValue + ", right " + rightValue;
   }
 
   @Override
   public VectorExpressionDescriptor.Descriptor getDescriptor() {
-    return (new VectorExpressionDescriptor.Builder())
-        .setMode(
-            VectorExpressionDescriptor.Mode.PROJECTION)
-        .setNumArguments(2)
-        .setArgumentTypes(
-            VectorExpressionDescriptor.ArgumentType.getType("long"),
-            VectorExpressionDescriptor.ArgumentType.getType("long"))
-        .setInputExpressionTypes(
-            VectorExpressionDescriptor.InputExpressionType.SCALAR,
-            VectorExpressionDescriptor.InputExpressionType.COLUMN).build();
+
+    // return null since this will be handled as a special case in VectorizationContext
+    return null;
   }
 }

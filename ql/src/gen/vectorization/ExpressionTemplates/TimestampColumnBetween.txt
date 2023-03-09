@@ -16,34 +16,47 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.hive.ql.exec.vector.expressions;
+package org.apache.hadoop.hive.ql.exec.vector.expressions.gen;
 
+import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.HashSet;
 
+import org.apache.hadoop.hive.ql.exec.vector.expressions.VectorExpression;
+import org.apache.hadoop.hive.ql.exec.vector.TimestampColumnVector;
+import org.apache.hadoop.hive.ql.exec.vector.VectorExpressionDescriptor.Descriptor;
 import org.apache.hadoop.hive.ql.exec.vector.LongColumnVector;
 import org.apache.hadoop.hive.ql.exec.vector.VectorizedRowBatch;
-import org.apache.hadoop.hive.ql.exec.vector.VectorExpressionDescriptor;
 import org.apache.hadoop.hive.ql.metadata.HiveException;
 
-public class LongScalarEqualLongColumn extends VectorExpression {
-
+/**
+ * Output a boolean value indicating if a column is BETWEEN two constants.
+ */
+public class <ClassName> extends VectorExpression {
   private static final long serialVersionUID = 1L;
 
-  protected final int colNum;
-  protected final long value;
+  private final int inputCol;
 
-  public LongScalarEqualLongColumn(long value, int colNum, int outputColumnNum) {
-    super(outputColumnNum);
-    this.colNum = colNum;
-    this.value = value;
-  }
+  private final Timestamp leftValue;
+  private final Timestamp rightValue;
 
-  public LongScalarEqualLongColumn() {
+  public <ClassName>() {
     super();
 
     // Dummy final assignments.
-    colNum = -1;
-    value = 0;
+    inputCol = -1;
+    leftValue = null;
+    rightValue = null;
+  }
+
+  /**
+   * After construction you must call setInListValues() to add the values to the IN set.
+   */
+  public <ClassName>(int colNum, Timestamp leftValue, Timestamp rightValue, int outputColumnNum) {
+    super(outputColumnNum);
+    this.inputCol = colNum;
+    this.leftValue = leftValue;
+    this.rightValue = rightValue;
   }
 
   @Override
@@ -53,13 +66,12 @@ public class LongScalarEqualLongColumn extends VectorExpression {
       super.evaluateChildren(batch);
     }
 
-    LongColumnVector inputColVector = (LongColumnVector) batch.cols[colNum];
+    TimestampColumnVector inputColVector = (TimestampColumnVector) batch.cols[inputCol];
     LongColumnVector outputColVector = (LongColumnVector) batch.cols[outputColumnNum];
     int[] sel = batch.selected;
     boolean[] inputIsNull = inputColVector.isNull;
     boolean[] outputIsNull = outputColVector.isNull;
     int n = batch.size;
-    long[] vector = inputColVector.vector;
     long[] outputVector = outputColVector.vector;
 
     // return immediately if batch is empty
@@ -72,8 +84,11 @@ public class LongScalarEqualLongColumn extends VectorExpression {
 
     if (inputColVector.isRepeating) {
       if (inputColVector.noNulls || !inputIsNull[0]) {
+        // Set isNull before call in case it changes it mind.
         outputIsNull[0] = false;
-        outputVector[0] = vector[0] == value ? 1 : 0;
+        outputVector[0] =
+           <OptionalNot>(inputColVector.compareTo(0, leftValue) < 0 ||
+            inputColVector.compareTo(0, rightValue) > 0) ? 0 : 1;
       } else {
         outputIsNull[0] = true;
         outputColVector.noNulls = false;
@@ -92,12 +107,16 @@ public class LongScalarEqualLongColumn extends VectorExpression {
            final int i = sel[j];
            // Set isNull before call in case it changes it mind.
            outputIsNull[i] = false;
-           outputVector[i] = (((value - vector[i]) ^ (vector[i] - value)) >>> 63) ^ 1;
+           outputVector[i] =
+               <OptionalNot>(inputColVector.compareTo(i, leftValue) < 0 ||
+                inputColVector.compareTo(i, rightValue) > 0) ? 0 : 1;
          }
         } else {
           for(int j = 0; j != n; j++) {
             final int i = sel[j];
-            outputVector[i] = (((value - vector[i]) ^ (vector[i] - value)) >>> 63) ^ 1;
+            outputVector[i] =
+               <OptionalNot>(inputColVector.compareTo(i, leftValue) < 0 ||
+                inputColVector.compareTo(i, rightValue) > 0) ? 0 : 1;
           }
         }
       } else {
@@ -109,49 +128,50 @@ public class LongScalarEqualLongColumn extends VectorExpression {
           outputColVector.noNulls = true;
         }
         for(int i = 0; i != n; i++) {
-          outputVector[i] = (((value - vector[i]) ^ (vector[i] - value)) >>> 63) ^ 1;
+          outputVector[i] =
+               <OptionalNot>(inputColVector.compareTo(i, leftValue) < 0 ||
+                inputColVector.compareTo(i, rightValue) > 0) ? 0 : 1;
         }
       }
     } else /* there are nulls in the inputColVector */ {
 
       // Carefully handle NULLs...
-
-      /*
-       * For better performance on LONG/DOUBLE we don't want the conditional
-       * statements inside the for loop.
-       */
       outputColVector.noNulls = false;
 
       if (batch.selectedInUse) {
-        for(int j=0; j != n; j++) {
+        for(int j = 0; j != n; j++) {
           int i = sel[j];
           outputIsNull[i] = inputIsNull[i];
-          outputVector[i] = (((value - vector[i]) ^ (vector[i] - value)) >>> 63) ^ 1;
+          if (!inputIsNull[i]) {
+            outputVector[i] =
+               <OptionalNot>(inputColVector.compareTo(i, leftValue) < 0 ||
+                inputColVector.compareTo(i, rightValue) > 0) ? 0 : 1;
+          }
         }
       } else {
         System.arraycopy(inputIsNull, 0, outputIsNull, 0, n);
         for(int i = 0; i != n; i++) {
-          outputVector[i] = (((value - vector[i]) ^ (vector[i] - value)) >>> 63) ^ 1;
+          if (!inputIsNull[i]) {
+            outputVector[i] =
+               <OptionalNot>(inputColVector.compareTo(i, leftValue) < 0 ||
+                inputColVector.compareTo(i, rightValue) > 0) ? 0 : 1;
+          }
         }
       }
     }
   }
 
-  public String vectorExpressionParameters() {
-    return "val " + value + ", " + getColumnParamString(1, colNum);
+  @Override
+  public Descriptor getDescriptor() {
+
+    // This VectorExpression (IN) is a special case, so don't return a descriptor.
+    return null;
   }
 
-  @Override
-  public VectorExpressionDescriptor.Descriptor getDescriptor() {
-    return (new VectorExpressionDescriptor.Builder())
-        .setMode(
-            VectorExpressionDescriptor.Mode.PROJECTION)
-        .setNumArguments(2)
-        .setArgumentTypes(
-            VectorExpressionDescriptor.ArgumentType.getType("long"),
-            VectorExpressionDescriptor.ArgumentType.getType("long"))
-        .setInputExpressionTypes(
-            VectorExpressionDescriptor.InputExpressionType.SCALAR,
-            VectorExpressionDescriptor.InputExpressionType.COLUMN).build();
+   @Override
+  public String vectorExpressionParameters() {
+    return
+        getColumnParamString(0, inputCol) +
+        ", left " + leftValue.toString() + ", right " + rightValue.toString();
   }
 }

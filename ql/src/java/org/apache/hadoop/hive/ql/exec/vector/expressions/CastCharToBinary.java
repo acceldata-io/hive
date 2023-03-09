@@ -19,22 +19,28 @@
 package org.apache.hadoop.hive.ql.exec.vector.expressions;
 
 import org.apache.hadoop.hive.ql.exec.vector.BytesColumnVector;
+import org.apache.hadoop.hive.ql.metadata.HiveException;
+import org.apache.hadoop.hive.serde2.typeinfo.CharTypeInfo;
 
-// cast string group to string (varchar to string, etc.)
-public class CastStringGroupToString extends StringUnaryUDFDirect {
+public class CastCharToBinary extends StringUnaryUDFDirect {
 
   private static final long serialVersionUID = 1L;
+  private int maxLength;
 
-  public CastStringGroupToString() {
-    super();
+  public CastCharToBinary(int inputColumn, int outputColumnNum) {
+    super(inputColumn, outputColumnNum);
   }
 
-  public CastStringGroupToString(int inputColumn, int outputColumnNum) {
-    super(inputColumn, outputColumnNum);
+  public CastCharToBinary() {
+    super();
   }
 
   @Override
   protected void func(BytesColumnVector outV, byte[][] vector, int[] start, int[] length, int i) {
-    outV.setVal(i, vector[i], start[i], length[i]);
+    StringExpr.padRight(outV, i, vector[i], start[i], length[i], maxLength);
+  }
+
+  public String vectorExpressionParameters() {
+    return getColumnParamString(0, inputColumn) + ", maxLength " + maxLength;
   }
 }

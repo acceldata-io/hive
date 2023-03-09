@@ -28,6 +28,7 @@ import org.apache.hadoop.hive.ql.exec.vector.VectorExtractRow;
 import org.apache.hadoop.hive.ql.exec.vector.VectorRandomBatchSource;
 import org.apache.hadoop.hive.ql.exec.vector.VectorRandomRowSource;
 import org.apache.hadoop.hive.ql.exec.vector.VectorRandomRowSource.GenerationSpec;
+import org.apache.hadoop.hive.ql.exec.vector.udf.VectorUDFAdaptor;
 import org.apache.hadoop.hive.ql.exec.vector.VectorizationContext;
 import org.apache.hadoop.hive.ql.exec.vector.VectorizedRowBatch;
 import org.apache.hadoop.hive.ql.exec.vector.VectorizedRowBatchCtx;
