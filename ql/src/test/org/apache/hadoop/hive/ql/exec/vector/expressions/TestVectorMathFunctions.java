@@ -63,6 +63,8 @@ import org.junit.Test;
 
 public class TestVectorMathFunctions {
 
+  private HiveConf hiveConf = new HiveConf();
+
   private static final double eps = 1.0e-7;
   private static boolean equalsWithinTolerance(double a, double b) {
     return Math.abs(a - b) < eps;
