@@ -18,7 +18,8 @@
 
 package org.apache.hadoop.hive.ql.exec.vector.expressions;
 
-import junit.framework.Assert;
+import org.junit.Assert;
+
 import org.apache.hadoop.hive.common.type.DataTypePhysicalVariation;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.exec.ExprNodeEvaluator;
@@ -392,7 +393,17 @@ public class TestVectorTimestampExtract {
             Arrays.asList(dataTypePhysicalVariations),
             hiveConf);
     VectorExpression vectorExpression = vectorizationContext.getVectorExpression(exprDesc);
-    vectorExpression.transientInit();
+    vectorExpression.transientInit(hiveConf);
+
+    if (timestampExtractTestMode == TimestampExtractTestMode.VECTOR_EXPRESSION &&
+        vectorExpression instanceof VectorUDFAdaptor) {
+      System.out.println(
+          "*NO NATIVE VECTOR EXPRESSION* dateTimeStringTypeInfo " + dateTimeStringTypeInfo.toString() +
+          " timestampExtractTestMode " + timestampExtractTestMode +
+          " vectorExpression " + vectorExpression.toString());
+    }
+
+    // System.out.println("*VECTOR EXPRESSION* " + vectorExpression.getClass().getSimpleName());
 
     /*
     System.out.println(

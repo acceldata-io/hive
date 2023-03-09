@@ -326,6 +326,9 @@ public class TestVectorSubStr {
     resultVectorExtractRow.init(new TypeInfo[] { targetTypeInfo }, new int[] { columns.size() });
     Object[] scrqtchRow = new Object[1];
 
+    // System.out.println("*VECTOR EXPRESSION* " + vectorExpression.getClass().getSimpleName());
+
+    /*
     System.out.println(
         "*DEBUG* typeInfo " + typeInfo.toString() +
         " targetTypeInfo " + targetTypeInfo.toString() +
