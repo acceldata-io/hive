@@ -27,6 +27,7 @@ import org.junit.Assert;
 
 import org.apache.hadoop.hive.serde2.RandomTypeUtil;
 import org.apache.hadoop.hive.common.type.Timestamp;
+import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.exec.vector.BytesColumnVector;
 import org.apache.hadoop.hive.ql.exec.vector.DoubleColumnVector;
 import org.apache.hadoop.hive.ql.exec.vector.LongColumnVector;
@@ -717,7 +718,7 @@ public class TestVectorMathFunctions {
     BytesColumnVector resultV = (BytesColumnVector) b.cols[2];
     b.cols[0].noNulls = true;
     VectorExpression expr = new FuncBin(1, 2);
-    expr.transientInit();
+    expr.transientInit(hiveConf);
     expr.evaluate(b);
     String s = new String(resultV.vector[1], resultV.start[1], resultV.length[1]);
     Assert.assertEquals("11111111", s);
@@ -731,7 +732,7 @@ public class TestVectorMathFunctions {
     BytesColumnVector resultV = (BytesColumnVector) b.cols[2];
     b.cols[1].noNulls = true;
     VectorExpression expr = new FuncHex(1, 2);
-    expr.transientInit();
+    expr.transientInit(hiveConf);
     expr.evaluate(b);
     String s = new String(resultV.vector[1], resultV.start[1], resultV.length[1]);
     Assert.assertEquals("FF", s);

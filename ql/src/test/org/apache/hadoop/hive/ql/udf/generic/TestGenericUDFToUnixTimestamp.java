@@ -34,6 +34,10 @@ import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectInspectorFactory;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import static org.mockito.Mockito.when;
+
+import org.apache.hadoop.mapred.JobConf;
+import org.mockito.Mockito;
 
 import junit.framework.TestCase;
 
