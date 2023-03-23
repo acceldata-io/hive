@@ -988,13 +988,13 @@ public class TestWorker extends CompactorTest {
     burnThroughTransactions("default", "mtwb", 25);
 
     CompactionRequest rqst = new CompactionRequest("default", "mtwb", CompactionType.MINOR);
-    String initiatorVersion = "4.0.0-alpha-1";
+    String initiatorVersion = "3.1.4.3.2.2.0-1";
     rqst.setInitiatorVersion(initiatorVersion);
     txnHandler.compact(rqst);
 
     Worker worker = Mockito.spy(new Worker());
     worker.setConf(conf);
-    String workerVersion = "4.0.0-alpha-1-SNAPSHOT";
+    String workerVersion = "3.1.4.3.2.2.0-1-SNAPSHOT";
     doReturn(workerVersion).when(worker).getRuntimeVersion();
     worker.init(new AtomicBoolean(true));
     worker.run();

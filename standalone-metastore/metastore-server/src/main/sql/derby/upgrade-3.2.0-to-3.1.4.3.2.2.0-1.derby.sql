@@ -1,4 +1,4 @@
--- Upgrade MetaStore schema from 3.2.0 to 4.0.0-alpha-1
+-- Upgrade MetaStore schema from 3.2.0 to 3.1.4.3.2.2.0-1
 -- HIVE-19416
 ALTER TABLE "APP"."TBLS" ADD WRITE_ID bigint DEFAULT 0;
 ALTER TABLE "APP"."PARTITIONS" ADD WRITE_ID bigint DEFAULT 0;
@@ -208,4 +208,4 @@ ALTER TABLE "APP"."WRITE_SET" ALTER "WS_TABLE" SET DATA TYPE VARCHAR(256);
 ALTER TABLE "APP"."TXN_WRITE_NOTIFICATION_LOG" ALTER "WNL_TABLE" SET DATA TYPE VARCHAR(256);
 
 -- This needs to be the last thing done.  Insert any changes above this line.
-UPDATE "APP".VERSION SET SCHEMA_VERSION='4.0.0-alpha-1', VERSION_COMMENT='Hive release version 4.0.0-alpha-1' where VER_ID=1;
+UPDATE "APP".VERSION SET SCHEMA_VERSION='3.1.4.3.2.2.0-1', VERSION_COMMENT='Hive release version 3.1.4.3.2.2.0-1' where VER_ID=1;

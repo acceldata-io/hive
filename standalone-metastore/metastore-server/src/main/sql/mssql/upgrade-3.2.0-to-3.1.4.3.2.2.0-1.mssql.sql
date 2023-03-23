@@ -1,4 +1,4 @@
-SELECT 'Upgrading MetaStore schema from 3.2.0 to 4.0.0-alpha-1' AS MESSAGE;
+SELECT 'Upgrading MetaStore schema from 3.2.0 to 3.1.4.3.2.2.0-1' AS MESSAGE;
 
 -- HIVE-19416
 ALTER TABLE TBLS ADD WRITE_ID bigint NOT NULL CONSTRAINT DEF_TBLS_WRITE_ID DEFAULT(0);
@@ -262,5 +262,5 @@ ALTER TABLE "TXN_WRITE_NOTIFICATION_LOG" ALTER COLUMN "WNL_TABLE" nvarchar(256) 
 ALTER TABLE "TXN_WRITE_NOTIFICATION_LOG" ADD CONSTRAINT "TXN_WRITE_NOTIFICATION_LOG_PK" PRIMARY KEY ("WNL_TXNID", "WNL_DATABASE", "WNL_TABLE", "WNL_PARTITION");
 
 -- These lines need to be last.  Insert any changes above.
-UPDATE VERSION SET SCHEMA_VERSION='4.0.0-alpha-1', VERSION_COMMENT='Hive release version 4.0.0-alpha-1' where VER_ID=1;
-SELECT 'Finished upgrading MetaStore schema from 3.2.0 to 4.0.0-alpha-1' AS MESSAGE;
+UPDATE VERSION SET SCHEMA_VERSION='3.1.4.3.2.2.0-1', VERSION_COMMENT='Hive release version 3.1.4.3.2.2.0-1' where VER_ID=1;
+SELECT 'Finished upgrading MetaStore schema from 3.2.0 to 3.1.4.3.2.2.0-1' AS MESSAGE;

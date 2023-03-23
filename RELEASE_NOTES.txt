@@ -1,5 +1,5 @@
 
-Release Notes - Hive - Version 4.0.0-alpha-1
+Release Notes - Hive - Version 3.1.4.3.2.2.0-1
 
 ** Sub-task
     * [HIVE-5312] - Let HiveServer2 run simultaneously in HTTP (over thrift) and Binary (normal thrift transport) mode 
@@ -3137,5 +3137,5 @@ Release Notes - Hive - Version 4.0.0-alpha-1
     * [HIVE-25920] - Bump Xerce2 to 2.12.2
     * [HIVE-25935] - Cleanup IMetaStoreClient#getPartitionsByNames APIs
     * [HIVE-25945] - Upgrade H2 database version to 2.1.210
-    * [HIVE-26002] - Preparing for 4.0.0-alpha-1 development
+    * [HIVE-26002] - Preparing for 3.1.4.3.2.2.0-1 development
     * [HIVE-26025] - Remove IMetaStoreClient#listPartitionNames which is not used
