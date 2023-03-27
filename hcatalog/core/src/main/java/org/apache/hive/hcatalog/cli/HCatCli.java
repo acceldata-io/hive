@@ -23,6 +23,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -37,7 +38,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.Parser;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.hadoop.hive.common.io.SessionStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.hadoop.fs.permission.FsPermission;
@@ -71,8 +71,8 @@ public class HCatCli {
     CliSessionState ss = new CliSessionState(new HiveConf(SessionState.class));
     ss.in = System.in;
     try {
-      ss.out = new SessionStream(System.out, true, "UTF-8");
-      ss.err = new SessionStream(System.err, true, "UTF-8");
+      ss.out = new PrintStream(System.out, true, "UTF-8");
+      ss.err = new PrintStream(System.err, true, "UTF-8");
     } catch (UnsupportedEncodingException e) {
       System.exit(1);
     }

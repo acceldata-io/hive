@@ -19,6 +19,7 @@
 package org.apache.hive.service.cli.operation;
 
 import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivilegedExceptionAction;
@@ -42,7 +43,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.hive.common.LogUtils;
-import org.apache.hadoop.hive.common.io.SessionStream;
 import org.apache.hadoop.hive.common.metrics.common.Metrics;
 import org.apache.hadoop.hive.common.metrics.common.MetricsConstant;
 import org.apache.hadoop.hive.common.metrics.common.MetricsFactory;
@@ -147,11 +147,11 @@ public class SQLOperation extends ExecuteStatementOperation {
     try {
       sessionState.in = null; // hive server's session input stream is not used
       sessionState.out =
-          new SessionStream(System.out, true, StandardCharsets.UTF_8.name());
+          new PrintStream(System.out, true, StandardCharsets.UTF_8.name());
       sessionState.info =
-          new SessionStream(System.err, true, StandardCharsets.UTF_8.name());
+          new PrintStream(System.err, true, StandardCharsets.UTF_8.name());
       sessionState.err =
-          new SessionStream(System.err, true, StandardCharsets.UTF_8.name());
+          new PrintStream(System.err, true, StandardCharsets.UTF_8.name());
     } catch (UnsupportedEncodingException e) {
       log.error("Error creating PrintStream", e);
         sessionState.out = null;

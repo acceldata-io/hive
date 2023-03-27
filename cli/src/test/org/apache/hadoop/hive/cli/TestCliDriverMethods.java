@@ -47,7 +47,6 @@ import jline.console.completer.Completer;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hive.common.io.SessionStream;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.conf.HiveConf.ConfVars;
 import org.apache.hadoop.hive.metastore.api.FieldSchema;
@@ -124,10 +123,10 @@ public class TestCliDriverMethods {
 
     // Capture stdout and stderr
     ByteArrayOutputStream dataOut = new ByteArrayOutputStream();
-    SessionStream out = new SessionStream(dataOut);
+    PrintStream out = new PrintStream(dataOut);
     System.setOut(out);
     ByteArrayOutputStream dataErr = new ByteArrayOutputStream();
-    SessionStream err = new SessionStream(dataErr);
+    PrintStream err = new PrintStream(dataErr);
     System.setErr(err);
 
     CliSessionState ss = new CliSessionState(new HiveConf());
@@ -189,7 +188,7 @@ public class TestCliDriverMethods {
     when(proc.getSchema()).thenReturn(mockSchema);
 
     CliSessionState mockSS = mock(CliSessionState.class);
-    SessionStream mockOut = mock(SessionStream.class);
+    PrintStream mockOut = mock(PrintStream.class);
 
     mockSS.out = mockOut;
 
@@ -261,8 +260,8 @@ public class TestCliDriverMethods {
   public void testQuit() throws Exception {
 
     CliSessionState ss = new CliSessionState(new HiveConf());
-    ss.err = new SessionStream(System.err);
-    ss.out = new SessionStream(System.out);
+    ss.err = System.err;
+    ss.out = System.out;
 
     try {
       CliSessionState.start(ss);
@@ -293,7 +292,7 @@ public class TestCliDriverMethods {
     CliSessionState sessinState = new CliSessionState(new HiveConf());
     CliSessionState.start(sessinState);
     ByteArrayOutputStream data = new ByteArrayOutputStream();
-    sessinState.err = new SessionStream(data);
+    sessinState.err = new PrintStream(data);
     sessinState.database = "database";
     CliDriver driver = new CliDriver();
 
@@ -329,8 +328,8 @@ public class TestCliDriverMethods {
 
     ByteArrayOutputStream data = new ByteArrayOutputStream();
 
-    sessionState.err = new SessionStream(data);
-    sessionState.out = new SessionStream(System.out);
+    sessionState.err = new PrintStream(data);
+    sessionState.out = System.out;
     sessionState.setIsQtestLogging(true);
     try {
       CliSessionState.start(sessionState);
