@@ -339,4 +339,9 @@
   <value>false</value>
 </property>
 
+<property>
+  <name>hive.server2.operation.log.purgePolicy.timeToLive</name>
+  <value>5s</value>
+</property>
+
 </configuration>

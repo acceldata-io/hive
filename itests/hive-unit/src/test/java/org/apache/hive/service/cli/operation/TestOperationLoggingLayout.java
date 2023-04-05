@@ -144,6 +144,9 @@ public class TestOperationLoggingLayout {
     checkAppenderState("before operation close ", LogDivertAppender.QUERY_ROUTING_APPENDER, queryId, false);
     checkAppenderState("before operation close ", LogDivertAppenderForTest.TEST_QUERY_ROUTING_APPENDER, queryId, false);
     client.closeOperation(operationHandle);
+    checkAppenderState("after operation close ", LogDivertAppender.QUERY_ROUTING_APPENDER, queryId, expectedStopped);
+    checkAppenderState("after operation close ", LogDivertAppenderForTest.TEST_QUERY_ROUTING_APPENDER, queryId, expectedStopped);
+    Thread.sleep(8000);
     checkAppenderState("after operation close ", LogDivertAppender.QUERY_ROUTING_APPENDER, queryId, true);
     checkAppenderState("after operation close ", LogDivertAppenderForTest.TEST_QUERY_ROUTING_APPENDER, queryId, true);
   }
