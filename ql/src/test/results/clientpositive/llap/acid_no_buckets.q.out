@@ -287,7 +287,7 @@ Table Parameters:
 	numPartitions       	4                   
 	numRows             	2003                
 	rawDataSize         	0                   
-	totalSize           	18027               
+	totalSize           	18100
 	transactional       	true                
 	transactional_properties	default             
 #### A masked pattern was here ####
@@ -397,7 +397,7 @@ Table Parameters:
 	numPartitions       	4                   
 	numRows             	2003                
 	rawDataSize         	0                   
-	totalSize           	18027               
+	totalSize           	18100
 	transactional       	true                
 	transactional_properties	default             
 #### A masked pattern was here ####
@@ -1777,7 +1777,7 @@ STAGE PLANS:
                     partitionColumnCount: 2
                     partitionColumns: ds:string, hr:string
                     scratchColumnTypeNames: []
-        Map 8 
+        Map 8
             Map Operator Tree:
                   TableScan Vectorization:
                       native: true
@@ -1898,7 +1898,7 @@ STAGE PLANS:
                     File Sink Vectorization:
                         className: VectorFileSinkOperator
                         native: false
-        Reducer 6 
+        Reducer 6
             Execution mode: vectorized, llap
             Reduce Vectorization:
                 enabled: true
@@ -1930,7 +1930,7 @@ STAGE PLANS:
                     File Sink Vectorization:
                         className: VectorFileSinkOperator
                         native: false
-        Reducer 7 
+        Reducer 7
             Execution mode: llap
             Reduce Vectorization:
                 enabled: true
@@ -1938,7 +1938,7 @@ STAGE PLANS:
                 notVectorizedReason: Key expression for GROUPBY operator: Vectorizing complex type STRUCT not supported
                 vectorized: false
             Reduce Operator Tree:
-        Reducer 9 
+        Reducer 9
             Execution mode: vectorized, llap
             Reduce Vectorization:
                 enabled: true
@@ -2691,7 +2691,7 @@ STAGE PLANS:
                     partitionColumnCount: 2
                     partitionColumns: ds:string, hr:string
                     scratchColumnTypeNames: []
-        Map 10 
+        Map 10
             Map Operator Tree:
                   TableScan Vectorization:
                       native: true
@@ -2730,7 +2730,7 @@ STAGE PLANS:
                     partitionColumnCount: 2
                     partitionColumns: ds:string, hr:string
                     scratchColumnTypeNames: []
-        Reducer 11 
+        Reducer 11
             Execution mode: vectorized, llap
             Reduce Vectorization:
                 enabled: true
@@ -2790,7 +2790,7 @@ STAGE PLANS:
                         App Master Event Vectorization:
                             className: VectorAppMasterEventOperator
                             native: true
-        Reducer 2 
+        Reducer 2
             MergeJoin Vectorization:
                 enabled: false
                 enableConditionsNotMet: Vectorizing MergeJoin Supported IS false
@@ -2881,7 +2881,7 @@ STAGE PLANS:
                           native: true
                           nativeConditionsMet: hive.vectorized.execution.reducesink.new.enabled IS true, hive.execution.engine tez IN [tez] IS true, No PTF TopN IS true, No DISTINCT columns IS true, BinarySortableSerDe for keys IS true, LazyBinarySerDe for values IS true
                           valueColumns: 2:int, 3:struct<count:bigint,sum:double,input:int>, 4:bigint, 5:bigint, 6:binary, 7:int, 8:struct<count:bigint,sum:double,input:int>, 9:bigint, 10:binary
-        Reducer 6 
+        Reducer 6
             Execution mode: vectorized, llap
             Reduce Vectorization:
                 enabled: true
@@ -2913,7 +2913,7 @@ STAGE PLANS:
                     File Sink Vectorization:
                         className: VectorFileSinkOperator
                         native: false
-        Reducer 7 
+        Reducer 7
             Execution mode: vectorized, llap
             Reduce Vectorization:
                 enabled: true
@@ -2954,7 +2954,7 @@ STAGE PLANS:
                           native: true
                           nativeConditionsMet: hive.vectorized.execution.reducesink.new.enabled IS true, hive.execution.engine tez IN [tez] IS true, No PTF TopN IS true, No DISTINCT columns IS true, BinarySortableSerDe for keys IS true, LazyBinarySerDe for values IS true
                           valueColumns: 2:int, 3:struct<count:bigint,sum:double,input:int>, 4:bigint, 5:bigint, 6:binary, 7:int, 8:struct<count:bigint,sum:double,input:int>, 9:bigint, 10:binary
-        Reducer 8 
+        Reducer 8
             Execution mode: vectorized, llap
             Reduce Vectorization:
                 enabled: true
@@ -2986,7 +2986,7 @@ STAGE PLANS:
                     File Sink Vectorization:
                         className: VectorFileSinkOperator
                         native: false
-        Reducer 9 
+        Reducer 9
             Execution mode: llap
             Reduce Vectorization:
                 enabled: true
