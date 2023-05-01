@@ -35120,6 +35120,16 @@ void TableMeta::__set_catName(const std::string& val) {
   this->catName = val;
 __isset.catName = true;
 }
+
+void TableMeta::__set_ownerName(const std::string& val) {
+  this->ownerName = val;
+__isset.ownerName = true;
+}
+
+void TableMeta::__set_ownerType(const PrincipalType::type val) {
+  this->ownerType = val;
+__isset.ownerType = true;
+}
 std::ostream& operator<<(std::ostream& out, const TableMeta& obj)
 {
   obj.printTo(out);
@@ -35191,6 +35201,24 @@ uint32_t TableMeta::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 6:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->ownerName);
+          this->__isset.ownerName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 7:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast1291;
+          xfer += iprot->readI32(ecast1291);
+          this->ownerType = static_cast<PrincipalType::type>(ecast1291);
+          this->__isset.ownerType = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -35236,6 +35264,16 @@ uint32_t TableMeta::write(::apache::thrift::protocol::TProtocol* oprot) const {
     xfer += oprot->writeString(this->catName);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.ownerName) {
+    xfer += oprot->writeFieldBegin("ownerName", ::apache::thrift::protocol::T_STRING, 6);
+    xfer += oprot->writeString(this->ownerName);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.ownerType) {
+    xfer += oprot->writeFieldBegin("ownerType", ::apache::thrift::protocol::T_I32, 7);
+    xfer += oprot->writeI32(static_cast<int32_t>(this->ownerType));
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -35248,6 +35286,8 @@ void swap(TableMeta &a, TableMeta &b) {
   swap(a.tableType, b.tableType);
   swap(a.comments, b.comments);
   swap(a.catName, b.catName);
+  swap(a.ownerName, b.ownerName);
+  swap(a.ownerType, b.ownerType);
   swap(a.__isset, b.__isset);
 }
 
@@ -35257,6 +35297,8 @@ TableMeta::TableMeta(const TableMeta& other1292) {
   tableType = other1292.tableType;
   comments = other1292.comments;
   catName = other1292.catName;
+  ownerName = other1292.ownerName;
+  ownerType = other1292.ownerType;
   __isset = other1292.__isset;
 }
 TableMeta& TableMeta::operator=(const TableMeta& other1293) {
@@ -35265,6 +35307,8 @@ TableMeta& TableMeta::operator=(const TableMeta& other1293) {
   tableType = other1293.tableType;
   comments = other1293.comments;
   catName = other1293.catName;
+  ownerName = other1293.ownerName;
+  ownerType = other1293.ownerType;
   __isset = other1293.__isset;
   return *this;
 }
@@ -35276,6 +35320,8 @@ void TableMeta::printTo(std::ostream& out) const {
   out << ", " << "tableType=" << to_string(tableType);
   out << ", " << "comments="; (__isset.comments ? (out << to_string(comments)) : (out << "<null>"));
   out << ", " << "catName="; (__isset.catName ? (out << to_string(catName)) : (out << "<null>"));
+  out << ", " << "ownerName="; (__isset.ownerName ? (out << to_string(ownerName)) : (out << "<null>"));
+  out << ", " << "ownerType="; (__isset.ownerType ? (out << to_string(ownerType)) : (out << "<null>"));
   out << ")";
 }
 
