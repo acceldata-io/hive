@@ -143,7 +143,7 @@
     <dropwizard-metrics-hadoop-metrics2-reporter.version>0.1.2</dropwizard-metrics-hadoop-metrics2-reporter.version>
     <druid.version>27.0.1</druid.version>
     <esri.version>2.2.4</esri.version>
-    <flatbuffers.version>1.6.0.1</flatbuffers.version>
+    <flatbuffers.version>1.9.0</flatbuffers.version>
     <guava.version>32.0.1-jre</guava.version>
     <groovy.version>2.4.11</groovy.version>
     <h2database.version>2.1.210</h2database.version>
@@ -1692,7 +1692,7 @@
             <log4j.configurationFile>${test.log4j.scheme}${test.conf.dir}/hive-log4j2.properties</log4j.configurationFile>
             <hive.test.console.log.level>${test.console.log.level}</hive.test.console.log.level>
             <log4j.debug>true</log4j.debug>
-            <!-- don't diry up /tmp -->
+            <!-- don't dirty up /tmp -->
             <java.io.tmpdir>${test.tmp.dir}</java.io.tmpdir>
             <spark.home>${spark.home}</spark.home>
             <!-- Hadoop's minidfs class uses this -->
