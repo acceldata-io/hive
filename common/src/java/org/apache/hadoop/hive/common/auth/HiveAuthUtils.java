@@ -35,6 +35,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.thrift.TConfiguration;
+import org.apache.thrift.transport.TSSLTransportFactory.TSSLTransportParameters;
 import org.apache.thrift.transport.TSSLTransportFactory;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TSocket;
@@ -50,41 +51,74 @@ import org.slf4j.LoggerFactory;
 public class HiveAuthUtils {
   private static final Logger LOG = LoggerFactory.getLogger(HiveAuthUtils.class);
 
+
+  public static <T extends TTransport> T configureThriftMaxMessageSize(T transport, int maxMessageSize) {
+    if (maxMessageSize > 0) {
+      if (transport.getConfiguration() == null) {
+        LOG.warn("TTransport {} is returning a null Configuration, Thrift max message size is not getting configured",
+                transport.getClass().getName());
+        return transport;
+      }
+      transport.getConfiguration().setMaxMessageSize(maxMessageSize);
+    }
+    return transport;
+  }
   public static TTransport getSocketTransport(String host, int port, int loginTimeout) throws TTransportException {
-    return new TSocket(new TConfiguration(),host, port, loginTimeout);
+    return  getSocketTransport(host, port, loginTimeout, /* maxMessageSize */ -1);
+  }
+  public static TTransport getSocketTransport(String host, int port, int loginTimeout, int maxMessageSize)
+          throws TTransportException {
+    TSocket tSocket = new TSocket(new TConfiguration(),host, port, loginTimeout);
+    return configureThriftMaxMessageSize(tSocket, maxMessageSize);
   }
 
-  public static TTransport getSSLSocket(String host, int port, int loginTimeout)
-    throws TTransportException {
-    // The underlying SSLSocket object is bound to host:port with the given SO_TIMEOUT
-    TSocket tSSLSocket = TSSLTransportFactory.getClientSocket(host, port, loginTimeout);
-    return getSSLSocketWithHttps(tSSLSocket);
+  public static TTransport getSSLSocket(String host, int port, int loginTimeout, TSSLTransportParameters params,
+                                        int maxMessageSize) throws TTransportException {
+    // The underlying SSLSocket object is bound to host:port with the given SO_TIMEOUT and
+    // SSLContext created with the given params
+    TSocket tSSLSocket = null;
+    if (params != null) {
+      tSSLSocket = TSSLTransportFactory.getClientSocket(host, port, loginTimeout, params);
+    } else {
+      tSSLSocket = TSSLTransportFactory.getClientSocket(host, port, loginTimeout);
+    }
+    return getSSLSocketWithHttps(tSSLSocket, maxMessageSize);
+  }
+  public static TTransport getSSLSocket(String host, int port, int loginTimeout, String trustStorePath,
+                                        String trustStorePassWord, String trustStoreType, String trustStoreAlgorithm) throws TTransportException {
+    return getSSLSocket(host, port, loginTimeout, trustStorePath, trustStorePassWord, trustStoreType,
+            trustStoreAlgorithm, /* maxMessageSize */ -1);
+  }
+  public static TTransport getSSLSocket(String host, int port, int loginTimeout) throws TTransportException {
+    return getSSLSocket(host, port, loginTimeout, /* maxMessageSize */ -1);
   }
 
-  public static TTransport getSSLSocket(String host, int port, int loginTimeout,
-      String trustStorePath, String trustStorePassWord, String trustStoreType,
-      String trustStoreAlgorithm) throws TTransportException {
-    TSSLTransportFactory.TSSLTransportParameters params =
-      new TSSLTransportFactory.TSSLTransportParameters();
+   public static TTransport getSSLSocket(String host, int port, int loginTimeout, int maxMessageSize)
+          throws TTransportException {
+    return getSSLSocket(host, port, loginTimeout, /* params */ null, maxMessageSize);
+  }
+
+  public static TTransport getSSLSocket(String host, int port, int loginTimeout, String trustStorePath,
+                                        String trustStorePassWord, String trustStoreType, String trustStoreAlgorithm, int maxMessageSize)
+          throws TTransportException {
+    TSSLTransportParameters params = new TSSLTransportParameters();
     String tStoreType = trustStoreType.isEmpty()? KeyStore.getDefaultType() : trustStoreType;
     String tStoreAlgorithm = trustStoreAlgorithm.isEmpty()?
             TrustManagerFactory.getDefaultAlgorithm() : trustStoreAlgorithm;
     params.setTrustStore(trustStorePath, trustStorePassWord, tStoreAlgorithm, tStoreType);
     params.requireClientAuth(true);
-    // The underlying SSLSocket object is bound to host:port with the given SO_TIMEOUT and
-    // SSLContext created with the given params
-    TSocket tSSLSocket = TSSLTransportFactory.getClientSocket(host, port, loginTimeout, params);
-    return getSSLSocketWithHttps(tSSLSocket);
+    return getSSLSocket(host, port, loginTimeout, params, maxMessageSize);
   }
 
   // Using endpoint identification algorithm as HTTPS enables us to do
   // CNAMEs/subjectAltName verification
-  private static TSocket getSSLSocketWithHttps(TSocket tSSLSocket) throws TTransportException {
+  private static TSocket getSSLSocketWithHttps(TSocket tSSLSocket,int maxMessageSize) throws TTransportException {
     SSLSocket sslSocket = (SSLSocket) tSSLSocket.getSocket();
     SSLParameters sslParams = sslSocket.getSSLParameters();
     sslParams.setEndpointIdentificationAlgorithm("HTTPS");
     sslSocket.setSSLParameters(sslParams);
-    return new TSocket(sslSocket);
+    TSocket tSocket = new TSocket(sslSocket);
+    return configureThriftMaxMessageSize(tSocket, maxMessageSize);
   }
 
   public static TServerSocket getServerSocket(String hiveHost, int portNum)
