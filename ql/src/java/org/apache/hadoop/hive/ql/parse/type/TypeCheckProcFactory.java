@@ -1145,17 +1145,9 @@ public class TypeCheckProcFactory<T> {
     private T interpretNode(T columnDesc, T valueDesc)
         throws SemanticException {
       if (exprFactory.isColumnRefExpr(columnDesc)) {
-        final TypeInfo info = exprFactory.getTypeInfo(columnDesc);
-        switch (info.getCategory()) {
-        case MAP:
-        case LIST:
-        case UNION:
-        case STRUCT:
-          return valueDesc;
-        case PRIMITIVE:
-          PrimitiveTypeInfo primitiveInfo = TypeInfoFactory.getPrimitiveTypeInfo(info.getTypeName().toLowerCase());
-          return interpretNodeAsConstant(primitiveInfo, valueDesc);
-        }
+        final PrimitiveTypeInfo typeInfo = TypeInfoFactory.getPrimitiveTypeInfo(
+            exprFactory.getTypeInfo(columnDesc).getTypeName().toLowerCase());
+        return interpretNodeAsConstant(typeInfo, valueDesc);
       }
       boolean columnStruct = exprFactory.isSTRUCTFuncCallExpr(columnDesc);
       if (columnStruct) {
