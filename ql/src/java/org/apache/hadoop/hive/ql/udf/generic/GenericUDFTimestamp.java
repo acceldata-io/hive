@@ -86,13 +86,6 @@ public class GenericUDFTimestamp extends GenericUDF {
         .getBoolVar(ConfVars.HIVE_INT_TIMESTAMP_CONVERSION_IN_SECONDS) : new HiveConf()
         .getBoolVar(ConfVars.HIVE_INT_TIMESTAMP_CONVERSION_IN_SECONDS);
 
-    if (strict) {
-      if (PrimitiveObjectInspectorUtils.getPrimitiveGrouping(tsInputTypes[0]) == PrimitiveGrouping.NUMERIC_GROUP) {
-        throw new UDFArgumentException(
-            "Casting NUMERIC types to TIMESTAMP is prohibited (" + ConfVars.HIVE_STRICT_TIMESTAMP_CONVERSION + ")");
-      }
-    }
-
     obtainTimestampConverter(arguments, 0, tsInputTypes, tsConvertors);
     return PrimitiveObjectInspectorFactory.writableTimestampObjectInspector;
   }
