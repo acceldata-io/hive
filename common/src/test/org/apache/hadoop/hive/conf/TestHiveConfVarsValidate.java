@@ -56,6 +56,11 @@ public class TestHiveConfVarsValidate {
     list.add(new Object[] { HIVE_EXPLAIN_NODE_VISIT_LIMIT, "1", null });
     list.add(new Object[] { HIVE_EXPLAIN_NODE_VISIT_LIMIT, "14", null });
     list.add(new Object[] { HIVE_EXPLAIN_NODE_VISIT_LIMIT, String.valueOf(Integer.MAX_VALUE), null });
+    list.add(new Object[] { HIVE_DATETIME_FORMATTER, "DATETIME", null });
+    list.add(new Object[] { HIVE_DATETIME_FORMATTER, "SIMPLE", null });
+    list.add(new Object[] { HIVE_DATETIME_FORMATTER, "simple", null });
+    list.add(new Object[] { HIVE_DATETIME_FORMATTER, "dateTime", null });
+    list.add(new Object[] { HIVE_DATETIME_FORMATTER, "OTHER", "Invalid value.. expects one of [datetime, simple]" });
     return list;
   }
 
