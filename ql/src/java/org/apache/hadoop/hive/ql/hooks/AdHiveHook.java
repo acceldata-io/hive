@@ -55,32 +55,16 @@ public class AdHiveHook implements ExecuteWithHookContext {
     // Nats client being singleton, create at the time of class loading, should not cause errors in hook
     // if not connected, try again to connect in any of the run method
     private static AdNatsClient natsClient;
-    private static Connection natsConnection;
-    private static JetStream jetStream;
-
     private static final String natsWorkQueue = "hive_queries_events";
     private static final String natsWorkQueueEndpoint = "hive_queries_events_endpoint";
 
     private static final PublishOptions publishOptions = new PublishOptions.Builder().streamTimeout(java.time.Duration.ofSeconds(5)).build();
-
-    private static Connection initializeNatsClient() {
-        if(null != natsConnection && natsConnection.getStatus() == Connection.Status.CONNECTED) {
-            return natsConnection;
-        } else {
-            return natsClient.connectToNATS();
-        }
-    }
-    private static JetStream getJetStream() throws Exception {
-        return natsConnection.jetStream();
-    }
 
     private static boolean registerNatsResources(String[] natsServers, String clusterName) {
 
         if(null == natsClient || !natsClient.isNatsConnected()) {
             try {
                 natsClient = new AdNatsClient(natsServers);
-                natsConnection = initializeNatsClient();
-                jetStream = getJetStream();
                 LOG.info("Got NATS resources in place");
             } catch (Exception e) {
                 LOG.warn("Error in connecting to NATS ");
@@ -143,13 +127,21 @@ public class AdHiveHook implements ExecuteWithHookContext {
 
         void shutdown() {
             try {
-                natsClient.closeNATSConnection(natsConnection);
+                natsClient.closeNATSConnection();
             } catch (InterruptedException e) {
                 e.printStackTrace(System.out);
             }
         }
 
         void handle(HookContext hookContext) {
+
+            JetStream jetStream;
+            try {
+                jetStream = natsClient.getConnection().jetStream();
+            } catch (Exception e) {
+                LOG.warn("Exception in initializing Nats jetstream, failed with exception ", e);
+                return;
+            }
 
             // Note: same hookContext object is used for all the events for a given query, if we try to
             // do it async we have concurrency issues and when query cache is enabled, post event comes
@@ -202,10 +194,10 @@ public class AdHiveHook implements ExecuteWithHookContext {
             }
         }
 
-        private ExecutionMode getExecutionMode(QueryPlan plan) {
+        private ExecutionMode getExecutionMode(QueryPlan plan, HiveConf conf) {
             List<ExecDriver> mrTasks = Utilities.getMRTasks(plan.getRootTasks());
             List<TezTask> tezTasks = Utilities.getTezTasks(plan.getRootTasks());
-            return getExecutionMode(plan, mrTasks, tezTasks);
+            return getExecutionMode(plan, mrTasks, tezTasks, conf);
         }
 
         private HiveHookEventProto getPreHookEvent(HookContext hookContext) {
@@ -217,7 +209,7 @@ public class AdHiveHook implements ExecuteWithHookContext {
 
             List<ExecDriver> mrTasks = Utilities.getMRTasks(plan.getRootTasks());
             List<TezTask> tezTasks = Utilities.getTezTasks(plan.getRootTasks());
-            ExecutionMode executionMode = getExecutionMode(plan, mrTasks, tezTasks);
+            ExecutionMode executionMode = getExecutionMode(plan, mrTasks, tezTasks, conf);
 
             HiveHookEventProto.Builder builder = HiveHookEventProto.newBuilder();
             builder.setEventType(EventType.QUERY_SUBMITTED.name());
@@ -287,6 +279,7 @@ public class AdHiveHook implements ExecuteWithHookContext {
         private HiveHookEventProto getPostHookEvent(HookContext hookContext, boolean success) {
             QueryPlan plan = hookContext.getQueryPlan();
             LOG.info("Received post-hook notification for: " + plan.getQueryId());
+            HiveConf conf = new HiveConf(hookContext.getConf());
 
             HiveHookEventProto.Builder builder = HiveHookEventProto.newBuilder();
             builder.setEventType(EventType.QUERY_COMPLETED.name());
@@ -295,7 +288,7 @@ public class AdHiveHook implements ExecuteWithHookContext {
             builder.setUser(getUser(hookContext));
             builder.setRequestUser(getRequestUser(hookContext));
             try {
-                String executionMode = getExecutionMode(plan).name();
+                String executionMode = getExecutionMode(plan,conf).name();
                 LOG.info("Acceldata: Execution mode retrieved as " + executionMode);
                 builder.setExecutionMode(executionMode);
                 long timeTaken = clock.getTime() - hookContext.getQueryPlan().getQueryStartTime();
@@ -397,8 +390,13 @@ public class AdHiveHook implements ExecuteWithHookContext {
         }
 
         private ExecutionMode getExecutionMode(QueryPlan plan, List<ExecDriver> mrTasks,
-                                               List<TezTask> tezTasks) {
-            if (tezTasks.size() > 0) {
+                                               List<TezTask> tezTasks, HiveConf conf) {
+
+            String llapExecutionMode = conf.get(HiveConf.ConfVars.LLAP_EXECUTION_MODE.varname);
+            if (llapExecutionMode != null && !llapExecutionMode.equals("none")) {
+                return ExecutionMode.LLAP;
+            }
+                if (tezTasks.size() > 0) {
                 // Need to go in and check if any of the tasks is running in LLAP mode.
                 for (TezTask tezTask : tezTasks) {
                     if (tezTask.getWork().getLlapMode()) {

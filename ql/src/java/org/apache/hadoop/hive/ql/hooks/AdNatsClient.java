@@ -29,7 +29,7 @@ public class AdNatsClient {
 
     private final String[] natsServers;
     //close connection when done
-    private final Connection connection;
+    private Connection connection;
     //close management instance when done
     private final JetStreamManagement management;
 
@@ -47,10 +47,13 @@ public class AdNatsClient {
     }
 
     public Connection getConnection() {
+        if (!isNatsConnected()) {
+            this.connection = this.connectToNATS();
+        }
         return this.connection;
     }
 
-    public Connection connectToNATS() {
+    private Connection connectToNATS() {
         try {
             Options.Builder builder = new Options.Builder();
             builder = builder.connectionTimeout(Duration.ofSeconds(10));
@@ -121,10 +124,8 @@ public class AdNatsClient {
         return management.deleteStream(streamName);
     }
 
-    public void closeNATSConnection(Connection natsConnection) throws InterruptedException {
-        if(null != natsConnection) {
-            natsConnection.close();
-        }
+    public void closeNATSConnection() throws InterruptedException {
+        this.connection.close();
     }
 
     public void storeConsumerOffset(String durableConsumerOffsetSubject, Long offset) throws Exception {
