@@ -988,7 +988,7 @@ public class TestWorker extends CompactorTest {
     burnThroughTransactions("default", "mtwb", 25);
 
     CompactionRequest rqst = new CompactionRequest("default", "mtwb", CompactionType.MINOR);
-    String initiatorVersion = "3.1.4.3.2.2.0-1";
+    String initiatorVersion = "3.1.4";
     rqst.setInitiatorVersion(initiatorVersion);
     txnHandler.compact(rqst);
 

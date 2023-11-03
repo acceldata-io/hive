@@ -82,8 +82,8 @@ public class TestInitiator extends CompactorTest {
     rqst = new CompactionRequest("default", "rflw2", CompactionType.MINOR);
     txnHandler.compact(rqst);
 
-    txnHandler.findNextToCompact(aFindNextCompactRequest(ServerUtils.hostname() + "-193892", "3.1.4.3.2.2.0-1"));
-    txnHandler.findNextToCompact(aFindNextCompactRequest("nosuchhost-193892", "3.1.4.3.2.2.0-1"));
+    txnHandler.findNextToCompact(aFindNextCompactRequest(ServerUtils.hostname() + "-193892", "3.1.4"));
+    txnHandler.findNextToCompact(aFindNextCompactRequest("nosuchhost-193892", "3.1.4"));
 
     startInitiator();
 
@@ -109,7 +109,7 @@ public class TestInitiator extends CompactorTest {
     CompactionRequest rqst = new CompactionRequest("default", "rfrw1", CompactionType.MINOR);
     txnHandler.compact(rqst);
 
-    txnHandler.findNextToCompact(aFindNextCompactRequest("nosuchhost-193892", "3.1.4.3.2.2.0-1"));
+    txnHandler.findNextToCompact(aFindNextCompactRequest("nosuchhost-193892", "3.1.4"));
 
     conf.setTimeVar(HiveConf.ConfVars.HIVE_COMPACTOR_WORKER_TIMEOUT, 1L, TimeUnit.MILLISECONDS);
 
