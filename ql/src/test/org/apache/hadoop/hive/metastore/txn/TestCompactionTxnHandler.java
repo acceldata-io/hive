@@ -73,7 +73,7 @@ import static org.apache.hadoop.hive.metastore.conf.MetastoreConf.ConfVars.COMPA
  */
 public class TestCompactionTxnHandler {
 
-  public static final String WORKER_VERSION = "3.1.4.3.2.2.0-1";
+  public static final String WORKER_VERSION = "3.1.4";
   private HiveConf conf = new HiveConf();
   private TxnStore txnHandler;
 
