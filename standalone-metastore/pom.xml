@@ -31,7 +31,7 @@
   </modules>
   <properties>
     <hive.version>3.1.4.3.2.2.0-1</hive.version>
-    <hive.version.shortname>3.1.4.3.2.2.0-1</hive.version.shortname>
+    <hive.version.shortname>3.1.4</hive.version.shortname>
     <standalone.metastore.path.to.root>.</standalone.metastore.path.to.root>
     <!-- Build properties -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
