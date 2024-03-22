@@ -44,7 +44,7 @@ public class QTestSysDbHandler implements QTestOptionHandler {
   @Override
   public void beforeTest(QTestUtil qt) throws Exception {
     if (enabled) {
-      String stsdbPath = HiveTestEnvSetup.HIVE_ROOT + "/metastore/scripts/upgrade/hive/hive-schema-3.1.4.3.2.2.0-2.hive.sql";
+      String stsdbPath = HiveTestEnvSetup.HIVE_ROOT + "/metastore/scripts/upgrade/hive/hive-schema-3.1.4.3.2.2.0-1095.hive.sql";
       qt.getCliDriver().processLine("source " + stsdbPath);
       qt.getCliDriver().processLine("use default");
     }

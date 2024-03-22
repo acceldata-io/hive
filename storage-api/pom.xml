@@ -21,7 +21,7 @@
   </parent>
   <groupId>org.apache.hive</groupId>
   <artifactId>hive-storage-api</artifactId>
-  <version>3.1.4.3.2.2.0-SNAPSHOT</version>
+  <version>3.1.4.3.2.2.0-1095</version>
   <packaging>jar</packaging>
   <name>Hive Storage API</name>
   <properties>
@@ -29,7 +29,7 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <commons-logging.version>1.1.3</commons-logging.version>
     <guava.version>27.0-jre</guava.version>
-    <hadoop.version>3.2.3.3.2.2.0-SNAPSHOT</hadoop.version>
+    <hadoop.version>3.2.3.3.2.2.0-1095</hadoop.version>
     <junit.version>4.13</junit.version>
     <junit.jupiter.version>5.6.3</junit.jupiter.version>
     <junit.vintage.version>5.6.3</junit.vintage.version>
@@ -38,20 +38,6 @@
     <checkstyle.conf.dir>${basedir}/checkstyle/</checkstyle.conf.dir>
     <maven.surefire.plugin.version>3.0.0-M4</maven.surefire.plugin.version>
   </properties>
-
-  <distributionManagement>
-    <repository>
-      <id>nexus-releases</id>
-      <name>Releases</name>
-     <url>https://repo1.acceldata.dev/repository/odp-release/</url>
-   </repository>
-   <snapshotRepository>
-     <id>nexus-snapshots</id>
-     <name>Snapshot</name>
-     <url>https://repo1.acceldata.dev/repository/odp-snapshot/</url>
-   </snapshotRepository>
- </distributionManagement>
-
   <dependencies>
     <!-- compile inter-project -->
     <dependency>
