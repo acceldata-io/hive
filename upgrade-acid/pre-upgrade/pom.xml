@@ -35,8 +35,8 @@
     <test.warehouse.scheme>file://</test.warehouse.scheme>
     <test.forkcount>1</test.forkcount>
     <skipITests>true</skipITests>
-    <hdp.hive.version>2.3.3</hdp.hive.version>
-    <hdp.hadoop.version>2.7.2</hdp.hadoop.version>
+    <hdp.hive.version>3.1.4.3.2.3.0-2</hdp.hive.version>
+    <hdp.hadoop.version>3.2.3.3.2.3.0-2</hdp.hadoop.version>
   </properties>
   <dependencies>
     <!--scope is 'provided' for all.  The UpgradeTool is provided as part of Hive 3.x and
@@ -149,7 +149,7 @@ java.io.IOException: Cannot initialize Cluster. Please check your configuration 
             -->
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-mapreduce-client-common</artifactId>
-      <version>2.7.2</version>
+      <version>${hdp.hadoop.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
