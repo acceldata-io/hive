@@ -29,6 +29,20 @@
     <module>metastore-server</module>
     <module>metastore-tools</module>
   </modules>
+
+<distributionManagement>
+    <repository>
+      <id>nexus-releases</id>
+      <name>Releases</name>
+     <url>https://repo1.acceldata.dev/repository/odp-release/</url>
+   </repository>
+   <snapshotRepository>
+     <id>nexus-snapshots</id>
+     <name>Snapshot</name>
+     <url>https://repo1.acceldata.dev/repository/odp-snapshot/</url>
+   </snapshotRepository>
+ </distributionManagement>
+ 
   <properties>
     <hive.version>3.1.4.3.2.2.0-1095</hive.version>
     <hive.version.shortname>3.1.4</hive.version.shortname>
