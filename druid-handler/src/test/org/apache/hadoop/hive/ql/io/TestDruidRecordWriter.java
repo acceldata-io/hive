@@ -130,7 +130,7 @@ import java.util.stream.Collectors;
         inputRowParser =
         new MapInputRowParser(new TimeAndDimsParseSpec(new TimestampSpec(DruidConstants.DEFAULT_TIMESTAMP_COLUMN,
             "auto",
-            null), new DimensionsSpec(ImmutableList.of(new StringDimensionSchema("host")), null, null)));
+            null), new DimensionsSpec(ImmutableList.of(new StringDimensionSchema("host")))));
     final Map<String, Object>
         parserMap =
         objectMapper.convertValue(inputRowParser, new TypeReference<Map<String, Object>>() {
@@ -146,11 +146,12 @@ import java.util.stream.Collectors;
             null,
             objectMapper);
 
-    IndexSpec indexSpec = new IndexSpec(new RoaringBitmapSerdeFactory(true), null, null, null);
+    IndexSpec indexSpec = new IndexSpec(RoaringBitmapSerdeFactory.getInstance(), null, null, null, null, null, null);
     RealtimeTuningConfig
         tuningConfig =
-        new RealtimeTuningConfig(null,
-            null, null, null, temporaryFolder.newFolder(), null, null, null, null, indexSpec, null, null, 0, 0, null,
+        new RealtimeTuningConfig(null, null,
+            null, null, null, null, temporaryFolder.newFolder(), null, null, null, null, indexSpec, null,
+            0, 0, null,
             null, 0L, null, null);
     LocalFileSystem localFileSystem = FileSystem.getLocal(config);
     DataSegmentPusher dataSegmentPusher = new LocalDataSegmentPusher(new LocalDataSegmentPusherConfig() {

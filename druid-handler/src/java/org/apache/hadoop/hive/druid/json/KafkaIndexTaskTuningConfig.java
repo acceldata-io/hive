@@ -21,6 +21,7 @@ package org.apache.hadoop.hive.druid.json;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.druid.segment.IndexSpec;
+import org.apache.druid.segment.incremental.AppendableIndexSpec;
 import org.apache.druid.segment.writeout.SegmentWriteOutMediumFactory;
 import org.joda.time.Period;
 
@@ -78,6 +79,11 @@ public class KafkaIndexTaskTuningConfig extends SeekableStreamIndexTaskTuningCon
   }
 
   @Override
+  public boolean isSkipBytesInMemoryOverheadCheck() {
+    return false;
+  }
+
+  @Override
   public KafkaIndexTaskTuningConfig withBasePersistDirectory(File dir) {
     return new KafkaIndexTaskTuningConfig(
         getMaxRowsInMemory(),
@@ -125,4 +131,8 @@ public class KafkaIndexTaskTuningConfig extends SeekableStreamIndexTaskTuningCon
         '}';
   }
 
+  @Override
+  public AppendableIndexSpec getAppendableIndexSpec() {
+    return null;
+  }
 }
