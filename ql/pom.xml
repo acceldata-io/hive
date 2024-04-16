@@ -1131,6 +1131,7 @@
                   <include>com.fasterxml.jackson.core:jackson-databind</include>
                   <include>com.fasterxml.jackson.dataformat:jackson-dataformat-yaml</include>
                   <include>com.google.guava:guava</include>
+                  <include>com.google.guava:failureaccess</include>
                   <include>net.sf.opencsv:opencsv</include>
                   <include>org.apache.hive:hive-spark-client</include>
                   <include>org.apache.hive:hive-storage-api</include>
@@ -1160,6 +1161,10 @@
                 </filter>
               </filters>
               <relocations>
+                <relocation>
+                  <pattern>com.google.common.util.concurrent.internal</pattern>
+                  <shadedPattern>org.apache.hive.com.google.common.util.concurrent.internal</shadedPattern>
+                </relocation>
                 <relocation>
                   <pattern>com.esotericsoftware</pattern>
                   <shadedPattern>org.apache.hive.com.esotericsoftware</shadedPattern>
