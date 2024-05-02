@@ -251,6 +251,17 @@
       </releases>
     </repository>
     <repository>
+            <id>acceldata repo</id>
+            <name>acceldata repo</name>
+            <url>https://repo1.acceldata.dev/repository/odp-central/</url>
+            <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+        </repository>
+    <repository>
       <id>repository-release</id>
       <url>https://repository.apache.org/content/repositories/releases/</url>
       <releases>
