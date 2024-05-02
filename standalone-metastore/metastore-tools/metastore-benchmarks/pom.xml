@@ -102,7 +102,7 @@
     <dependency>
       <groupId>org.apache.maven.plugins</groupId>
       <artifactId>maven-jxr-plugin</artifactId>
-      <version>2.5</version>
+      <version>3.3.2</version>
       <exclusions>
         <exclusion>
           <groupId>org.apache.velocity</groupId>
@@ -201,7 +201,7 @@
         <!-- This is needed for checkstyle -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.5</version>
+        <version>3.3.2</version>
       </plugin>
     </plugins>
   </reporting>
