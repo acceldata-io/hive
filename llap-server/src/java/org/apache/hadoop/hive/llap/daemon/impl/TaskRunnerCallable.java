@@ -318,13 +318,18 @@ public class TaskRunnerCallable extends CallableWithNdc<TaskRunner2Result> {
 
   private void setMDCFromNDC() {
     final Stack<String> clonedNDC = NDC.cloneStack();
-    LOG.debug("Get the class name " + clonedNDC.peek().getClass());
+    if(!clonedNDC.empty())
+      LOG.debug("Get the class name " + clonedNDC.peek().getClass());
+
     final String fragId = clonedNDC.empty() ? "":clonedNDC.pop().toString();
     LOG.debug("FragId " + fragId);
+
     final String queryId = clonedNDC.empty() ? "":clonedNDC.pop().toString();
     LOG.debug("queryId " + queryId);
+
     final String dagId = clonedNDC.empty() ? "":clonedNDC.pop().toString();
     LOG.debug("dagId " + dagId);
+
     MDC.put("dagId", dagId);
     MDC.put("queryId", queryId);
     MDC.put("fragmentId", fragId);
