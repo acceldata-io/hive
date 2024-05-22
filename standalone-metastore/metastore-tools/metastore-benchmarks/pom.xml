@@ -187,9 +187,14 @@
             <version>${javac.errorprone.version}</version>
           </dependency>
           <dependency>
-            <groupId>com.google.errorprone</groupId>
-            <artifactId>error_prone_core</artifactId>
-            <version>${errorprone.core.version}</version>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-compiler-javac</artifactId>
+            <version>${javac.errorprone.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-compiler-api</artifactId>
+            <version>${javac.errorprone.version}</version>
           </dependency>
         </dependencies>
       </plugin>
