@@ -24,10 +24,6 @@
   <name>Hive Metastore Tools common libraries</name>
   <properties>
     <standalone.metastore.path.to.root>../..</standalone.metastore.path.to.root>
-    <maven.compiler.release>11</maven.compiler.release>
-    <java.version>11</java.version>
-    <maven.compiler.target>11</maven.compiler.target>
-    <maven.compiler.source>11</maven.compiler.source>
   </properties>
   <dependencies>
     <dependency>
