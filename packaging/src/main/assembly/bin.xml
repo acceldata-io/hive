@@ -52,7 +52,6 @@
         <exclude>com.oracle.database.jdbc:*</exclude>
         <exclude>mysql:mysql-connector-java:*</exclude>
         <exclude>org.mariadb.jdbc:*</exclude>
-	<exclude>org.apache.logging.log4j:log4j-slf4j-impl:*</exclude>
       </excludes>
     </dependencySet>
     <dependencySet>
