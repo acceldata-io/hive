@@ -22,6 +22,8 @@ import java.util.Arrays;
 
 import org.apache.hadoop.hive.common.type.HiveDecimal;
 import org.apache.hadoop.hive.ql.exec.vector.BytesColumnVector;
+import org.apache.hadoop.hive.ql.exec.vector.ColumnVector;
+import org.apache.hadoop.hive.ql.exec.vector.IDecimalColumnVector;
 import org.apache.hadoop.hive.ql.exec.vector.DecimalColumnVector;
 import org.apache.hadoop.hive.ql.exec.vector.VectorExpressionDescriptor;
 import org.apache.hadoop.hive.ql.exec.vector.VectorizedRowBatch;
@@ -48,7 +50,7 @@ public class CastStringToDecimal extends VectorExpression {
   /**
    * Convert input string to a decimal, at position i in the respective vectors.
    */
-  protected void func(DecimalColumnVector outputColVector, BytesColumnVector inputColVector, int i) {
+   protected void func(ColumnVector outputColVector, BytesColumnVector inputColVector, int i) {
     String s;
     try {
 
@@ -57,7 +59,7 @@ public class CastStringToDecimal extends VectorExpression {
        * making a new string.
        */
       s = new String(inputColVector.vector[i], inputColVector.start[i], inputColVector.length[i], "UTF-8");
-      outputColVector.set(i, HiveDecimal.create(s));
+      ((IDecimalColumnVector) outputColVector).set(i, HiveDecimal.create(s));
     } catch (Exception e) {
 
       // for any exception in conversion to decimal, produce NULL
@@ -76,7 +78,7 @@ public class CastStringToDecimal extends VectorExpression {
     BytesColumnVector inputColVector = (BytesColumnVector) batch.cols[inputColumnNum[0]];
     int[] sel = batch.selected;
     int n = batch.size;
-    DecimalColumnVector outputColVector = (DecimalColumnVector) batch.cols[outputColumnNum];
+    ColumnVector outputColVector = batch.cols[outputColumnNum];
 
     boolean[] inputIsNull = inputColVector.isNull;
     boolean[] outputIsNull = outputColVector.isNull;
