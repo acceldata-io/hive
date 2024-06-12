@@ -23,7 +23,7 @@
   <!--this module is added to parent pom so that it builds and releases with the reset of Hive-->
   <groupId>org.apache.hive</groupId>
   <artifactId>hive-upgrade-acid</artifactId>
-  <version>3.1.4.3.2.3.1-2</version>
+  <version>3.1.4.3.2.3.0-SNAPSHOT</version>
   <name>Hive Upgrade Acid</name>
   <packaging>pom</packaging>
   <properties>
@@ -42,7 +42,8 @@
     <junit.vintage.version>5.6.2</junit.vintage.version>
     <maven.surefire.plugin.version>3.0.0-M4</maven.surefire.plugin.version>
   </properties>
-   <distributionManagement>
+
+<distributionManagement>
     <repository>
       <id>nexus-releases</id>
       <name>Releases</name>
@@ -53,9 +54,9 @@
      <name>Snapshot</name>
      <url>https://repo1.acceldata.dev/repository/odp-snapshot/</url>
    </snapshotRepository>
-  </distributionManagement>
-  <repositories>
-    <repository>
+ </distributionManagement>
+<repositories>
+<repository>
             <id>acceldata repo</id>
             <name>acceldata repo</name>
             <url>https://repo1.acceldata.dev/repository/odp-central/</url>
@@ -65,8 +66,8 @@
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
-    </repository>
-  </repositories>
+        </repository>
+ </repositories>
 
   <modules>
     <module>pre-upgrade</module>
