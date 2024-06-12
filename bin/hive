@@ -155,6 +155,8 @@ for f in ${HIVE_LIB}/*.jar; do
   CLASSPATH=${CLASSPATH}:$f;
 done
 
+export HIVE_CLASSPATH="/usr/odp/current/hive-client/lib/llap/log4j-slf4j-impl-2.17.1.jar:${HIVE_CLASSPATH}"
+
 # add the auxiliary jars such as serdes
 if [ -d "${HIVE_AUX_JARS_PATH}" ]; then
   hive_aux_jars_abspath=`cd ${HIVE_AUX_JARS_PATH} && pwd`
