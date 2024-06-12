@@ -1,5 +1,5 @@
 
-Release Notes - Hive - Version 3.1.4.3.3.0.0-SNAPSHOT
+Release Notes - Hive - Version 3.1.4.3.2.3.0-SNAPSHOT
 
 ** Sub-task
     * [HIVE-5312] - Let HiveServer2 run simultaneously in HTTP (over thrift) and Binary (normal thrift transport) mode 
