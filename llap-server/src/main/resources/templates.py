@@ -28,7 +28,7 @@ yarnfile = """
         "constraints": [
           {
             "type": "ANTI_AFFINITY",
-            "scope": "node",
+            "scope": "NODE",
             "target_tags": [
               "llap"
             ]
