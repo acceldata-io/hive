@@ -39,6 +39,18 @@
     <maven.versions.plugin.version>2.16.0</maven.versions.plugin.version>
     <maven.surefire.plugin.version>3.0.0-M4</maven.surefire.plugin.version>
   </properties>
+<distributionManagement>
+    <repository>
+      <id>nexus-releases</id>
+      <name>Releases</name>
+     <url>https://repo1.acceldata.dev/repository/odp-release/</url>
+   </repository>
+   <snapshotRepository>
+     <id>nexus-snapshots</id>
+     <name>Snapshot</name>
+     <url>https://repo1.acceldata.dev/repository/odp-snapshot/</url>
+   </snapshotRepository>
+ </distributionManagement>
   <dependencies>
     <!-- compile inter-project -->
     <dependency>
