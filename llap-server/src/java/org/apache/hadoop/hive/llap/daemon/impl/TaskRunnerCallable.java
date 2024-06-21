@@ -49,7 +49,7 @@ import org.apache.hadoop.security.SecurityUtil;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.hadoop.security.token.Token;
 import org.apache.hadoop.yarn.api.records.ApplicationId;
-import org.apache.log4j.NDC;
+import org.apache.log4japi.NDC;
 import org.apache.tez.common.CallableWithNdc;
 import org.apache.tez.common.TezCommonUtils;
 import org.apache.tez.common.security.JobTokenIdentifier;
@@ -318,9 +318,18 @@ public class TaskRunnerCallable extends CallableWithNdc<TaskRunner2Result> {
 
   private void setMDCFromNDC() {
     final Stack<String> clonedNDC = NDC.cloneStack();
-    final String fragId = clonedNDC.pop();
-    final String queryId = clonedNDC.pop();
-    final String dagId = clonedNDC.pop();
+    if(!clonedNDC.empty())
+      LOG.debug("Get the class name " + clonedNDC.peek().getClass());
+
+    final String fragId = clonedNDC.empty() ? "":clonedNDC.pop().toString();
+    LOG.debug("FragId " + fragId);
+
+    final String queryId = clonedNDC.empty() ? "":clonedNDC.pop().toString();
+    LOG.debug("queryId " + queryId);
+
+    final String dagId = clonedNDC.empty() ? "":clonedNDC.pop().toString();
+    LOG.debug("dagId " + dagId);
+
     MDC.put("dagId", dagId);
     MDC.put("queryId", queryId);
     MDC.put("fragmentId", fragId);

@@ -143,8 +143,6 @@ def main(args):
 	resource = LlapResource(config)
 
 	daemon_args = args.args
-
-	# https://docs.python.org/3.0/whatsnew/3.0.html#integers
 	if int(max_direct_memory) > 0:
 		daemon_args = " -XX:MaxDirectMemorySize=%s %s" % (max_direct_memory, daemon_args)
 	daemon_args = " -Dhttp.maxConnections=%s %s" % ((max(args.instances, resource.executors) + 1), daemon_args)
@@ -199,7 +197,6 @@ def main(args):
 	with open(join(output, "run.sh"), "w") as f:
 		f.write(runner % vars)
 	os.chmod(join(output, "run.sh"), 0o700)
-    # https://docs.python.org/3.0/whatsnew/3.0.html#integers
 
 	if not args.java_child:
 		print("%s Prepared %s/run.sh for running LLAP on YARN" % (strftime("%H:%M:%S", gmtime()), output))

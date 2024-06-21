@@ -33,6 +33,11 @@
     <!-- intra-project -->
     <!-- used for vector code-gen -->
     <dependency>
+      <groupId>io.nats</groupId>
+      <artifactId>jnats</artifactId>
+      <version>2.16.4</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.atlas</groupId>
       <artifactId>atlas-client-v2</artifactId>
       <version>${atlas.version}</version>
@@ -1130,10 +1135,6 @@
                 <relocation>
                   <pattern>com.fasterxml.jackson</pattern>
                   <shadedPattern>org.apache.hive.com.fasterxml.jackson</shadedPattern>
-                </relocation>
-                <relocation>
-                  <pattern>com.codahale.metrics</pattern>
-                  <shadedPattern>org.apache.hive.com.codahale.metrics</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.zaxxer.hikari</pattern>

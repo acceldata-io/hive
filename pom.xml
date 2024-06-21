@@ -60,6 +60,18 @@
     <module>standalone-metastore</module>
     <module>kafka-handler</module>
   </modules>
+<distributionManagement>
+    <repository>
+      <id>nexus-releases</id>
+      <name>Releases</name>
+     <url>https://repo1.acceldata.dev/repository/odp-release/</url>
+   </repository>
+   <snapshotRepository>
+     <id>nexus-snapshots</id>
+     <name>Snapshot</name>
+     <url>https://repo1.acceldata.dev/repository/odp-snapshot/</url>
+   </snapshotRepository>
+ </distributionManagement>
   <properties>
     <standalone-metastore.version>4.0.0</standalone-metastore.version>
     <hive.version.shortname>4.0.0</hive.version.shortname>
@@ -241,6 +253,17 @@
     <repository>
       <id>repository-release</id>
       <url>https://repository.apache.org/content/repositories/releases/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>acceldata repo</id>
+      <name>acceldata repo</name>
+      <url>https://repo1.acceldata.dev/repository/odp-central/</url>
       <releases>
         <enabled>true</enabled>
       </releases>
