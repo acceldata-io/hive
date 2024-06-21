@@ -1,4 +1,4 @@
-SELECT 'Upgrading MetaStore schema from 3.2.0 to 4.0.0-alpha-1' AS Status from dual;
+SELECT 'Upgrading MetaStore schema from 3.2.0 to 3.1.4.3.2.2.0-1' AS Status from dual;
 
 -- HIVE-21336 safeguards from changes user may have made after 3.x schema was installed.
 ALTER SESSION SET NLS_LENGTH_SEMANTICS=BYTE;
@@ -86,7 +86,8 @@ INSERT INTO TXNS (TXN_ID, TXN_STATE, TXN_STARTED, TXN_LAST_HEARTBEAT, TXN_USER, 
 --    EXECUTE IMMEDIATE 'CREATE SEQUENCE TXNS_TXN_ID_SEQ INCREMENT BY 1 START WITH ' || max_txn || ' CACHE 20';
 -- END;
 CREATE SEQUENCE TXNS_TXN_ID_SEQ INCREMENT BY 1 START WITH 1000000001 CACHE 20;
-ALTER TABLE TXNS MODIFY TXN_ID default TXNS_TXN_ID_SEQ.nextval;
+CREATE OR REPLACE TRIGGER TXNS_TXN_ID_TRIG BEFORE INSERT ON TXNS FOR EACH ROW BEGIN
+  SELECT TXNS_TXN_ID_SEQ.nextval INTO :new.TXN_ID FROM dual; END;
 
 RENAME NEXT_TXN_ID TO TXN_LOCK_TBL;
 ALTER TABLE TXN_LOCK_TBL RENAME COLUMN NTXN_NEXT TO TXN_LOCK;
@@ -233,5 +234,5 @@ ALTER TABLE WRITE_SET MODIFY ("WS_TABLE" VARCHAR2(256));
 ALTER TABLE TXN_WRITE_NOTIFICATION_LOG MODIFY ("WNL_TABLE" varchar(256));
 
 -- These lines need to be last.  Insert any changes above.
-UPDATE VERSION SET SCHEMA_VERSION='4.0.0-alpha-1', VERSION_COMMENT='Hive release version 4.0.0-alpha-1' where VER_ID=1;
-SELECT 'Finished upgrading MetaStore schema from 3.2.0 to 4.0.0-alpha-1' AS Status from dual;
+UPDATE VERSION SET SCHEMA_VERSION='3.1.4.3.2.2.0-1', VERSION_COMMENT='Hive release version 3.1.4.3.2.2.0-1' where VER_ID=1;
+SELECT 'Finished upgrading MetaStore schema from 3.2.0 to 3.1.4.3.2.2.0-1' AS Status from dual;
