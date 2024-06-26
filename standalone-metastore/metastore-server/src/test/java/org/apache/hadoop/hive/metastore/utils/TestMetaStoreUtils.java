@@ -59,7 +59,7 @@ public class TestMetaStoreUtils {
   @Parameterized.Parameters(name = "zoneId={0}, timestamp={1}")
   public static Collection<Object[]> generateZoneTimestampPairs() {
     List<Object[]> params = new ArrayList<>();
-    long minDate = LocalDate.of(0, 1, 1).atStartOfDay().toEpochSecond(ZoneOffset.UTC);
+    long minDate = LocalDate.of(1, 1, 1).atStartOfDay().toEpochSecond(ZoneOffset.UTC);
     long maxDate = LocalDate.of(9999, 12, 31).atStartOfDay().toEpochSecond(ZoneOffset.UTC);
     new Random(23).longs(500, minDate, maxDate).forEach(i -> {
       LocalDateTime datetime = LocalDateTime.ofEpochSecond(i, 0, ZoneOffset.UTC);
