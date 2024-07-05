@@ -121,11 +121,7 @@ public class DruidOutputFormat implements HiveOutputFormat<NullWritable, DruidWr
         .getDimensionsAndAggregates(columnNames, columnTypes);
     final InputRowParser inputRowParser = new MapInputRowParser(new TimeAndDimsParseSpec(
             new TimestampSpec(DruidConstants.DEFAULT_TIMESTAMP_COLUMN, "auto", null),
-            new DimensionsSpec(dimensionsAndAggregates.lhs, Lists
-                .newArrayList(Constants.DRUID_TIMESTAMP_GRANULARITY_COL_NAME,
-                    Constants.DRUID_SHARD_KEY_COL_NAME
-                ), null
-            )
+            new DimensionsSpec(dimensionsAndAggregates.lhs)
     ));
 
     Map<String, Object>
@@ -152,10 +148,9 @@ public class DruidOutputFormat implements HiveOutputFormat<NullWritable, DruidWr
     Integer maxRowInMemory = HiveConf.getIntVar(jc, HiveConf.ConfVars.HIVE_DRUID_MAX_ROW_IN_MEMORY);
 
     IndexSpec indexSpec = DruidStorageHandlerUtils.getIndexSpec(jc);
-    RealtimeTuningConfig realtimeTuningConfig = new RealtimeTuningConfig(maxRowInMemory, null, null, null,
-        new File(basePersistDirectory, dataSource), new CustomVersioningPolicy(version), null, null, null, indexSpec,
-        null, true, 0, 0, true, null, 0L, null, null);
-
+    RealtimeTuningConfig realtimeTuningConfig = new RealtimeTuningConfig(null, maxRowInMemory, null, null, null, null,
+            new File(basePersistDirectory, dataSource), new CustomVersioningPolicy(version), null, null, null, indexSpec,
+            null, 0, 0, true, null, 0L, null, null);
     LOG.debug(String.format("running with Data schema [%s] ", dataSchema));
     return new DruidRecordWriter(dataSchema, realtimeTuningConfig,
             DruidStorageHandlerUtils.createSegmentPusherForDirectory(segmentDirectory, jc),
