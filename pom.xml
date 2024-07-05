@@ -146,10 +146,10 @@
     <derby.version>10.14.2.0</derby.version>
     <dropwizard.version>3.1.0</dropwizard.version>
     <dropwizard-metrics-hadoop-metrics2-reporter.version>0.1.2</dropwizard-metrics-hadoop-metrics2-reporter.version>
-    <druid.version>0.17.1</druid.version>
+    <druid.version>28.0.1</druid.version>
     <esri.version>2.2.4</esri.version>
     <flatbuffers.version>1.12.0</flatbuffers.version>
-    <guava.version>22.0</guava.version>
+    <guava.version>31.1-jre</guava.version>
     <groovy.version>2.4.21</groovy.version>
     <h2database.version>2.2.220</h2database.version>
     <hadoop.version>3.3.6</hadoop.version>
