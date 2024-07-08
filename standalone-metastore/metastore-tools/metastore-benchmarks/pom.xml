@@ -16,7 +16,7 @@
   <parent>
     <artifactId>hive-metastore-tools</artifactId>
     <groupId>org.apache.hive</groupId>
-    <version>4.0.0</version>
+    <version>4.0.0.3.3.6.0-1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <packaging>jar</packaging>
@@ -184,17 +184,17 @@
           <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-compiler-javac-errorprone</artifactId>
-            <version>${javac.errorprone.version}</version>
+            <version>2.15.0</version>
           </dependency>
           <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-compiler-javac</artifactId>
-            <version>${javac.errorprone.version}</version>
+            <version>2.15.0</version>
           </dependency>
           <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-compiler-api</artifactId>
-            <version>${javac.errorprone.version}</version>
+            <version>2.15.0</version>
           </dependency>
         </dependencies>
       </plugin>

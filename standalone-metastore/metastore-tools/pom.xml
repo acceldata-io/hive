@@ -16,7 +16,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>hive-standalone-metastore</artifactId>
-    <version>4.0.0</version>
+    <version>4.0.0.3.3.6.0-1</version>
     <groupId>org.apache.hive</groupId>
   </parent>
   <artifactId>hive-metastore-tools</artifactId>
@@ -108,8 +108,8 @@
       <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-jxr-plugin -->
       <dependency>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jxr-plugin</artifactId>
-        <exclusions>
+	<artifactId>maven-jxr-plugin</artifactId>
+	<exclusions>
           <exclusion>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-utils</artifactId>
