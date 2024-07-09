@@ -23,6 +23,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.metastore.txn.service.CompactionHouseKeeperService;
 import org.apache.hadoop.hive.metastore.txn.service.AcidTxnCleanerService;
 import org.hamcrest.CoreMatchers;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.hamcrest.core.StringContains;
 import org.hamcrest.core.StringEndsWith;
 import org.junit.After;
@@ -83,8 +84,9 @@ public class TestMetastoreConf {
 
     }
   }
+
   private void createConfFile(String fileName, boolean inConf, String envVar,
-                              Map<String, String> properties) throws IOException {
+      Map<String, String> properties) throws IOException {
     File tmpDir = new File(System.getProperty("java.io.tmpdir"));
     File dir = new File(tmpDir, randomFileName());
     Assume.assumeTrue(dir.mkdir());
@@ -95,6 +97,7 @@ public class TestMetastoreConf {
       Assume.assumeTrue(dir.mkdir());
       dir.deleteOnExit();
     }
+    // System.setProperty(MetastoreConf.TEST_ENV_WORKAROUND + envVar, dir.getAbsolutePath());
     File confFile = new File(dir, fileName);
     confFile.deleteOnExit();
     FileWriter writer = new FileWriter(confFile);
@@ -116,15 +119,15 @@ public class TestMetastoreConf {
   private String randomFileName() {
     StringBuilder buf = new StringBuilder();
     for (int i = 0; i < 10; i++) {
-      buf.append((char)(rand.nextInt(26) + 'a'));
+      buf.append((char) (rand.nextInt(26) + 'a'));
     }
     return buf.toString();
   }
 
   private Map<String, String> instaMap(String... vals) {
     Map<String, String> properties = new HashMap<>(vals.length / 2);
-    for (int i = 0; i < vals.length; i+= 2) {
-      properties.put(vals[i], vals[i+1]);
+    for (int i = 0; i < vals.length; i += 2) {
+      properties.put(vals[i], vals[i + 1]);
     }
     return properties;
   }
@@ -164,8 +167,7 @@ public class TestMetastoreConf {
         "test.bool", "false",
         "test.time", "30s",
         "test.str.list", "d",
-        "test.class", TestClass2.class.getName()
-    ));
+        "test.class", TestClass2.class.getName()));
     conf = MetastoreConf.newMetastoreConf();
     Assert.assertEquals("notthedefault", MetastoreConf.getVar(conf, ConfVars.STR_TEST_ENTRY));
     Assert.assertEquals(37L, MetastoreConf.getLongVar(conf, ConfVars.LONG_TEST_ENTRY));
@@ -192,8 +194,7 @@ public class TestMetastoreConf {
   @Test
   public void readMetastoreSiteWithMetastoreHomeDir() throws IOException {
     createConfFile("metastore-site.xml", true, "METASTORE_HOME", instaMap(
-        "test.long", "24"
-    ));
+        "test.long", "24"));
     conf = MetastoreConf.newMetastoreConf();
     Assert.assertEquals(24, MetastoreConf.getLongVar(conf, ConfVars.LONG_TEST_ENTRY));
   }
@@ -201,8 +202,7 @@ public class TestMetastoreConf {
   @Test
   public void readHiveSiteWithHiveConfDir() throws IOException {
     createConfFile("hive-site.xml", false, "HIVE_CONF_DIR", instaMap(
-        "test.double", "1.8"
-    ));
+        "test.double", "1.8"));
     conf = MetastoreConf.newMetastoreConf();
     Assert.assertEquals(1.8, MetastoreConf.getDoubleVar(conf, ConfVars.DOUBLE_TEST_ENTRY),
         0.01);
@@ -211,8 +211,7 @@ public class TestMetastoreConf {
   @Test
   public void readHiveSiteWithHiveHomeDir() throws IOException {
     createConfFile("hive-site.xml", true, "HIVE_HOME", instaMap(
-        "test.bool", "false"
-    ));
+        "test.bool", "false"));
     conf = MetastoreConf.newMetastoreConf();
     Assert.assertFalse(MetastoreConf.getBoolVar(conf, ConfVars.BOOLEAN_TEST_ENTRY));
   }
@@ -220,8 +219,7 @@ public class TestMetastoreConf {
   @Test
   public void readHiveMetastoreSiteWithHiveConfDir() throws IOException {
     createConfFile("hivemetastore-site.xml", false, "HIVE_CONF_DIR", instaMap(
-        "test.double", "1.8"
-    ));
+        "test.double", "1.8"));
     conf = MetastoreConf.newMetastoreConf();
     Assert.assertEquals(1.8, MetastoreConf.getDoubleVar(conf, ConfVars.DOUBLE_TEST_ENTRY),
         0.01);
@@ -230,8 +228,7 @@ public class TestMetastoreConf {
   @Test
   public void readHiveMetastoreSiteWithHiveHomeDir() throws IOException {
     createConfFile("hivemetastore-site.xml", true, "HIVE_HOME", instaMap(
-        "test.bool", "false"
-    ));
+        "test.bool", "false"));
     conf = MetastoreConf.newMetastoreConf();
     Assert.assertFalse(MetastoreConf.getBoolVar(conf, ConfVars.BOOLEAN_TEST_ENTRY));
   }
@@ -269,7 +266,8 @@ public class TestMetastoreConf {
 
   @After
   public void unsetEnvWorkAround() {
-    // We have to unset the env workarounds so they don't confuse each other between tests.
+    // We have to unset the env workarounds so they don't confuse each other between
+    // tests.
     System.getProperties().remove(MetastoreConf.TEST_ENV_WORKAROUND + "METASTORE_CONF_DIR");
     System.getProperties().remove(MetastoreConf.TEST_ENV_WORKAROUND + "METASTORE_HOME");
     System.getProperties().remove(MetastoreConf.TEST_ENV_WORKAROUND + "HIVE_CONF_DIR");
@@ -285,8 +283,7 @@ public class TestMetastoreConf {
         "hive.test.bool", "false",
         "hive.test.time", "3s",
         "hive.test.str.list", "g,h,i,j",
-        "hive.test.class", TestClass2.class.getName()
-    ));
+        "hive.test.class", TestClass2.class.getName()));
     conf = MetastoreConf.newMetastoreConf();
     Assert.assertEquals("hivedefault", MetastoreConf.getVar(conf, ConfVars.STR_TEST_ENTRY));
     Assert.assertEquals(1.9, MetastoreConf.getDoubleVar(conf, ConfVars.DOUBLE_TEST_ENTRY),
@@ -463,22 +460,24 @@ public class TestMetastoreConf {
   @Test
   public void dumpConfig() throws IOException {
     createConfFile("metastore-site.xml", true, "METASTORE_HOME", instaMap(
-        "test.long", "23"
-    ));
+        "test.long", "23"));
     conf = MetastoreConf.newMetastoreConf();
     String dump = MetastoreConf.dumpConfig(conf);
-    Assert.assertThat(dump, new StringContains("Used metastore-site file: file:/"));
-    Assert.assertThat(dump, new StringContains("Key: <test.long> old hive key: <hive.test.long>  value: <23>"));
-    Assert.assertThat(dump, new StringContains("Key: <test.str> old hive key: <hive.test.str>  value: <defaultval>"));
-    Assert.assertThat(dump, new StringEndsWith("Finished MetastoreConf object.\n"));
+    assertThat(dump, new StringContains("Used metastore-site file: file:/"));
+    assertThat(dump, new StringContains("Used metastore-site file: file:/"));
+    assertThat(dump, new StringContains("Key: <test.long> old hive key: <hive.test.long>  value: <23>"));
+    assertThat(dump, new StringContains("Key: <test.str> old hive key: <hive.test.str>  value: <defaultval>"));
+    assertThat(dump, new StringEndsWith("Finished MetastoreConf object.\n"));
     // Make sure the hidden keys didn't get published
-    Assert.assertThat(dump, CoreMatchers.not(new StringContains(ConfVars.PWD.getVarname())));
+    assertThat(dump, CoreMatchers.not(new StringContains(ConfVars.PWD.getVarname())));
   }
 
   /**
    * Test class names hardcoded in MetastoreConf.
-   * MetastoreConf uses several hard-coded class names. If one of these classes is renamed or
-   * moved to a different package we want to be able to catch this. So we compare expected
+   * MetastoreConf uses several hard-coded class names. If one of these classes is
+   * renamed or
+   * moved to a different package we want to be able to catch this. So we compare
+   * expected
    * class name with the actual one.
    */
   @Test
