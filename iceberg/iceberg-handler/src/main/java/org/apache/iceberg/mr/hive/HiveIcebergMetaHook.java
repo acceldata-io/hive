@@ -153,8 +153,8 @@ public class HiveIcebergMetaHook implements HiveMetaHook {
       AlterTableType.ADDCOLS, AlterTableType.REPLACE_COLUMNS, AlterTableType.RENAME_COLUMN,
       AlterTableType.ADDPROPS, AlterTableType.DROPPROPS, AlterTableType.SETPARTITIONSPEC,
       AlterTableType.UPDATE_COLUMNS, AlterTableType.RENAME, AlterTableType.EXECUTE, AlterTableType.CREATE_BRANCH,
-      AlterTableType.CREATE_TAG, AlterTableType.DROP_BRANCH, AlterTableType.DROPPARTITION, AlterTableType.DROP_TAG,
-      AlterTableType.COMPACT);
+      AlterTableType.CREATE_TAG, AlterTableType.DROP_BRANCH, AlterTableType.RENAME_BRANCH, AlterTableType.DROPPARTITION,
+      AlterTableType.DROP_TAG, AlterTableType.COMPACT, AlterTableType.REPLACE_SNAPSHOTREF);
   private static final List<String> MIGRATION_ALLOWED_SOURCE_FORMATS = ImmutableList.of(
       FileFormat.PARQUET.name().toLowerCase(),
       FileFormat.ORC.name().toLowerCase(),
@@ -1068,11 +1068,7 @@ public class HiveIcebergMetaHook implements HiveMetaHook {
           hmsTable.getParameters().put("current-snapshot-id", String.valueOf(snapshot.snapshotId()));
         }
         String formatVersion = String.valueOf(((BaseTable) tbl).operations().current().formatVersion());
-        // If it is not the default format version, then set it in the table properties.
-        if (!"1".equals(formatVersion)) {
-          hmsTable.getParameters().put(TableProperties.FORMAT_VERSION, formatVersion);
-        }
-
+        hmsTable.getParameters().put(TableProperties.FORMAT_VERSION, formatVersion);
         // Set the serde info
         hmsTable.getSd().setInputFormat(HiveIcebergInputFormat.class.getName());
         hmsTable.getSd().setOutputFormat(HiveIcebergOutputFormat.class.getName());
