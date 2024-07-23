@@ -1103,6 +1103,7 @@
                   <include>org.roaringbitmap:RoaringBitmap</include>
                   <include>org.roaringbitmap:shims</include>
                   <include>com.github.luben:zstd-jni</include>
+                  <include>com.google.guava:failureaccess</include>
                 </includes>
               </artifactSet>
               <filters>
@@ -1124,6 +1125,10 @@
                 </filter>
               </filters>
               <relocations>
+                <relocation>
+                  <pattern>com.google.common.util.concurrent.internal</pattern>
+                  <shadedPattern>org.apache.hive.com.google.common.util.concurrent.internal</shadedPattern>
+                </relocation>
                 <relocation>
                   <pattern>com.esotericsoftware</pattern>
                   <shadedPattern>org.apache.hive.com.esotericsoftware</shadedPattern>
