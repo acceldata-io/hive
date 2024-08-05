@@ -20,10 +20,12 @@ package org.apache.hadoop.hive.ql.metadata;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import org.apache.hadoop.conf.Configurable;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.hive.common.classification.InterfaceAudience;
 import org.apache.hadoop.hive.common.classification.InterfaceStability;
 import org.apache.hadoop.hive.common.type.SnapshotContext;
@@ -58,6 +60,7 @@ import org.apache.hadoop.hive.ql.parse.UpdateSemanticAnalyzer;
 import org.apache.hadoop.hive.ql.plan.DynamicPartitionCtx;
 import org.apache.hadoop.hive.ql.plan.ExprNodeDesc;
 import org.apache.hadoop.hive.ql.plan.FileSinkDesc;
+import org.apache.hadoop.hive.ql.plan.MergeTaskProperties;
 import org.apache.hadoop.hive.ql.plan.OperatorDesc;
 import org.apache.hadoop.hive.ql.plan.TableDesc;
 import org.apache.hadoop.hive.ql.security.authorization.HiveAuthorizationProvider;
@@ -71,6 +74,7 @@ import org.apache.hadoop.mapred.OutputFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -687,6 +691,20 @@ public interface HiveStorageHandler extends Configurable {
   }
 
   /**
+   * Return snapshot metadata of table snapshots which are newer than the specified.
+   * The specified snapshot is excluded.
+   * @param hmsTable table metadata stored in Hive Metastore
+   * @param since the snapshot preceding the oldest snapshot which should be checked.
+   *              The value null means all should be checked.
+   * @return Iterable of {@link SnapshotContext}.
+   */
+  default Iterable<SnapshotContext> getSnapshotContexts(
+      org.apache.hadoop.hive.ql.metadata.Table hmsTable, SnapshotContext since) {
+    return Collections.emptyList();
+  }
+
+
+  /**
    * Alter table operations can rely on this to customize the EnvironmentContext to be used during the alter table
    * invocation (both on client and server side of HMS)
    * @param alterTableDesc the alter table desc (e.g.: AlterTableSetPropertiesDesc) containing the work to do
@@ -696,6 +714,18 @@ public interface HiveStorageHandler extends Configurable {
       EnvironmentContext environmentContext) {
   }
 
+  /**
+   * Check the operation type of all snapshots which are newer than the specified. The specified snapshot is excluded.
+   * @deprecated
+   * <br>Use {@link HiveStorageHandler#getSnapshotContexts(org.apache.hadoop.hive.ql.metadata.Table hmsTable, SnapshotContext since)}
+   * and check {@link SnapshotContext.WriteOperationType#APPEND}.equals({@link SnapshotContext#getOperation()}).
+   *
+   * @param hmsTable table metadata stored in Hive Metastore
+   * @param since the snapshot preceding the oldest snapshot which should be checked.
+   *              The value null means all should be checked.
+   * @return null if table is empty, true if all snapshots are {@link SnapshotContext.WriteOperationType#APPEND}s, false otherwise.
+   */
+  @Deprecated
   default Boolean hasAppendsOnly(org.apache.hadoop.hive.ql.metadata.Table hmsTable, SnapshotContext since) {
     return null;
   }
@@ -711,14 +741,41 @@ public interface HiveStorageHandler extends Configurable {
     throw new UnsupportedOperationException("Storage handler does not support show partitions command");
   }
 
+  /**
+   * Validates that the provided partitionSpec is a valid according to the current table partitioning.
+   * @param hmsTable {@link org.apache.hadoop.hive.ql.metadata.Table} table metadata stored in Hive Metastore
+   * @param partitionSpec Map of Strings {@link java.util.Map} partition specification
+   */
   default void validatePartSpec(org.apache.hadoop.hive.ql.metadata.Table hmsTable, Map<String, String> partitionSpec)
       throws SemanticException {
+    validatePartSpec(hmsTable, partitionSpec, Context.RewritePolicy.DEFAULT);
+  }
+
+  /**
+   * Validates that the provided partitionSpec is a valid according to the current table partitioning.
+   * @param hmsTable {@link org.apache.hadoop.hive.ql.metadata.Table} table metadata stored in Hive Metastore
+   * @param partitionSpec Map of Strings {@link java.util.Map} partition specification
+   * @param policy {@link org.apache.hadoop.hive.ql.Context.RewritePolicy} compaction rewrite policy
+   */
+  default void validatePartSpec(org.apache.hadoop.hive.ql.metadata.Table hmsTable, Map<String, String> partitionSpec,
+      Context.RewritePolicy policy) throws SemanticException {
     throw new UnsupportedOperationException("Storage handler does not support validation of partition values");
   }
 
   default boolean canUseTruncate(org.apache.hadoop.hive.ql.metadata.Table hmsTable, Map<String, String> partitionSpec)
       throws SemanticException {
     return true;
+  }
+
+  /**
+   * Checks if a given table and partition specifications are eligible for compaction.
+   * @param table {@link org.apache.hadoop.hive.ql.metadata.Table} table metadata stored in Hive Metastore
+   * @param partitionSpec Map of Strings {@link java.util.Map} partition specification
+   * @return Optional of ErrorMsg {@link org.apache.hadoop.hive.ql.ErrorMsg}
+   */
+  default Optional<ErrorMsg> isEligibleForCompaction(org.apache.hadoop.hive.ql.metadata.Table table,
+      Map<String, String> partitionSpec) {
+    throw new UnsupportedOperationException("Storage handler does not support validating eligibility for compaction");
   }
 
   default List<String> getPartitionNames(org.apache.hadoop.hive.ql.metadata.Table hmsTable,
@@ -746,5 +803,60 @@ public interface HiveStorageHandler extends Configurable {
           throws SemanticException {
     throw new UnsupportedOperationException("Storage handler does not support getting partitions by expression " +
             "for a table.");
+  }
+
+  /**
+   * Returns partition based on table and partition specification.
+   * @param table {@link org.apache.hadoop.hive.ql.metadata.Table} table metadata stored in Hive Metastore
+   * @param partitionSpec Map of Strings {@link java.util.Map} partition specification
+   * @return Partition {@link org.apache.hadoop.hive.ql.metadata.Partition} 
+   * @throws SemanticException {@link org.apache.hadoop.hive.ql.parse.SemanticException} 
+   */
+  default Partition getPartition(org.apache.hadoop.hive.ql.metadata.Table table, Map<String, String> partitionSpec)
+      throws SemanticException {
+    return getPartition(table, partitionSpec, Context.RewritePolicy.DEFAULT);
+  }
+
+  /**
+   * Returns partition based on table and partition specification.
+   * @param table {@link org.apache.hadoop.hive.ql.metadata.Table} table metadata stored in Hive Metastore
+   * @param partitionSpec Map of Strings {@link java.util.Map} partition specification
+   * @param policy {@link org.apache.hadoop.hive.ql.Context.RewritePolicy} compaction rewrite policy
+   * @return Partition {@link org.apache.hadoop.hive.ql.metadata.Partition}
+   * @throws SemanticException {@link org.apache.hadoop.hive.ql.parse.SemanticException}
+   */
+  default Partition getPartition(org.apache.hadoop.hive.ql.metadata.Table table, Map<String, String> partitionSpec,
+      Context.RewritePolicy policy) throws SemanticException {
+    throw new UnsupportedOperationException("Storage handler does not support getting partition for a table.");
+  }
+
+  /**
+   * Returns a list of partitions based on table and partial partition specification.
+   * @param table {@link org.apache.hadoop.hive.ql.metadata.Table} table metadata stored in Hive Metastore
+   * @param partitionSpec Map of Strings {@link java.util.Map} partition specification
+   * @return List of Partitions {@link org.apache.hadoop.hive.ql.metadata.Partition}
+   * @throws SemanticException {@link org.apache.hadoop.hive.ql.parse.SemanticException}
+   */
+  default List<Partition> getPartitions(org.apache.hadoop.hive.ql.metadata.Table table, 
+      Map<String, String> partitionSpec) throws SemanticException {
+    throw new UnsupportedOperationException("Storage handler does not support getting partitions for a table.");
+  }
+
+  default boolean supportsMergeFiles() {
+    return false;
+  }
+
+  default List<FileStatus> getMergeTaskInputFiles(Properties properties) throws IOException {
+    throw new UnsupportedOperationException("Storage handler does not support getting merge input files " +
+            "for a table.");
+  }
+
+  default MergeTaskProperties getMergeTaskProperties(Properties properties) {
+    throw new UnsupportedOperationException("Storage handler does not support getting merge input files " +
+            "for a table.");
+  }
+
+  default void setMergeTaskDeleteProperties(TableDesc tableDesc) {
+    throw new UnsupportedOperationException("Storage handler does not support getting custom delete merge schema.");
   }
 }
