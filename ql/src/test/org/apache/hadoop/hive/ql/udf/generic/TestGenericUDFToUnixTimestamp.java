@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.hive.ql.udf.generic;
 
+import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import org.apache.hadoop.hive.common.type.Date;
 import org.apache.hadoop.hive.common.type.Timestamp;
@@ -167,7 +168,8 @@ public class TestGenericUDFToUnixTimestamp {
     runAndVerify(udf2,
         new Text("1400-02-01 00:00:00 ICT"),
         new Text("yyyy-MM-dd HH:mm:ss z"),
-        new LongWritable(TimestampTZUtil.parse("1400-01-31 09:00:22", ZoneId.systemDefault()).getEpochSecond()));
+        new LongWritable(-17984788924L));
+
     runAndVerify(udf2,
         new Text("1400-02-01 00:00:00 UTC"),
         new Text("yyyy-MM-dd HH:mm:ss z"),
