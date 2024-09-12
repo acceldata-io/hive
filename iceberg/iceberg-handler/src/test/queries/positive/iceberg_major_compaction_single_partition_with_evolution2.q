@@ -9,47 +9,65 @@
 --! qt:replace:/(\S\"added-files-size\\\":\\\")(\d+)(\\\")/$1#Masked#$3/
 -- Mask total file size
 --! qt:replace:/(\S\"total-files-size\\\":\\\")(\d+)(\\\")/$1#Masked#$3/
+-- Mask removed file size
+--! qt:replace:/(\S\"removed-files-size\\\":\\\")(\d+)(\\\")/$1#Masked#$3/
 -- Mask current-snapshot-timestamp-ms
 --! qt:replace:/(\s+current-snapshot-timestamp-ms\s+)\S+(\s*)/$1#Masked#$2/
 --! qt:replace:/(MAJOR\s+succeeded\s+)[a-zA-Z0-9\-\.\s+]+(\s+manual)/$1#Masked#$2/
 -- Mask compaction id as they will be allocated in parallel threads
 --! qt:replace:/^[0-9]/#Masked#/
--- Mask removed file size
---! qt:replace:/(\S\"removed-files-size\\\":\\\")(\d+)(\\\")/$1#Masked#$3/
 
 set hive.llap.io.enabled=true;
 set hive.vectorized.execution.enabled=true;
 set hive.optimize.shared.work.merge.ts.schema=true;
 
 create table ice_orc (
-    first_name string, 
-    last_name string,
-    dept_id bigint
+    a string
  )
+partitioned by (b bigint)
 stored by iceberg stored as orc 
 tblproperties ('format-version'='2');
 
-insert into ice_orc VALUES ('fn1','ln1', 1);
-insert into ice_orc VALUES ('fn2','ln2', 1);
-insert into ice_orc VALUES ('fn3','ln3', 1);
-insert into ice_orc VALUES ('fn4','ln4', 1);
-delete from ice_orc where last_name in ('ln3', 'ln4');
+insert into ice_orc partition(b=1) VALUES 
+('a1'),
+('a2'),
+('a3');
 
-alter table ice_orc set partition spec(dept_id);
+insert into ice_orc partition(b=1) VALUES
+('a4'),
+('a5'),
+('a6');
 
-insert into ice_orc PARTITION(dept_id=2) VALUES ('fn5','ln5');
-insert into ice_orc PARTITION(dept_id=2) VALUES ('fn6','ln6');
-insert into ice_orc PARTITION(dept_id=2) VALUES ('fn7','ln7');
-insert into ice_orc PARTITION(dept_id=2) VALUES ('fn8','ln8');
-delete from ice_orc where last_name in ('ln7', 'ln8');
+alter table ice_orc set partition spec(a);
+
+insert into ice_orc partition (a='a') VALUES 
+(1),
+(2),
+(3);
+
+insert into ice_orc partition (a='a') VALUES 
+(4),
+(5),
+(6);
+
+select * from ice_orc;
+describe formatted ice_orc;
+
+delete from ice_orc where a in ('a2', 'a4');
+delete from ice_orc where b in (3, 6);
+
+select * from ice_orc;
+describe formatted ice_orc;
+
+explain alter table ice_orc partition(a='a') compact 'major' and wait;
+alter table ice_orc partition(a='a') compact 'major' and wait;
+
+select * from ice_orc;
+describe formatted ice_orc;
+
+explain alter table ice_orc partition(b=1) compact 'major' and wait;
+alter table ice_orc partition(b=1) compact 'major' and wait;
 
 select * from ice_orc;
 describe formatted ice_orc;
 show compactions order by 'partition';
-
-alter table ice_orc COMPACT 'major' and wait;
-
-select * from ice_orc;
-describe formatted ice_orc;
-show compactions order by 'partition';
-
