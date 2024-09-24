@@ -13359,6 +13359,7 @@ __isset.validWriteIdList = true;
 
 void SetPartitionsStatsRequest::__set_engine(const std::string& val) {
   this->engine = val;
+__isset.engine = true;
 }
 std::ostream& operator<<(std::ostream& out, const SetPartitionsStatsRequest& obj)
 {
@@ -13380,7 +13381,6 @@ uint32_t SetPartitionsStatsRequest::read(::apache::thrift::protocol::TProtocol* 
   using ::apache::thrift::protocol::TProtocolException;
 
   bool isset_colStats = false;
-  bool isset_engine = false;
 
   while (true)
   {
@@ -13437,7 +13437,7 @@ uint32_t SetPartitionsStatsRequest::read(::apache::thrift::protocol::TProtocol* 
       case 5:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->engine);
-          isset_engine = true;
+          this->__isset.engine = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -13452,8 +13452,6 @@ uint32_t SetPartitionsStatsRequest::read(::apache::thrift::protocol::TProtocol* 
   xfer += iprot->readStructEnd();
 
   if (!isset_colStats)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_engine)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -13490,10 +13488,11 @@ uint32_t SetPartitionsStatsRequest::write(::apache::thrift::protocol::TProtocol*
     xfer += oprot->writeString(this->validWriteIdList);
     xfer += oprot->writeFieldEnd();
   }
-  xfer += oprot->writeFieldBegin("engine", ::apache::thrift::protocol::T_STRING, 5);
-  xfer += oprot->writeString(this->engine);
-  xfer += oprot->writeFieldEnd();
-
+  if (this->__isset.engine) {
+    xfer += oprot->writeFieldBegin("engine", ::apache::thrift::protocol::T_STRING, 5);
+    xfer += oprot->writeString(this->engine);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -13533,7 +13532,7 @@ void SetPartitionsStatsRequest::printTo(std::ostream& out) const {
   out << ", " << "needMerge="; (__isset.needMerge ? (out << to_string(needMerge)) : (out << "<null>"));
   out << ", " << "writeId="; (__isset.writeId ? (out << to_string(writeId)) : (out << "<null>"));
   out << ", " << "validWriteIdList="; (__isset.validWriteIdList ? (out << to_string(validWriteIdList)) : (out << "<null>"));
-  out << ", " << "engine=" << to_string(engine);
+  out << ", " << "engine="; (__isset.engine ? (out << to_string(engine)) : (out << "<null>"));
   out << ")";
 }
 
@@ -17581,6 +17580,7 @@ __isset.validWriteIdList = true;
 
 void TableStatsRequest::__set_engine(const std::string& val) {
   this->engine = val;
+__isset.engine = true;
 }
 
 void TableStatsRequest::__set_id(const int64_t val) {
@@ -17609,7 +17609,6 @@ uint32_t TableStatsRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
   bool isset_dbName = false;
   bool isset_tblName = false;
   bool isset_colNames = false;
-  bool isset_engine = false;
 
   while (true)
   {
@@ -17674,7 +17673,7 @@ uint32_t TableStatsRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
       case 6:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->engine);
-          isset_engine = true;
+          this->__isset.engine = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -17701,8 +17700,6 @@ uint32_t TableStatsRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
   if (!isset_tblName)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_colNames)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_engine)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -17742,10 +17739,11 @@ uint32_t TableStatsRequest::write(::apache::thrift::protocol::TProtocol* oprot) 
     xfer += oprot->writeString(this->validWriteIdList);
     xfer += oprot->writeFieldEnd();
   }
-  xfer += oprot->writeFieldBegin("engine", ::apache::thrift::protocol::T_STRING, 6);
-  xfer += oprot->writeString(this->engine);
-  xfer += oprot->writeFieldEnd();
-
+  if (this->__isset.engine) {
+    xfer += oprot->writeFieldBegin("engine", ::apache::thrift::protocol::T_STRING, 6);
+    xfer += oprot->writeString(this->engine);
+    xfer += oprot->writeFieldEnd();
+  }
   if (this->__isset.id) {
     xfer += oprot->writeFieldBegin("id", ::apache::thrift::protocol::T_I64, 7);
     xfer += oprot->writeI64(this->id);
@@ -17797,7 +17795,7 @@ void TableStatsRequest::printTo(std::ostream& out) const {
   out << ", " << "colNames=" << to_string(colNames);
   out << ", " << "catName="; (__isset.catName ? (out << to_string(catName)) : (out << "<null>"));
   out << ", " << "validWriteIdList="; (__isset.validWriteIdList ? (out << to_string(validWriteIdList)) : (out << "<null>"));
-  out << ", " << "engine=" << to_string(engine);
+  out << ", " << "engine="; (__isset.engine ? (out << to_string(engine)) : (out << "<null>"));
   out << ", " << "id="; (__isset.id ? (out << to_string(id)) : (out << "<null>"));
   out << ")";
 }
@@ -17835,6 +17833,7 @@ __isset.validWriteIdList = true;
 
 void PartitionsStatsRequest::__set_engine(const std::string& val) {
   this->engine = val;
+__isset.engine = true;
 }
 std::ostream& operator<<(std::ostream& out, const PartitionsStatsRequest& obj)
 {
@@ -17859,7 +17858,6 @@ uint32_t PartitionsStatsRequest::read(::apache::thrift::protocol::TProtocol* ipr
   bool isset_tblName = false;
   bool isset_colNames = false;
   bool isset_partNames = false;
-  bool isset_engine = false;
 
   while (true)
   {
@@ -17944,7 +17942,7 @@ uint32_t PartitionsStatsRequest::read(::apache::thrift::protocol::TProtocol* ipr
       case 7:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->engine);
-          isset_engine = true;
+          this->__isset.engine = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -17965,8 +17963,6 @@ uint32_t PartitionsStatsRequest::read(::apache::thrift::protocol::TProtocol* ipr
   if (!isset_colNames)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_partNames)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_engine)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -18018,10 +18014,11 @@ uint32_t PartitionsStatsRequest::write(::apache::thrift::protocol::TProtocol* op
     xfer += oprot->writeString(this->validWriteIdList);
     xfer += oprot->writeFieldEnd();
   }
-  xfer += oprot->writeFieldBegin("engine", ::apache::thrift::protocol::T_STRING, 7);
-  xfer += oprot->writeString(this->engine);
-  xfer += oprot->writeFieldEnd();
-
+  if (this->__isset.engine) {
+    xfer += oprot->writeFieldBegin("engine", ::apache::thrift::protocol::T_STRING, 7);
+    xfer += oprot->writeString(this->engine);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -18069,7 +18066,7 @@ void PartitionsStatsRequest::printTo(std::ostream& out) const {
   out << ", " << "partNames=" << to_string(partNames);
   out << ", " << "catName="; (__isset.catName ? (out << to_string(catName)) : (out << "<null>"));
   out << ", " << "validWriteIdList="; (__isset.validWriteIdList ? (out << to_string(validWriteIdList)) : (out << "<null>"));
-  out << ", " << "engine=" << to_string(engine);
+  out << ", " << "engine="; (__isset.engine ? (out << to_string(engine)) : (out << "<null>"));
   out << ")";
 }
 

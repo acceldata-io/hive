@@ -108,7 +108,7 @@ class GetPartitionsByNamesRequest
     /**
      * @var string
      */
-    public $engine = null;
+    public $engine = "hive";
     /**
      * @var string
      */
