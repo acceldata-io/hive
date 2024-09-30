@@ -180,7 +180,12 @@
         Error Prone integration
         -->
         <dependencies>
-          <dependency>
+		<dependency>
+            <groupId>com.google.errorprone</groupId>
+            <artifactId>error_prone_core</artifactId>
+            <version>${errorprone.core.version}</version>
+          </dependency>
+		<dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-compiler-javac-errorprone</artifactId>
             <version>2.15.0</version>
