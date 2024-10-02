@@ -1,8 +1,6 @@
 -- SORT_QUERY_RESULTS
 -- Mask neededVirtualColumns due to non-strict order
 --! qt:replace:/(\s+neededVirtualColumns:\s)(.*)/$1#Masked#/
--- Mask the totalSize value as it can have slight variability, causing test flakiness
---! qt:replace:/(\s+totalSize\s+)\S+(\s+)/$1#Masked#$2/
 -- Mask random uuid
 --! qt:replace:/(\s+uuid\s+)\S+(\s*)/$1#Masked#$2/
 -- Mask a random snapshot id
@@ -16,6 +14,10 @@
 --! qt:replace:/(MAJOR\s+succeeded\s+)[a-zA-Z0-9\-\.\s+]+(\s+manual)/$1#Masked#$2/
 -- Mask compaction id as they will be allocated in parallel threads
 --! qt:replace:/^[0-9]/#Masked#/
+-- Mask removed file size
+--! qt:replace:/(\S\"removed-files-size\\\":\\\")(\d+)(\\\")/$1#Masked#$3/
+-- Mask iceberg version
+--! qt:replace:/(\S\"iceberg-version\\\":\\\")(\w+\s\w+\s\d+\.\d+\.\d+\s\(\w+\s\w+\))(\\\")/$1#Masked#$3/
 
 set hive.llap.io.enabled=true;
 set hive.vectorized.execution.enabled=true;
@@ -63,4 +65,4 @@ alter table ice_orc COMPACT 'major' and wait;
 
 select * from ice_orc;
 describe formatted ice_orc;
-show compactions;
+show compactions order by 'partition';
