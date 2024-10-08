@@ -96,6 +96,7 @@
                   <excludes>
                       **/HadoopInputFile.class
                       **/HadoopTableOperations.class
+                      **/SerializableTable.class
                   </excludes>
                 </artifactItem>
               </artifactItems>

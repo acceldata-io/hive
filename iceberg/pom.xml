@@ -37,6 +37,7 @@
     <google.errorprone.version>2.5.1</google.errorprone.version>
     <assertj.version>3.24.2</assertj.version>
     <awaitility.version>4.2.1</awaitility.version>
+    <junit.jupiter.version>5.10.0</junit.jupiter.version>
     <immutables.value.version>2.10.0</immutables.value.version>
     <validate.skip>false</validate.skip>
     <caffeine.version>2.9.3</caffeine.version>
@@ -207,6 +208,16 @@
         <groupId>org.awaitility</groupId>
         <artifactId>awaitility</artifactId>
         <version>${awaitility.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-api</artifactId>
+        <version>${junit.jupiter.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-params</artifactId>
+        <version>${junit.jupiter.version}</version>
       </dependency>
       <dependency>
         <groupId>com.esotericsoftware</groupId>
