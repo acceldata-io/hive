@@ -367,7 +367,12 @@ public class MetaToolTaskListExtTblLocs extends MetaToolTask {
       listEntities.add(out);
     }
     Collections.sort(listEntities);
-    return new JSONArray(listEntities);
+    try {
+      return new JSONArray(listEntities);
+    } catch (JSONException e) {
+      LOG.error("JSONException e", e);
+      return new JSONArray();
+    }
   }
 
   private ExternalTableGraphNode constructTree(Set<String> locations) {
@@ -472,7 +477,7 @@ public class MetaToolTaskListExtTblLocs extends MetaToolTask {
    * Class denoting every external table data location.
    * Each location can be either a table location(in this case, partition-name is not set) or
    * a partition location which is outside table location.
-   * If the location is a table location, we store additional data like how many partitions are there in the table 
+   * If the location is a table location, we store additional data like how many partitions are there in the table
    * and how many of them are there in the table loc itself.
    */
   private class DataLocation {
@@ -499,7 +504,7 @@ public class MetaToolTaskListExtTblLocs extends MetaToolTask {
     private void incrementNumPartsInTblLoc() {
       this.numPartitionsInTblLoc++;
     }
-    
+
     private String getPartName() {
       return this.partName;
     }
@@ -507,11 +512,11 @@ public class MetaToolTaskListExtTblLocs extends MetaToolTask {
     private String getDbName() {
       return this.dbName;
     }
-    
+
     private String getTblName() {
       return this.tblName;
     }
-    
+
     private int getNumPartitionsInTblLoc() {
       return this.numPartitionsInTblLoc;
     }
@@ -519,7 +524,7 @@ public class MetaToolTaskListExtTblLocs extends MetaToolTask {
     private int getTotalPartitions() {
       return this.totalPartitions;
     }
-    
+
     private long getSizeExtTblData() {
       return this.sizeExtTblData;
     }
@@ -562,7 +567,7 @@ public class MetaToolTaskListExtTblLocs extends MetaToolTask {
     private void addChild(ExternalTableGraphNode child) {
       this.childNodes.add(child);
     }
-    
+
     private List<ExternalTableGraphNode> getChildNodes() {
       return this.childNodes;
     }
