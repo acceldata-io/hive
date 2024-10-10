@@ -5169,7 +5169,7 @@ public class HiveConf extends Configuration {
     LLAP_PLUGIN_ACL("hive.llap.plugin.acl", "*", "The ACL for LLAP plugin AM endpoint."),
     LLAP_PLUGIN_ACL_DENY("hive.llap.plugin.acl.blocked", "",
         "The deny ACL for LLAP plugin AM endpoint."),
-    LLAP_REMOTE_TOKEN_REQUIRES_SIGNING("hive.llap.remote.token.requires.signing", "true",
+    LLAP_REMOTE_TOKEN_REQUIRES_SIGNING("hive.llap.remote.token.requires.signing", "false",
         new StringSet("false", "except_llap_owner", "true"),
         "Whether the token returned from LLAP management API should require fragment signing.\n" +
         "True by default; can be disabled to allow CLI to get tokens from LLAP in a secure\n" +
