@@ -32,6 +32,10 @@
       <artifactId>hive-common</artifactId>
       <version>${project.version}</version>
       <exclusions>
+	<exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-reload4j</artifactId>
+          </exclusion>
         <exclusion>
           <groupId>org.eclipse.jetty.aggregate</groupId>
           <artifactId>jetty-all</artifactId>
