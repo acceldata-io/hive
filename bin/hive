@@ -253,6 +253,12 @@ fi
 if [[ "$SERVICE" == "llap" && ! -z "$HBASE_MR_CLASSPATH" ]] ; then
   SERVICE_ARGS=("${SERVICE_ARGS[@]}" "-k" "${HBASE_MR_CLASSPATH}")
 fi
+#ODP-1237 | ODP-2485 - slf4j wanrning hadling
+if [[ "$SERVICE" == "llap" ]] ; then
+   for f in ${HIVE_LIB}/llap/*.jar; do
+     CLASSPATH=${CLASSPATH}:$f;
+   done
+fi
 
 # supress the HADOOP_HOME warnings in 1.x.x
 export HADOOP_HOME_WARN_SUPPRESS=true 
