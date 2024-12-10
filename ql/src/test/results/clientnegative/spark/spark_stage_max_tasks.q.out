@@ -1,5 +1,5 @@
 PREHOOK: query: EXPLAIN
-SELECT TRANSFORM(key) USING 'python sleep.py' AS k
+SELECT TRANSFORM(key) USING 'ambari-python-wrap sleep.py' AS k
   FROM (SELECT key FROM src1 GROUP BY key) a ORDER BY k
 PREHOOK: type: QUERY
 PREHOOK: Input: default@src1
