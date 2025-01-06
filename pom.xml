@@ -291,6 +291,11 @@
     <dependencies>
       <!-- dependencies are always listed in sorted order by groupId, artifactId -->
       <dependency>
+    	<groupId>org.jdbi</groupId>
+   		 <artifactId>jdbi</artifactId>
+    		<version>2.63.1</version>
+      </dependency>
+      <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-java-sdk-bundle</artifactId>
         <version>${aws-java-sdk.version}</version>
