@@ -109,4 +109,44 @@ public class AuthType {
     }
     return "";
   }
+
+  public boolean isPasswordBasedAuth(HiveAuthConstants.AuthTypes type) {
+    return PASSWORD_BASED_TYPES.contains(type);
+  }
+
+  /**
+   * Refer from configuration to see if Kerberos auth method is enabled
+   * @return true if kerberos is enabled, otherwise false.
+   */
+  public static boolean isKerberosAuthMode(Configuration conf) {
+    AuthType authType = authTypeFromConf(conf, true);
+    return authType.isEnabled(HiveAuthConstants.AuthTypes.KERBEROS);
+  }
+
+  /**
+   * Refer from configuration to see if SAML auth method is enabled
+   * @return true if SAML is enabled, otherwise false.
+   */
+  public static boolean isSamlAuthMode(Configuration conf) {
+    AuthType authType = authTypeFromConf(conf, true);
+    return authType.isEnabled(HiveAuthConstants.AuthTypes.SAML);
+  }
+
+  public static AuthType authTypeFromConf(Configuration conf, boolean isHttpMode) {
+    String authTypeStr = HiveConf.getVar(conf, HiveConf.ConfVars.HIVE_SERVER2_AUTHENTICATION);
+    boolean isAuthTypeEmpty = StringUtils.isEmpty(authTypeStr);
+    final HiveServer2TransportMode transportMode;
+    if (isHttpMode) {
+      transportMode = HiveServer2TransportMode.http;
+      if (isAuthTypeEmpty) {
+        authTypeStr = HiveAuthConstants.AuthTypes.NOSASL.getAuthName();
+      }
+    } else {
+      transportMode = HiveServer2TransportMode.binary;
+      if (isAuthTypeEmpty) {
+        authTypeStr = HiveAuthConstants.AuthTypes.NONE.getAuthName();
+      }
+    }
+    return new AuthType(authTypeStr, transportMode);
+  }
 }

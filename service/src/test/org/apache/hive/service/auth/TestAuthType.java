@@ -40,11 +40,11 @@ public class TestAuthType {
     AuthType authType = new AuthType(type.getAuthName());
     Assert.assertTrue(authType.isEnabled(type));
     if (type == HiveAuthConstants.AuthTypes.NOSASL || type == HiveAuthConstants.AuthTypes.NONE ||
-        AuthType.PASSWORD_BASED_TYPES.contains(type)) {
+            AuthType.PASSWORD_BASED_TYPES.contains(type)) {
       Assert.assertEquals(type.getAuthName(), authType.getPasswordBasedAuthStr());
     } else {
       Assert.assertEquals("Should return empty string if no password based authentication is set.",
-          "", authType.getPasswordBasedAuthStr());
+              "", authType.getPasswordBasedAuthStr());
     }
   }
 
@@ -61,18 +61,39 @@ public class TestAuthType {
     Assert.assertTrue(authType.isEnabled(type));
 
     Set<HiveAuthConstants.AuthTypes> disabledAuthTypes = Arrays.stream(HiveAuthConstants.AuthTypes.values())
-        .collect(Collectors.toSet());
+            .collect(Collectors.toSet());
     disabledAuthTypes.remove(HiveAuthConstants.AuthTypes.SAML);
     disabledAuthTypes.remove(type);
     for (HiveAuthConstants.AuthTypes disabledType : disabledAuthTypes) {
       Assert.assertFalse(authType.isEnabled(disabledType));
     }
     Assert.assertEquals(type.getAuthName(), authType.getPasswordBasedAuthStr());
-  }
 
-  @Test(expected = Exception.class)
-  public void testKerberosWithSAML() throws Exception {
-    AuthType authType = new AuthType("KERBEROS,SAML");
+  verify("SAML,"+type.getAuthName(),HiveServer2TransportMode.binary,true);
+
+  verify("SAML,"+type.getAuthName(),HiveServer2TransportMode.all,true);
+}
+
+  private void verify(String authTypes, HiveServer2TransportMode mode, boolean shouldThrowException) {
+    try {
+      AuthType authType = new AuthType(authTypes, mode);
+      if (shouldThrowException) {
+        Assert.fail("HiveServer2 " + mode.name() + " mode cann't support " + authTypes + " by design");
+      } else {
+        String[] authMethods = authTypes.split(",");
+        for (int i = 0; i < authMethods.length; i++) {
+          HiveAuthConstants.AuthTypes authMech = EnumUtils.getEnumIgnoreCase(HiveAuthConstants.AuthTypes.class,
+              authMethods[i]);
+          Assert.assertTrue(authType.isEnabled(authMech));
+        }
+      }
+    } catch (Exception e) {
+      if (!shouldThrowException) {
+        Assert.fail("HiveServer2 " + mode.name() + " mode should be able to support " + authTypes);
+      } else {
+        Assert.assertTrue(e instanceof RuntimeException);
+      }
+    }
   }
 
   @Test(expected = Exception.class)

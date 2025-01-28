@@ -45,11 +45,13 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.io.ByteStreams;
 
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.hadoop.hive.conf.Constants;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.conf.HiveConf.ConfVars;
 import org.apache.hadoop.hive.shims.HadoopShims.KerberosNameShim;
 import org.apache.hadoop.hive.shims.ShimLoader;
-import org.apache.hadoop.hive.shims.Utils;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.hive.service.CookieSigner;
 import org.apache.hive.service.auth.AuthType;
@@ -110,7 +112,7 @@ public class ThriftHttpServlet extends TServlet {
   private boolean isCookieSecure;
   private boolean isHttpOnlyCookie;
   private final HiveAuthFactory hiveAuthFactory;
-  private static final String HIVE_DELEGATION_TOKEN_HEADER =  "X-Hive-Delegation-Token";
+  public static final String HIVE_DELEGATION_TOKEN_HEADER =  "X-Hive-Delegation-Token";
   private static final String X_FORWARDED_FOR = "X-Forwarded-For";
 
   private JWTValidator jwtValidator;
@@ -721,7 +723,13 @@ public class ThriftHttpServlet extends TServlet {
 
   private String getAuthHeaderDecodedString(HttpServletRequest request) throws HttpAuthenticationException {
     String authHeaderBase64Str = getAuthHeader(request);
-    return new String(Base64.getDecoder().decode(authHeaderBase64Str), StandardCharsets.UTF_8);
+    try {
+      return new String(Base64.getDecoder().decode(authHeaderBase64Str), StandardCharsets.UTF_8);
+    } catch (IllegalArgumentException e) {
+      // Auth header content is not base64 encoded
+      throw new HttpAuthenticationException("Authorization header received " +
+        "from the client does not contain base64 encoded data", e);
+    }
   }
 
   /**
@@ -758,35 +766,84 @@ public class ThriftHttpServlet extends TServlet {
     return authType.isEnabled(HiveAuthConstants.AuthTypes.KERBEROS);
   }
 
-  private boolean hasJWT(HttpServletRequest request) {
-    String authHeaderString;
-    try {
-      authHeaderString = getAuthHeader(request);
-    } catch (HttpAuthenticationException e) {
+    @VisibleForTesting
+    public boolean isAuthTypeEnabled (HttpServletRequest request, HiveAuthConstants.AuthTypes authType){
+
+      if (hasAuthScheme(request, HttpAuthUtils.BASIC) && this.authType.isPasswordBasedAuth(authType)
+              && this.authType.isEnabled(authType)) {
+        // The "Authorization: Basic" scheme indicates password-based authentication.
+        return true;
+      }
+      if (this.authType.isEnabled(HiveAuthConstants.AuthTypes.KERBEROS) &&
+              authType == HiveAuthConstants.AuthTypes.KERBEROS &&
+              (StringUtils.isNotEmpty(request.getHeader(HIVE_DELEGATION_TOKEN_HEADER)) ||
+                      hasAuthScheme(request, HttpAuthUtils.NEGOTIATE))) {
+        // Hive delegation token or "Authorization: Negotiate" scheme indicates Kerberos
+        // authentication.
+        return true;
+      }
+      if (this.authType.isEnabled(HiveAuthConstants.AuthTypes.SAML) &&
+              authType == HiveAuthConstants.AuthTypes.SAML &&
+              (StringUtils.isNotEmpty(request.getHeader(HiveSamlUtils.SSO_TOKEN_RESPONSE_PORT)) ||
+                      hasAuthScheme(request, HttpAuthUtils.BEARER) && !hasJWT(request))) {
+        // X-Hive-Token-Response-Port header or "Authorization: Bearer <SAML TOKEN>" scheme
+        // indicates SAML authentication.
+        return true;
+      }
+      if (this.authType.isEnabled(HiveAuthConstants.AuthTypes.JWT) &&
+              authType == HiveAuthConstants.AuthTypes.JWT &&
+              hasAuthScheme(request, HttpAuthUtils.BEARER) && hasJWT(request)) {
+        // The "Authorization: Bearer <any.JWT.token>" scheme indicates JWT authentication.
+        return true;
+      }
       return false;
     }
-    // Assume JWT consists of three parts separated by dots
-    String[] jwt = authHeaderString.split("\\.");
-    return jwt.length == 3;
-  }
 
-  private static String getDoAsQueryParam(String queryString) {
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("URL query string:" + queryString);
+    private boolean hasJWT (HttpServletRequest request){
+      String authHeaderString;
+      try {
+        authHeaderString = getAuthHeader(request);
+      } catch (HttpAuthenticationException e) {
+        return false;
+      }
+      // Assume JWT consists of three parts separated by dots
+      String[] jwt = authHeaderString.split("\\.");
+      return jwt.length == 3;
     }
-    if (queryString == null) {
+
+    private boolean hasAuthScheme (HttpServletRequest request, String authScheme){
+      String authHeader = request.getHeader(HttpAuthUtils.AUTHORIZATION);
+      if (authHeader == null || authHeader.isEmpty()) {
+        return false;
+      }
+
+      LOG.debug("HTTP Auth Header [{}]", authHeader);
+
+      String[] parts = authHeader.trim().split(" ");
+      if (parts.length < 2) {
+        return false;
+      }
+
+      return parts[0].equalsIgnoreCase(authScheme.toLowerCase());
+    }
+
+    private static String getDoAsQueryParam (String queryString){
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("URL query string:" + queryString);
+      }
+      if (queryString == null) {
+        return null;
+      }
+      Map<String, String[]> params = javax.servlet.http.HttpUtils.parseQueryString(queryString);
+      Set<String> keySet = params.keySet();
+      for (String key : keySet) {
+        if (key.equalsIgnoreCase("doAs")) {
+          return params.get(key)[0];
+        }
+      }
       return null;
     }
-    Map<String, String[]> params = javax.servlet.http.HttpUtils.parseQueryString( queryString );
-    Set<String> keySet = params.keySet();
-    for (String key: keySet) {
-      if (key.equalsIgnoreCase("doAs")) {
-        return params.get(key)[0];
-      }
-    }
-    return null;
   }
-
 }
 
 

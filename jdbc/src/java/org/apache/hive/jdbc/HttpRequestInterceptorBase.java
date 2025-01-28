@@ -20,6 +20,10 @@ package org.apache.hive.jdbc;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Supplier;
+import org.apache.hadoop.hive.conf.Constants;
+import org.apache.hadoop.util.Time;
 import org.apache.http.Header;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
