@@ -787,38 +787,6 @@ public class ThriftHttpServlet extends TServlet {
     return false;
   }
 
-    @VisibleForTesting
-    public boolean isAuthTypeEnabled (HttpServletRequest request, HiveAuthConstants.AuthTypes authType){
-
-      if (hasAuthScheme(request, HttpAuthUtils.BASIC) && this.authType.isPasswordBasedAuth(authType)
-              && this.authType.isEnabled(authType)) {
-        // The "Authorization: Basic" scheme indicates password-based authentication.
-        return true;
-      }
-      if (this.authType.isEnabled(HiveAuthConstants.AuthTypes.KERBEROS) &&
-              authType == HiveAuthConstants.AuthTypes.KERBEROS &&
-              (StringUtils.isNotEmpty(request.getHeader(HIVE_DELEGATION_TOKEN_HEADER)) ||
-                      hasAuthScheme(request, HttpAuthUtils.NEGOTIATE))) {
-        // Hive delegation token or "Authorization: Negotiate" scheme indicates Kerberos
-        // authentication.
-        return true;
-      }
-      if (this.authType.isEnabled(HiveAuthConstants.AuthTypes.SAML) &&
-              authType == HiveAuthConstants.AuthTypes.SAML &&
-              (StringUtils.isNotEmpty(request.getHeader(HiveSamlUtils.SSO_TOKEN_RESPONSE_PORT)) ||
-                      hasAuthScheme(request, HttpAuthUtils.BEARER) && !hasJWT(request))) {
-        // X-Hive-Token-Response-Port header or "Authorization: Bearer <SAML TOKEN>" scheme
-        // indicates SAML authentication.
-        return true;
-      }
-      if (this.authType.isEnabled(HiveAuthConstants.AuthTypes.JWT) &&
-              authType == HiveAuthConstants.AuthTypes.JWT &&
-              hasAuthScheme(request, HttpAuthUtils.BEARER) && hasJWT(request)) {
-        // The "Authorization: Bearer <any.JWT.token>" scheme indicates JWT authentication.
-        return true;
-      }
-      return false;
-    }
 
     private boolean hasJWT (HttpServletRequest request){
       String authHeaderString;
@@ -865,6 +833,3 @@ public class ThriftHttpServlet extends TServlet {
       return null;
     }
   }
-}
-
-
