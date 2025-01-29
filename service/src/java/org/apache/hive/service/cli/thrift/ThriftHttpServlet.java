@@ -24,6 +24,7 @@ import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivilegedExceptionAction;
 import java.security.SecureRandom;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
@@ -41,13 +42,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.NewCookie;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 import com.google.common.io.ByteStreams;
 
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.hadoop.hive.conf.Constants;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.conf.HiveConf.ConfVars;
 import org.apache.hadoop.hive.shims.HadoopShims.KerberosNameShim;
 import org.apache.hadoop.hive.shims.ShimLoader;
-import org.apache.hadoop.hive.shims.Utils;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.hive.service.CookieSigner;
 import org.apache.hive.service.auth.AuthType;
@@ -59,6 +63,7 @@ import org.apache.hive.service.auth.HttpAuthUtils;
 import org.apache.hive.service.auth.HttpAuthenticationException;
 import org.apache.hive.service.auth.PasswdAuthenticationProvider;
 import org.apache.hive.service.auth.PlainSaslHelper;
+import org.apache.hive.service.auth.jwt.JWTValidator;
 import org.apache.hive.service.auth.ldap.HttpEmptyAuthenticationException;
 import org.apache.hive.service.auth.saml.HiveSaml2Client;
 import org.apache.hive.service.auth.saml.HiveSamlRelayStateStore;
@@ -107,15 +112,18 @@ public class ThriftHttpServlet extends TServlet {
   private boolean isCookieSecure;
   private boolean isHttpOnlyCookie;
   private final HiveAuthFactory hiveAuthFactory;
-  private static final String HIVE_DELEGATION_TOKEN_HEADER =  "X-Hive-Delegation-Token";
+  public static final String HIVE_DELEGATION_TOKEN_HEADER =  "X-Hive-Delegation-Token";
   private static final String X_FORWARDED_FOR = "X-Forwarded-For";
+  private static final String AUTH_TYPE = "auth";
+
+  private JWTValidator jwtValidator;
 
   public ThriftHttpServlet(TProcessor processor, TProtocolFactory protocolFactory,
-      String authType, UserGroupInformation serviceUGI, UserGroupInformation httpUGI,
+      UserGroupInformation serviceUGI, UserGroupInformation httpUGI,
       HiveAuthFactory hiveAuthFactory, HiveConf hiveConf) throws Exception {
     super(processor, protocolFactory);
     this.hiveConf = hiveConf;
-    this.authType = new AuthType(authType);
+    this.authType = AuthType.authTypeFromConf(hiveConf, true);
     this.serviceUGI = serviceUGI;
     this.httpUGI = httpUGI;
     this.hiveAuthFactory = hiveAuthFactory;
@@ -136,6 +144,9 @@ public class ThriftHttpServlet extends TServlet {
       this.isHttpOnlyCookie = hiveConf.getBoolVar(
         ConfVars.HIVE_SERVER2_THRIFT_HTTP_COOKIE_IS_HTTPONLY);
     }
+    if (this.authType.isEnabled(HiveAuthConstants.AuthTypes.JWT)) {
+      this.jwtValidator = new JWTValidator(hiveConf);
+    }
   }
 
   @Override
@@ -146,14 +157,6 @@ public class ThriftHttpServlet extends TServlet {
     boolean requireNewCookie = false;
 
     try {
-      if (hiveConf.getBoolean(ConfVars.HIVE_SERVER2_XSRF_FILTER_ENABLED.varname,false)){
-        boolean continueProcessing = Utils.doXsrfFilter(request,response,null,null);
-        if (!continueProcessing){
-          LOG.warn("Request did not have valid XSRF header, rejecting.");
-          return;
-        }
-      }
-
       clientIpAddress = request.getRemoteAddr();
       LOG.debug("Client IP Address: " + clientIpAddress);
       // If the cookie based authentication is already enabled, parse the
@@ -205,7 +208,7 @@ public class ThriftHttpServlet extends TServlet {
           clientUserName = doPasswdAuth(request, HiveAuthConstants.AuthTypes.NOSASL.getAuthName());
         } else {
           // For a kerberos setup
-          if (isKerberosAuthMode(authType)) {
+          if (isAuthTypeEnabled(request, HiveAuthConstants.AuthTypes.KERBEROS)) {
             String delegationToken = request.getHeader(HIVE_DELEGATION_TOKEN_HEADER);
             // Each http request must have an Authorization header
             if ((delegationToken != null) && (!delegationToken.isEmpty())) {
@@ -213,7 +216,9 @@ public class ThriftHttpServlet extends TServlet {
             } else {
               clientUserName = doKerberosAuth(request);
             }
-          } else if (authType.isEnabled(HiveAuthConstants.AuthTypes.SAML)) {
+          } else if (isAuthTypeEnabled(request, HiveAuthConstants.AuthTypes.JWT)) {
+            clientUserName = validateJWT(request, response);
+          } else if (isAuthTypeEnabled(request, HiveAuthConstants.AuthTypes.SAML)) {
             // check if this request needs a SAML redirect
             String authHeader = request.getHeader(HttpAuthUtils.AUTHORIZATION);
             if ((authHeader == null || authHeader.isEmpty()) && needsRedirect(request, response)) {
@@ -264,8 +269,7 @@ public class ThriftHttpServlet extends TServlet {
         LOG.info("Cookie added for clientUserName " + clientUserName);
       }
       super.doPost(request, response);
-    }
-    catch (HttpAuthenticationException e) {
+    } catch (HttpAuthenticationException e) {
       // Ignore HttpEmptyAuthenticationException, it is normal for knox
       // to send a request with empty header
       if (!(e instanceof HttpEmptyAuthenticationException)) {
@@ -281,7 +285,7 @@ public class ThriftHttpServlet extends TServlet {
       }
       // Send a 401 to the client
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-      if(isKerberosAuthMode(authType)) {
+      if(isAuthTypeEnabled(request, HiveAuthConstants.AuthTypes.KERBEROS)) {
         response.addHeader(HttpAuthUtils.WWW_AUTHENTICATE, HttpAuthUtils.NEGOTIATE);
       } else {
         try {
@@ -292,14 +296,30 @@ public class ThriftHttpServlet extends TServlet {
         }
       }
       response.getWriter().println("Authentication Error: " + e.getMessage());
-    }
-    finally {
+    } finally {
       // Clear the thread locals
       SessionManager.clearUserName();
       SessionManager.clearIpAddress();
       SessionManager.clearProxyUserName();
       SessionManager.clearForwardedAddresses();
     }
+  }
+
+  private String validateJWT(HttpServletRequest request, HttpServletResponse response)
+      throws HttpAuthenticationException {
+    Preconditions.checkState(jwtValidator != null, "JWT validator should have been set");
+    String signedJwt = extractBearerToken(request, response);
+    String user = null;
+    try {
+      user = jwtValidator.validateJWTAndExtractUser(signedJwt);
+      Preconditions.checkNotNull(user, "JWT needs to contain the user name as subject");
+      Preconditions.checkState(!user.isEmpty(), "User name should not be empty");
+      LOG.info("JWT verification successful for user {}", user);
+    } catch (Exception e) {
+      LOG.error("JWT verification failed", e);
+      throw new HttpAuthenticationException(e);
+    }
+    return user;
   }
 
   /**
@@ -672,7 +692,8 @@ public class ThriftHttpServlet extends TServlet {
 
   private String getUsername(HttpServletRequest request)
       throws HttpAuthenticationException {
-    String creds[] = getAuthHeaderTokens(request);
+    String authHeaderDecodedString = getAuthHeaderDecodedString(request);
+    String[] creds = authHeaderDecodedString.split(":", 2);
     // Username must be present
     if (creds[0] == null || creds[0].isEmpty()) {
       throw new HttpAuthenticationException("Authorization header received " +
@@ -683,23 +704,29 @@ public class ThriftHttpServlet extends TServlet {
 
   private String getPassword(HttpServletRequest request)
       throws HttpAuthenticationException {
-    String[] creds = getAuthHeaderTokens(request);
+    String authHeaderDecodedString = getAuthHeaderDecodedString(request);
+    String[] creds = authHeaderDecodedString.split(":", 2);
     // Password must be present
-    if (creds[1] == null || creds[1].isEmpty()) {
+    if (creds.length < 2 || creds[1] == null || creds[1].isEmpty()) {
       throw new HttpAuthenticationException("Authorization header received " +
-          "from the client does not contain username.");
+          "from the client does not contain password.");
     }
     return creds[1];
   }
 
-  private String[] getAuthHeaderTokens(HttpServletRequest request) throws HttpAuthenticationException {
+  private String getAuthHeaderDecodedString(HttpServletRequest request) throws HttpAuthenticationException {
     String authHeaderBase64Str = getAuthHeader(request);
-    String authHeaderString = new String(Base64.getDecoder().decode(authHeaderBase64Str), StandardCharsets.UTF_8);
-    return authHeaderString.split(":");
+    try {
+      return new String(Base64.getDecoder().decode(authHeaderBase64Str), StandardCharsets.UTF_8);
+    } catch (IllegalArgumentException e) {
+      // Auth header content is not base64 encoded
+      throw new HttpAuthenticationException("Authorization header received " +
+        "from the client does not contain base64 encoded data", e);
+    }
   }
 
   /**
-   * Returns the base64 encoded auth header payload
+   * Returns the base64 encoded auth header payload.
    * @param request request to interrogate
    * @return base64 encoded auth header payload
    * @throws HttpAuthenticationException exception if header is missing or empty
@@ -728,27 +755,81 @@ public class ThriftHttpServlet extends TServlet {
     return authHeaderBase64String;
   }
 
-  private boolean isKerberosAuthMode(AuthType authType) {
-    return authType.isEnabled(HiveAuthConstants.AuthTypes.KERBEROS);
-  }
+  private boolean isAuthTypeEnabled(HttpServletRequest request,
+      HiveAuthConstants.AuthTypes authType) {
+    String authMethod = request.getHeader(AUTH_TYPE);
 
-  private static String getDoAsQueryParam(String queryString) {
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("URL query string:" + queryString);
-    }
-    if (queryString == null) {
-      return null;
-    }
-    Map<String, String[]> params = javax.servlet.http.HttpUtils.parseQueryString( queryString );
-    Set<String> keySet = params.keySet();
-    for (String key: keySet) {
-      if (key.equalsIgnoreCase("doAs")) {
-        return params.get(key)[0];
+    if (authType.getAuthName().equalsIgnoreCase(authMethod) && this.authType.isEnabled(authType) ||
+        "UIDPWD".equalsIgnoreCase(authMethod) && this.authType.isPasswordBasedAuth(authType)) {
+      // Request has already set the "auth" header
+      return true;
+    } else if (authMethod == null) {
+      // Kerberos -> JWT -> SAML -> Password(fall through if there is no match)
+      // If the auth header is missing, the request must come from the old running client.
+      // We support mixing JWT and SAML or LDAP auth methods in old client,
+      // the way to tell them is whether there is JWT token in request header.
+      if (this.authType.isEnabled(HiveAuthConstants.AuthTypes.JWT)) {
+        if (authType == HiveAuthConstants.AuthTypes.JWT) {
+          return hasJWT(request);
+        } else if (authType != HiveAuthConstants.AuthTypes.KERBEROS) {
+          // If you wish to try JWT,KERBEROS with the old client,
+          // append the property http.header.auth=kerberos to the URL.
+          return this.authType.isEnabled(authType);
+        }
+      }
+
+      if (this.authType.isLoadedFirst(authType)) {
+        // This is important to keep compatible with old clients, the first auth method
+        // takes over when the "auth" header is missing.
+        return true;
       }
     }
-    return null;
+    return false;
   }
 
-}
 
+    private boolean hasJWT (HttpServletRequest request){
+      String authHeaderString;
+      try {
+        authHeaderString = getAuthHeader(request);
+      } catch (HttpAuthenticationException e) {
+        return false;
+      }
+      // Assume JWT consists of three parts separated by dots
+      String[] jwt = authHeaderString.split("\\.");
+      return jwt.length == 3;
+    }
 
+    private boolean hasAuthScheme (HttpServletRequest request, String authScheme){
+      String authHeader = request.getHeader(HttpAuthUtils.AUTHORIZATION);
+      if (authHeader == null || authHeader.isEmpty()) {
+        return false;
+      }
+
+      LOG.debug("HTTP Auth Header [{}]", authHeader);
+
+      String[] parts = authHeader.trim().split(" ");
+      if (parts.length < 2) {
+        return false;
+      }
+
+      return parts[0].equalsIgnoreCase(authScheme.toLowerCase());
+    }
+
+    private static String getDoAsQueryParam (String queryString){
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("URL query string:" + queryString);
+      }
+      if (queryString == null) {
+        return null;
+      }
+      Map<String, String[]> params = javax.servlet.http.HttpUtils.parseQueryString(queryString);
+      Set<String> keySet = params.keySet();
+      for (String key : keySet) {
+        if (key.equalsIgnoreCase("doAs")) {
+          return params.get(key)[0];
+        }
+      }
+      return null;
+    }
+  }
