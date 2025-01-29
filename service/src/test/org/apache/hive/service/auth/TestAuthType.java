@@ -18,6 +18,10 @@
 
 package org.apache.hive.service.auth;
 
+import com.google.common.collect.ImmutableSet;
+
+import org.apache.commons.lang3.EnumUtils;
+import org.apache.hadoop.hive.conf.HiveServer2TransportMode;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -37,14 +41,14 @@ public class TestAuthType {
   }
 
   private void testSingleAuth(HiveAuthConstants.AuthTypes type) throws Exception {
-    AuthType authType = new AuthType(type.getAuthName());
+    AuthType authType = new AuthType(type.getAuthName(), HiveServer2TransportMode.http);
     Assert.assertTrue(authType.isEnabled(type));
     if (type == HiveAuthConstants.AuthTypes.NOSASL || type == HiveAuthConstants.AuthTypes.NONE ||
-            AuthType.PASSWORD_BASED_TYPES.contains(type)) {
+        AuthType.PASSWORD_BASED_TYPES.contains(type)) {
       Assert.assertEquals(type.getAuthName(), authType.getPasswordBasedAuthStr());
     } else {
       Assert.assertEquals("Should return empty string if no password based authentication is set.",
-              "", authType.getPasswordBasedAuthStr());
+          "", authType.getPasswordBasedAuthStr());
     }
   }
 
@@ -56,12 +60,12 @@ public class TestAuthType {
   }
 
   private void testOnePasswordAuthWithSAML(HiveAuthConstants.AuthTypes type) throws Exception {
-    AuthType authType = new AuthType("SAML," + type.getAuthName());
+    AuthType authType = new AuthType("SAML," + type.getAuthName(), HiveServer2TransportMode.http);
     Assert.assertTrue(authType.isEnabled(HiveAuthConstants.AuthTypes.SAML));
     Assert.assertTrue(authType.isEnabled(type));
 
     Set<HiveAuthConstants.AuthTypes> disabledAuthTypes = Arrays.stream(HiveAuthConstants.AuthTypes.values())
-            .collect(Collectors.toSet());
+        .collect(Collectors.toSet());
     disabledAuthTypes.remove(HiveAuthConstants.AuthTypes.SAML);
     disabledAuthTypes.remove(type);
     for (HiveAuthConstants.AuthTypes disabledType : disabledAuthTypes) {
@@ -69,10 +73,9 @@ public class TestAuthType {
     }
     Assert.assertEquals(type.getAuthName(), authType.getPasswordBasedAuthStr());
 
-  verify("SAML,"+type.getAuthName(),HiveServer2TransportMode.binary,true);
-
-  verify("SAML,"+type.getAuthName(),HiveServer2TransportMode.all,true);
-}
+    verify("SAML," + type.getAuthName(), HiveServer2TransportMode.binary, true);
+    verify("SAML," + type.getAuthName(), HiveServer2TransportMode.all, true);
+  }
 
   private void verify(String authTypes, HiveServer2TransportMode mode, boolean shouldThrowException) {
     try {
@@ -85,6 +88,11 @@ public class TestAuthType {
           HiveAuthConstants.AuthTypes authMech = EnumUtils.getEnumIgnoreCase(HiveAuthConstants.AuthTypes.class,
               authMethods[i]);
           Assert.assertTrue(authType.isEnabled(authMech));
+          if (i == 0) {
+            Assert.assertTrue(authType.isLoadedFirst(authMech));
+          } else {
+            Assert.assertFalse(authType.isLoadedFirst(authMech));
+          }
         }
       }
     } catch (Exception e) {
@@ -94,6 +102,11 @@ public class TestAuthType {
         Assert.assertTrue(e instanceof RuntimeException);
       }
     }
+  }
+
+  @Test(expected = Exception.class)
+  public void testKerberosWithSAML() throws Exception {
+    AuthType authType = new AuthType("KERBEROS,SAML");
   }
 
   @Test(expected = Exception.class)

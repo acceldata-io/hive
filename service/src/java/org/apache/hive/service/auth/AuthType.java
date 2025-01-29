@@ -18,14 +18,22 @@
 
 package org.apache.hive.service.auth;
 
-import org.apache.commons.lang3.EnumUtils;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableSet;
 
-import java.util.Arrays;
+import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hive.conf.HiveConf;
+import org.apache.hadoop.hive.conf.HiveServer2TransportMode;
+
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * AuthType is used to parse and verify
@@ -33,40 +41,54 @@ import java.util.Set;
  * Throws an exception if the config value is not allowed.
  */
 public class AuthType {
-  static final Set<HiveAuthConstants.AuthTypes> PASSWORD_BASED_TYPES = new HashSet<>(Arrays.asList(
-      HiveAuthConstants.AuthTypes.LDAP, HiveAuthConstants.AuthTypes.CUSTOM, HiveAuthConstants.AuthTypes.PAM));
+  static final Set<HiveAuthConstants.AuthTypes> PASSWORD_BASED_TYPES = ImmutableSet.of(HiveAuthConstants.AuthTypes.LDAP,
+  HiveAuthConstants.AuthTypes.CUSTOM, HiveAuthConstants.AuthTypes.PAM, HiveAuthConstants.AuthTypes.NONE);
   private final BitSet typeBits;
+  private final List<HiveAuthConstants.AuthTypes> authTypes;
+  private final HiveServer2TransportMode mode;
 
-  public AuthType(String authTypes) throws Exception {
+  @VisibleForTesting
+  public AuthType(String authTypes, HiveServer2TransportMode mode) {
+    this.authTypes = new ArrayList<>();
+    this.mode = mode;
     typeBits = new BitSet();
     parseTypes(authTypes);
     verifyTypes(authTypes);
   }
 
-  private void parseTypes(String authTypes) throws Exception {
+  private void parseTypes(String authTypes)  {
     String[] types = authTypes.split(",");
     for (String type : types) {
       if (!EnumUtils.isValidEnumIgnoreCase(HiveAuthConstants.AuthTypes.class, type)) {
-        throw new Exception(type + " is not a valid authentication type.");
+        throw new IllegalArgumentException(type + " is not a valid authentication type.");
       }
       typeBits.set(EnumUtils.getEnumIgnoreCase(HiveAuthConstants.AuthTypes.class, type).ordinal());
     }
   }
 
-  private void verifyTypes(String authTypes) throws Exception {
+  private void verifyTypes(String authTypes) {
     if (typeBits.cardinality() == 1) {
       // single authentication type has no conflicts
       return;
     }
-    if (typeBits.get(HiveAuthConstants.AuthTypes.SAML.ordinal()) &&
-        !typeBits.get(HiveAuthConstants.AuthTypes.NOSASL.ordinal()) &&
-        !typeBits.get(HiveAuthConstants.AuthTypes.KERBEROS.ordinal()) &&
-        !typeBits.get(HiveAuthConstants.AuthTypes.NONE.ordinal()) &&
-        (!areAnyEnabled(PASSWORD_BASED_TYPES) || isExactlyOneEnabled(PASSWORD_BASED_TYPES))) {
-      // SAML can be enabled with another password based authentication types
-      return;
+    if (typeBits.get(HiveAuthConstants.AuthTypes.NOSASL.ordinal())) {
+      throw new UnsupportedOperationException("NOSASL can't be along with other auth methods: " + authTypes);
     }
-    throw new Exception("The authentication types have conflicts: " + authTypes);
+
+    if (typeBits.get(HiveAuthConstants.AuthTypes.NONE.ordinal())) {
+      throw new UnsupportedOperationException("None can't be along with other auth methods: " + authTypes);
+    }
+
+    if (areAnyEnabled(PASSWORD_BASED_TYPES) && !isExactlyOneEnabled(PASSWORD_BASED_TYPES)) {
+      throw new RuntimeException("Multiple password based auth methods found: " + authTypes);
+    }
+
+    if ((typeBits.get(HiveAuthConstants.AuthTypes.SAML.ordinal()) ||
+            typeBits.get(HiveAuthConstants.AuthTypes.JWT.ordinal())) &&
+            (mode == HiveServer2TransportMode.all || mode == HiveServer2TransportMode.binary)) {
+      throw new UnsupportedOperationException(
+              "HiveServer2 binary mode doesn't support JWT and SAML," + " please consider using http mode only");
+    }
   }
 
   private boolean isExactlyOneEnabled(Collection<HiveAuthConstants.AuthTypes> types) {
@@ -94,13 +116,17 @@ public class AuthType {
     return typeBits.get(type.ordinal());
   }
 
+  public boolean isPasswordBasedAuthEnabled() {
+    return areAnyEnabled(PASSWORD_BASED_TYPES);
+  }
+
+  public String getAuthTypes() {
+    return authTypes.stream().map(au -> au.getAuthName()).collect(Collectors.joining(","));
+  }
 
   public String getPasswordBasedAuthStr() {
     if (isEnabled(HiveAuthConstants.AuthTypes.NOSASL)) {
       return HiveAuthConstants.AuthTypes.NOSASL.getAuthName();
-    }
-    if (isEnabled(HiveAuthConstants.AuthTypes.NONE)) {
-      return HiveAuthConstants.AuthTypes.NONE.getAuthName();
     }
     for (HiveAuthConstants.AuthTypes type : PASSWORD_BASED_TYPES) {
       if (isEnabled(type)) {
@@ -108,6 +134,13 @@ public class AuthType {
       }
     }
     return "";
+  }
+
+  public boolean isLoadedFirst(HiveAuthConstants.AuthTypes type) {
+    if (!isEnabled(type) || authTypes.isEmpty()) {
+      return false;
+    }
+    return authTypes.get(0) == type;
   }
 
   public boolean isPasswordBasedAuth(HiveAuthConstants.AuthTypes type) {
@@ -149,4 +182,5 @@ public class AuthType {
     }
     return new AuthType(authTypeStr, transportMode);
   }
+
 }
