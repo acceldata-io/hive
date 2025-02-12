@@ -62,7 +62,6 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.THttpClient;
 import org.apache.thrift.transport.TTransport;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -78,7 +77,7 @@ import com.google.common.base.Joiner;
  * classes instead of jdbc.
  */
 
-public class TestThriftHttpCLIServiceFeatures  {
+public class TestThriftHttpCLIServiceFeatures extends AbstractThriftCLITest {
 
   private static String transportMode = "http";
   private static String thriftHttpPath = "cliservice";
@@ -137,17 +136,15 @@ public class TestThriftHttpCLIServiceFeatures  {
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
-    // Set up the base class
-    ThriftCLIServiceTest.setUpBeforeClass();
+    initConf(TestThriftHttpCLIServiceFeatures.class);
 
-    assertNotNull(ThriftCLIServiceTest.port);
-    assertNotNull(ThriftCLIServiceTest.hiveServer2);
-    assertNotNull(ThriftCLIServiceTest.hiveConf);
-    HiveConf hiveConf = ThriftCLIServiceTest.hiveConf;
+    assertNotNull(port);
+    assertNotNull(hiveServer2);
+    assertNotNull(hiveConf);
 
     hiveConf.setBoolVar(ConfVars.HIVE_SERVER2_ENABLE_DOAS, false);
-    hiveConf.setVar(ConfVars.HIVE_SERVER2_THRIFT_BIND_HOST, ThriftCLIServiceTest.host);
-    hiveConf.setIntVar(ConfVars.HIVE_SERVER2_THRIFT_HTTP_PORT, ThriftCLIServiceTest.port);
+    hiveConf.setVar(ConfVars.HIVE_SERVER2_THRIFT_BIND_HOST, host);
+    hiveConf.setIntVar(ConfVars.HIVE_SERVER2_THRIFT_HTTP_PORT, port);
     hiveConf.setVar(ConfVars.HIVE_SERVER2_AUTHENTICATION, HiveAuthConstants.AuthTypes.NOSASL.toString());
     hiveConf.setVar(ConfVars.HIVE_SERVER2_TRANSPORT_MODE, transportMode);
     hiveConf.setVar(ConfVars.HIVE_SERVER2_THRIFT_HTTP_PATH, thriftHttpPath);
@@ -157,19 +154,14 @@ public class TestThriftHttpCLIServiceFeatures  {
     hiveConf.setVar(ConfVars.HIVE_AUTHENTICATOR_MANAGER, SessionStateUserAuthenticator.class.getName());
     hiveConf.setBoolVar(ConfVars.HIVE_AUTHORIZATION_ENABLED, true);
 
-    ThriftCLIServiceTest.startHiveServer2WithConf(hiveConf);
+    // query history adds no value to this test
+    // this should be handled with HiveConfForTests when it's used here too
+    hiveConf.setBoolVar(HiveConf.ConfVars.HIVE_QUERY_HISTORY_ENABLED, false);
 
-    ThriftCLIServiceTest.client = ThriftCLIServiceTest.getServiceClientInternal();
+    startHiveServer2WithConf(hiveConf);
+
+    client = ThriftCLIServiceTest.getServiceClientInternal();
   }
-
-  /**
-   * @throws java.lang.Exception
-   */
-  @AfterClass
-  public static void tearDownAfterClass() throws Exception {
-    ThriftCLIServiceTest.tearDownAfterClass();
-  }
-
 
   @Test
   /**
@@ -225,21 +217,21 @@ public class TestThriftHttpCLIServiceFeatures  {
   }
 
   private TTransport getRawBinaryTransport() throws Exception {
-    return HiveAuthUtils.getSocketTransport(ThriftCLIServiceTest.host, ThriftCLIServiceTest.port, 0);
+    return HiveAuthUtils.getSocketTransport(host, port, 0);
   }
 
   private static TTransport getHttpTransport() throws Exception {
     DefaultHttpClient httpClient = new DefaultHttpClient();
     String httpUrl = getHttpUrl();
     httpClient.addRequestInterceptor(
-        new HttpBasicAuthInterceptor(ThriftCLIServiceTest.USERNAME, ThriftCLIServiceTest.PASSWORD,
+        new HttpBasicAuthInterceptor(USERNAME, PASSWORD,
             null, null, false, null, null));
     return new THttpClient(httpUrl, httpClient);
   }
 
   private static String getHttpUrl() {
-    return transportMode + "://" + ThriftCLIServiceTest.host + ":"
-        + ThriftCLIServiceTest.port +
+    return transportMode + "://" + host + ":"
+        + port +
         "/" + thriftHttpPath + "/";
   }
 
@@ -292,7 +284,7 @@ public class TestThriftHttpCLIServiceFeatures  {
     DefaultHttpClient hClient = new DefaultHttpClient();
     String httpUrl = getHttpUrl();
     HttpBasicAuthInterceptorWithLogging authInt =
-      new HttpBasicAuthInterceptorWithLogging(ThriftCLIServiceTest.USERNAME, ThriftCLIServiceTest.PASSWORD, null, null,
+      new HttpBasicAuthInterceptorWithLogging(USERNAME, PASSWORD, null, null,
       false, additionalHeaders, cookieHeaders);
     hClient.addRequestInterceptor(authInt);
     transport = new THttpClient(httpUrl, hClient);
@@ -342,8 +334,8 @@ public class TestThriftHttpCLIServiceFeatures  {
     }
 
     // interceptor for adding username, pwd
-    HttpBasicAuthInterceptor authInt = new HttpBasicAuthInterceptor(ThriftCLIServiceTest.USERNAME,
-        ThriftCLIServiceTest.PASSWORD, null, null,
+    HttpBasicAuthInterceptor authInt = new HttpBasicAuthInterceptor(USERNAME,
+            PASSWORD, null, null,
         false, null, null);
     hClient.addRequestInterceptor(authInt);
 

@@ -215,6 +215,12 @@ hash
 hex
 histogram_numeric
 hour
+iceberg_bucket
+iceberg_day
+iceberg_hour
+iceberg_month
+iceberg_truncate
+iceberg_year
 if
 in
 in_bloom_filter
@@ -582,6 +588,7 @@ explode
 first_value
 floor_minute
 from_unixtime
+iceberg_truncate
 in_file
 inline
 isfalse
@@ -843,6 +850,12 @@ hash
 hex
 histogram_numeric
 hour
+iceberg_bucket
+iceberg_day
+iceberg_hour
+iceberg_month
+iceberg_truncate
+iceberg_year
 if
 in
 in_bloom_filter
