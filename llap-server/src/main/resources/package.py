@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env ambari-python-wrap
 
 import sys,os,stat
 import argparse

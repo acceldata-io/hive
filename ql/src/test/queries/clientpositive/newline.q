@@ -8,7 +8,7 @@ set hive.transform.escape.input=true;
 create table tmp_tmp_n0(key string, value string) stored as rcfile;
 insert overwrite table tmp_tmp_n0
 SELECT TRANSFORM(key, value) USING
-'python newline.py' AS key, value FROM src limit 6;
+'ambari-python-wrap newline.py' AS key, value FROM src limit 6;
 
 select * from tmp_tmp_n0;
 
@@ -22,7 +22,7 @@ add file ../../data/scripts/escapedcarriagereturn.py;
 create table tmp_tmp_n0(key string, value string) stored as rcfile;
 insert overwrite table tmp_tmp_n0
 SELECT TRANSFORM(key, value) USING
-'python escapednewline.py' AS key, value FROM src limit 5;
+'ambari-python-wrap escapednewline.py' AS key, value FROM src limit 5;
 
 select * from tmp_tmp_n0;
 
@@ -31,7 +31,7 @@ SELECT TRANSFORM(key, value) USING
 
 insert overwrite table tmp_tmp_n0
 SELECT TRANSFORM(key, value) USING
-'python escapedcarriagereturn.py' AS key, value FROM src limit 5;
+'ambari-python-wrap escapedcarriagereturn.py' AS key, value FROM src limit 5;
 
 select * from tmp_tmp_n0;
 
@@ -40,7 +40,7 @@ SELECT TRANSFORM(key, value) USING
 
 insert overwrite table tmp_tmp_n0
 SELECT TRANSFORM(key, value) USING
-'python escapedtab.py' AS key, value FROM src limit 5;
+'ambari-python-wrap escapedtab.py' AS key, value FROM src limit 5;
 
 select * from tmp_tmp_n0;
 
@@ -49,7 +49,7 @@ SELECT TRANSFORM(key, value) USING
 
 insert overwrite table tmp_tmp_n0
 SELECT TRANSFORM(key, value) USING
-'python doubleescapedtab.py' AS key, value FROM src limit 5;
+'ambari-python-wrap doubleescapedtab.py' AS key, value FROM src limit 5;
 
 select * from tmp_tmp_n0;
 

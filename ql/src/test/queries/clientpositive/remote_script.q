@@ -7,7 +7,7 @@ set hive.transform.escape.input=true;
 create table tmp_tmp(key string, value string) stored as rcfile;
 insert overwrite table tmp_tmp
 SELECT TRANSFORM(key, value) USING
-'python newline.py' AS key, value FROM src limit 6;
+'ambari-python-wrap newline.py' AS key, value FROM src limit 6;
 
 select * from tmp_tmp ORDER BY key ASC, value ASC;
 
