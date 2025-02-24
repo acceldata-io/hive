@@ -326,7 +326,8 @@ public class LlapServiceDriver {
       throws IOException, InterruptedException {
     Path scriptPath = new Path(new Path(scriptParent, "yarn"), "package.py");
     List<String> scriptArgs = new ArrayList<>(cl.getArgs().length + 7);
-    scriptArgs.addAll(Arrays.asList("python", scriptPath.toString(), "--input", tmpDir.toString(), "--output",
+    // TODO : Following python need to changed to ambari-python-wrap ??
+    scriptArgs.addAll(Arrays.asList("ambari-python-wrap", scriptPath.toString(), "--input", tmpDir.toString(), "--output",
         outputDir, "--javaChild"));
     scriptArgs.addAll(Arrays.asList(cl.getArgs()));
 

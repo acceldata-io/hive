@@ -12,7 +12,7 @@ FROM (
 ) tmap
 INSERT OVERWRITE TABLE dest1_n135
 REDUCE tmap.key, tmap.value
-USING 'python input20_script.py'
+USING 'ambari-python-wrap input20_script.py'
 AS (key STRING, value STRING);
 
 FROM (
@@ -23,7 +23,7 @@ FROM (
 ) tmap
 INSERT OVERWRITE TABLE dest1_n135
 REDUCE tmap.key, tmap.value
-USING 'python input20_script.py'
+USING 'ambari-python-wrap input20_script.py'
 AS (key STRING, value STRING);
 
 SELECT * FROM dest1_n135 ORDER BY key, value;
