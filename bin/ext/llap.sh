@@ -37,7 +37,7 @@ llap () {
   # check for config files
   test -f $TMPDIR/config.json
 
-  python $HIVE_HOME/scripts/llap/yarn/package.py --input $TMPDIR "$@"
+  ambari-python-wrap $HIVE_HOME/scripts/llap/yarn/package.py --input $TMPDIR "$@"
 
   # remove temp files
   rm -rf $TMPDIR
