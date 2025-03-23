@@ -43,7 +43,7 @@ public class TestHiveIcebergCherryPick {
     shell = HiveIcebergStorageHandlerTestUtils.shell();
     temp.create();
     testTables = HiveIcebergStorageHandlerTestUtils.testTables(shell, HIVE_CATALOG, temp);
-    HiveIcebergStorageHandlerTestUtils.init(shell, testTables, temp, "tez");
+    HiveIcebergStorageHandlerTestUtils.init(shell, testTables, temp);
   }
 
   @After

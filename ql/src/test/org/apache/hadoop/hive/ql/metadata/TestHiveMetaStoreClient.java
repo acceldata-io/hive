@@ -112,6 +112,8 @@ public class TestHiveMetaStoreClient extends HiveMetaStoreClientWithLocalCache i
   public Table getTable(GetTableRequest getTableRequest)
       throws MetaException, TException, NoSuchObjectException {
     Table tTable = new Table();
+    tTable.setDbName(getTableRequest.getDbName());
+    tTable.setTableName(getTableRequest.getTblName());
     tTable.setId(Long.MAX_VALUE);
     Map<String, String> parameters = new HashMap<>();
     parameters.put(hive_metastoreConstants.TABLE_IS_TRANSACTIONAL, "true");
