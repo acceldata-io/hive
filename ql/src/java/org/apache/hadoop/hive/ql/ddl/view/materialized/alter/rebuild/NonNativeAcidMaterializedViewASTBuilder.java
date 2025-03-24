@@ -18,11 +18,15 @@
 
 package org.apache.hadoop.hive.ql.ddl.view.materialized.alter.rebuild;
 
+import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.ql.Context;
 import org.apache.hadoop.hive.ql.metadata.Table;
 import org.apache.hadoop.hive.ql.parse.ASTNode;
+import org.apache.hadoop.hive.ql.parse.ParseDriver;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class NonNativeAcidMaterializedViewASTBuilder extends MaterializedViewASTBuilder {
@@ -37,6 +41,23 @@ public class NonNativeAcidMaterializedViewASTBuilder extends MaterializedViewAST
     return wrapIntoSelExpr(mvTable.getStorageHandler().acidSelectColumns(mvTable, Context.Operation.DELETE)
             .stream().map(fieldSchema -> createQualifiedColumnNode(tableName, fieldSchema.getName()))
             .collect(Collectors.toList()));
+  }
+
+  @Override
+  public void appendDeleteSelectNodes(ASTNode selectNode, String tableName) {
+    Set<String> selectedColumns = new HashSet<>(selectNode.getChildCount());
+
+    for (int i = 0; i < selectNode.getChildCount(); ++i) {
+      ASTNode selectExpr = (ASTNode) selectNode.getChild(i);
+      selectedColumns.add(selectExpr.getChild(selectExpr.getChildCount() - 1).getText());
+    }
+
+    for (FieldSchema fieldSchema : mvTable.getStorageHandler().acidSelectColumns(mvTable, Context.Operation.DELETE)) {
+      if (!selectedColumns.contains(fieldSchema.getName())) {
+        ParseDriver.adaptor.addChild(selectNode, wrapIntoSelExpr(
+            createQualifiedColumnNode(tableName, fieldSchema.getName())));
+      }
+    }
   }
 
   @Override
