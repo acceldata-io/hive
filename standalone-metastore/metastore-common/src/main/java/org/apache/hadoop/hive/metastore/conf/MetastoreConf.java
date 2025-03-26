@@ -1809,8 +1809,6 @@ public class MetastoreConf {
         "hive.metastore.custom.database.product.classname", "none",
           "Hook for external RDBMS. This class will be instantiated only when " +
           "metastore.use.custom.database.product is set to true."),
-    HIVE_BLOBSTORE_SUPPORTED_SCHEMES("hive.blobstore.supported.schemes", "hive.blobstore.supported.schemes", "s3,s3a,s3n",
-            "Comma-separated list of supported blobstore schemes."),
     // support set s3a properties in hms side
     HIVE_FS_S3A_ACCESS_KEY("fs.s3a.access.key", "fs.s3a.access.key", "",
             "AccessKey for accessing S3A-compatible blobstore."),
