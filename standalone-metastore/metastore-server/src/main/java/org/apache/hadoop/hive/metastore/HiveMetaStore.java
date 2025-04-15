@@ -47,6 +47,7 @@ import org.apache.hadoop.hive.metastore.utils.SecurityUtils;
 import org.apache.hadoop.security.SecurityUtil;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.hadoop.util.ShutdownHookManager;
+import org.apache.hadoop.hive.common.IPStackUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.thrift.TProcessor;
@@ -744,7 +745,7 @@ public class HiveMetaStore extends ThriftHiveMetastore {
    * @throws Exception
    */
   private static String getServerInstanceURI(int port) throws Exception {
-    return getServerHostName() + ":" + port;
+    return IPStackUtils.concatHostPort(getServerHostName(), port);
   }
 
   static String getServerHostName() throws Exception {
