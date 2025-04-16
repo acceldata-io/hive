@@ -119,6 +119,24 @@ public class PerfLogger {
     return result;
   }
 
+  public void mergeFrom(PerfLogger other) {
+    if (other == null) {
+      return;
+    }
+
+    // Merge startTimes
+    for (Map.Entry<String, Long> entry : other.startTimes.entrySet()) {
+      // Don't overwrite if already present
+      this.startTimes.putIfAbsent(entry.getKey(), entry.getValue());
+    }
+
+    // Merge endTimes
+    for (Map.Entry<String, Long> entry : other.endTimes.entrySet()) {
+      // Don't overwrite if already present
+      this.endTimes.putIfAbsent(entry.getKey(), entry.getValue());
+    }
+  }
+
   /**
    * Call this function when you start to measure time spent by a piece of code.
    * @param callerName the logging object to be used.
