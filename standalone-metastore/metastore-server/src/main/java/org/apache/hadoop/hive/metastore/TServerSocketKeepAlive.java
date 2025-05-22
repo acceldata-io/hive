@@ -16,21 +16,17 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.hive.metastore;
+package org.apache.hadoop.hive.ql.plan;
 
-import java.net.SocketException;
+import org.apache.hadoop.fs.Path;
 
-import org.apache.thrift.transport.TServerSocket;
-import org.apache.thrift.transport.TSocket;
-import org.apache.thrift.transport.TTransportException;
+import java.io.IOException;
+import java.util.Properties;
 
-/**
- * TServerSocketKeepAlive - like TServerSocket, but will enable keepalive for
- * accepted sockets.
- *
- */
-public class TServerSocketKeepAlive extends TServerSocket {
-  public TServerSocketKeepAlive(TServerSocket serverSocket) throws TTransportException {
-    super(serverSocket.getServerSocket());
+public interface MergeTaskProperties {
+  Path getTmpLocation();
+
+  default Properties getSplitProperties() throws IOException {
+    return null;
   }
 }
