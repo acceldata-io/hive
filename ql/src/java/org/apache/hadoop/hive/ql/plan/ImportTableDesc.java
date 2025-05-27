@@ -134,7 +134,7 @@ public class ImportTableDesc {
   }
 
   public String getSerName() {
-    return createTblDesc.getSerName();
+    return createTblDesc.getSerde();
   }
 
   public Map<String, String> getSerdeProps() {

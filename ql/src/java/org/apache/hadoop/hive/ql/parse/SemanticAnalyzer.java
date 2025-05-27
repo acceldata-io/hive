@@ -2696,7 +2696,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
             if (storageFormat.fillStorageFormat(child)) {
               directoryDesc.setInputFormat(storageFormat.getInputFormat());
               directoryDesc.setOutputFormat(storageFormat.getOutputFormat());
-              directoryDesc.setSerName(storageFormat.getSerde());
+              directoryDesc.setSerde(storageFormat.getSerde());
               directoryDescIsSet = true;
               continue;
             }
@@ -2714,7 +2714,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
             case HiveParser.TOK_TABLESERIALIZER:
               ASTNode serdeChild = (ASTNode) child.getChild(0);
               storageFormat.setSerde(unescapeSQLString(serdeChild.getChild(0).getText()));
-              directoryDesc.setSerName(storageFormat.getSerde());
+              directoryDesc.setSerde(storageFormat.getSerde());
               if (serdeChild.getChildCount() > 1) {
                 directoryDesc.setSerdeProps(new HashMap<String, String>());
                 readProps((ASTNode) serdeChild.getChild(1).getChild(0), directoryDesc.getSerdeProps());
@@ -7915,7 +7915,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
         tblDesc.setCols(new ArrayList<>(fieldSchemas));
         tblDesc.setPartCols(new ArrayList<>(partitionColumns));
       } else if (viewDesc != null) {
-        viewDesc.setSchema(new ArrayList<>(fieldSchemas));
+        viewDesc.setCols(new ArrayList<>(fieldSchemas));
         viewDesc.setPartCols(new ArrayList<>(partitionColumns));
         if (viewDesc.isOrganized()) {
           viewDesc.setSortCols(new ArrayList<>(sortColumns));
@@ -13429,7 +13429,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
         new ArrayList<FieldSchema>(resultSchema);
     ParseUtils.validateColumnNameUniqueness(derivedSchema);
 
-    List<FieldSchema> imposedSchema = createVwDesc.getSchema();
+    List<FieldSchema> imposedSchema = createVwDesc.getCols();
     if (imposedSchema != null) {
       int explicitColCount = imposedSchema.size();
       int derivedColCount = derivedSchema.size();
@@ -13485,7 +13485,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
     }
 
     // Set schema and expanded text for the view
-    createVwDesc.setSchema(derivedSchema);
+    createVwDesc.setCols(derivedSchema);
     createVwDesc.setViewExpandedText(expandedText);
   }
 
