@@ -94,8 +94,12 @@
                   <overWrite>true</overWrite>
                   <outputDirectory>${project.build.directory}/classes</outputDirectory>
                   <excludes>
-                      **/HadoopInputFile.class
-                      **/SerializableTable.class
+                    **/HadoopInputFile.class
+                    **/SerializableTable.class
+                    **/HadoopTableOperations.class
+                    **/StructLikeMap.class
+                    **/StructLikeWrapper.class
+                    org.apache.iceberg.PartitionsTable.class
                   </excludes>
                 </artifactItem>
               </artifactItems>

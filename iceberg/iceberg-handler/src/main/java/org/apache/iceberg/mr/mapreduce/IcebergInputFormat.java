@@ -207,6 +207,15 @@ public class IcebergInputFormat<T> extends InputFormat<Void, T> {
           conf.set(InputFormatConfig.SERIALIZED_TABLE_PREFIX + tbl.name(), SerializationUtil.serializeToBase64(tbl));
           return tbl;
         });
+    final ExecutorService workerPool =
+        ThreadPools.newFixedThreadPool("iceberg-plan-worker-pool",
+            conf.getInt(SystemConfigs.WORKER_THREAD_POOL_SIZE.propertyKey(), ThreadPools.WORKER_THREAD_POOL_SIZE));
+    try {
+      return planInputSplits(table, conf, workerPool);
+    } finally {
+      workerPool.shutdown();
+    }
+  }
 
     List<InputSplit> splits = Lists.newArrayList();
     boolean applyResidual = !conf.getBoolean(InputFormatConfig.SKIP_RESIDUAL_FILTERING, false);
@@ -226,22 +235,17 @@ public class IcebergInputFormat<T> extends InputFormat<Void, T> {
             HiveConf.ConfVars.HIVE_ICEBERG_ALLOW_DATAFILES_IN_TABLE_LOCATION_ONLY.defaultBoolVal);
     Path tableLocation = new Path(conf.get(InputFormatConfig.TABLE_LOCATION));
 
-
-    try (CloseableIterable<CombinedScanTask> tasksIterable = scan.planTasks()) {
-      tasksIterable.forEach(task -> {
-        if (applyResidual && (model == InputFormatConfig.InMemoryDataModel.HIVE ||
-            model == InputFormatConfig.InMemoryDataModel.PIG)) {
-          // TODO: We do not support residual evaluation for HIVE and PIG in memory data model yet
-          checkResiduals(task);
-        }
-        if (allowDataFilesWithinTableLocationOnly) {
-          validateFileLocations(task, tableLocation);
-        }
-        splits.add(new IcebergSplit(conf, task));
-      });
-    } catch (IOException e) {
-      throw new UncheckedIOException(String.format("Failed to close table scan: %s", scan), e);
-    }
+    String[] groupingPartitionColumns = conf.getStrings(InputFormatConfig.GROUPING_PARTITION_COLUMNS);
+    generateInputSplits(scan, table, groupingPartitionColumns, taskGroup -> {
+      if (applyResidual && model == InputFormatConfig.InMemoryDataModel.HIVE) {
+        // TODO: We do not support residual evaluation for HIVE and PIG in memory data model yet
+        checkResiduals(taskGroup);
+      }
+      if (allowDataFilesWithinTableLocationOnly) {
+        validateFileLocations(taskGroup, tableLocation);
+      }
+      splits.add(new IcebergSplit(conf, taskGroup));
+    });
 
     // If enabled, do not serialize FileIO hadoop config to decrease split size
     // However, do not skip serialization for metatable queries, because some metadata tasks cache the IO object and we

@@ -28,10 +28,12 @@ import org.apache.hadoop.hive.metastore.api.StorageDescriptor;
 import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.iceberg.BaseMetastoreTableOperations;
 import org.apache.iceberg.ClientPool;
+import org.apache.iceberg.Schema;
 import org.apache.iceberg.SchemaParser;
 import org.apache.iceberg.TableMetadata;
 import org.apache.iceberg.TableProperties;
 import org.apache.iceberg.exceptions.NoSuchIcebergTableException;
+import org.apache.iceberg.exceptions.NoSuchIcebergViewException;
 import org.apache.iceberg.io.FileIO;
 import org.apache.iceberg.relocated.com.google.common.base.Preconditions;
 import org.apache.iceberg.relocated.com.google.common.collect.ImmutableMap;
@@ -53,6 +55,7 @@ public interface HiveOperationsBase {
   long HIVE_TABLE_PROPERTY_MAX_SIZE_DEFAULT = 32672;
   String NO_LOCK_EXPECTED_KEY = "expected_parameter_key";
   String NO_LOCK_EXPECTED_VALUE = "expected_parameter_value";
+  String ICEBERG_VIEW_TYPE_VALUE = "iceberg-view";
 
   TableType tableType();
 
@@ -108,6 +111,17 @@ public interface HiveOperationsBase {
     } catch (ClassNotFoundException e) {
       throw new RuntimeException("Error checking storage handler class", e);
     }
+  }
+
+  static void validateTableIsIcebergView(Table table, String fullName) {
+    String tableTypeProp = table.getParameters().get(BaseMetastoreTableOperations.TABLE_TYPE_PROP);
+    NoSuchIcebergViewException.check(
+            TableType.VIRTUAL_VIEW.name().equalsIgnoreCase(table.getTableType()) &&
+                    ICEBERG_VIEW_TYPE_VALUE.equalsIgnoreCase(tableTypeProp),
+            "Not an iceberg view: %s (type=%s) (tableType=%s)",
+            fullName,
+            tableTypeProp,
+            table.getTableType());
   }
 
   default void persistTable(Table hmsTable, boolean updateHiveTable, String metadataLocation)

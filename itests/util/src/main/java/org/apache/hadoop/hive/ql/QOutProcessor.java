@@ -106,7 +106,7 @@ public class QOutProcessor {
 
   // Using String.contains instead of pattern, as it is much faster
   private final String[] maskIfContains = new String[] {
-      "file:",
+      "file:/",
       "pfile:",
       "/tmp/",
       "invalidscheme:",

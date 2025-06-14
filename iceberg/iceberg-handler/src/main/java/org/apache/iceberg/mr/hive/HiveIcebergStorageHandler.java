@@ -478,6 +478,83 @@ public class HiveIcebergStorageHandler implements HiveStoragePredicateHandler, H
     return stats;
   }
 
+  @Override
+  public Map<String, String> computeBasicStatistics(Partish partish) {
+    Map<String, String> stats;
+    if (!getStatsSource().equals(HiveMetaHook.ICEBERG)) {
+      stats = partish.getPartParameters();
+
+      if (!StatsSetupConst.areBasicStatsUptoDate(stats)) {
+        // populate quick-stats
+        stats = getBasicStatistics(partish, true);
+      }
+      return stats;
+    }
+    org.apache.hadoop.hive.ql.metadata.Table hmsTable = partish.getTable();
+    // For write queries where rows got modified, don't fetch from cache as values could have changed.
+    Table table = getTable(hmsTable);
+    Snapshot snapshot = IcebergTableUtil.getTableSnapshot(table, hmsTable);
+
+    if (snapshot != null && table.spec().isPartitioned()) {
+      PartitionStatisticsFile statsFile = IcebergTableUtil.getPartitionStatsFile(table, snapshot.snapshotId());
+      if (statsFile == null) {
+        try {
+          statsFile = PartitionStatsHandler.computeAndWriteStatsFile(table);
+        } catch (IOException e) {
+          throw new UncheckedIOException(e);
+        }
+
+        table.updatePartitionStatistics()
+            .setPartitionStatistics(statsFile)
+            .commit();
+      }
+    }
+    return getBasicStatistics(partish);
+  }
+
+  private static Map<String, String> getPartishSummary(Partish partish, Table table, Snapshot snapshot) {
+    if (partish.getPartition() != null) {
+      PartitionStatisticsFile statsFile = IcebergTableUtil.getPartitionStatsFile(table, snapshot.snapshotId());
+      if (statsFile != null) {
+        Types.StructType partitionType = Partitioning.partitionType(table);
+        Schema schema = PartitionStatsHandler.schema(partitionType);
+
+        CloseableIterable<PartitionStats> partitionStatsRecords = PartitionStatsHandler.readPartitionStatsFile(
+            schema, table.io().newInputFile(statsFile.path()));
+
+        try (Closeable toClose = partitionStatsRecords) {
+          PartitionStats partitionStats = Iterables.tryFind(partitionStatsRecords, stats -> {
+            PartitionSpec spec = table.specs().get(stats.specId());
+            PartitionData data  = IcebergTableUtil.toPartitionData(stats.partition(), partitionType,
+                spec.partitionType());
+            return spec.partitionToPath(data).equals(partish.getPartition().getName());
+          }).orNull();
+
+          if (partitionStats != null) {
+            Map<String, String> stats = ImmutableMap.of(
+                TOTAL_DATA_FILES_PROP, String.valueOf(partitionStats.dataFileCount()),
+                TOTAL_RECORDS_PROP, String.valueOf(partitionStats.dataRecordCount()),
+                TOTAL_EQ_DELETES_PROP, String.valueOf(partitionStats.equalityDeleteRecordCount()),
+                TOTAL_POS_DELETES_PROP, String.valueOf(partitionStats.positionDeleteRecordCount()),
+                TOTAL_FILE_SIZE_PROP, String.valueOf(partitionStats.totalDataFileSizeInBytes())
+            );
+            return stats;
+          } else {
+            LOG.warn("Partition {} not found in stats file: {}",
+                partish.getPartition().getName(), statsFile.path());
+            return null;
+          }
+        } catch (IOException e) {
+          throw new UncheckedIOException(e);
+        }
+      } else {
+        LOG.warn("Partition stats file not found for snapshot: {}", snapshot.snapshotId());
+        return null;
+      }
+    }
+    return snapshot.summary();
+  }
+
   private Table getTable(org.apache.hadoop.hive.ql.metadata.Table hmsTable) {
     Table table;
     final Optional<QueryState> queryState = SessionStateUtil.getQueryState(conf);
