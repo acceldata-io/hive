@@ -114,7 +114,7 @@
     <maven.cyclonedx.plugin.version>2.7.10</maven.cyclonedx.plugin.version>
     <maven.license.plugin.version>2.3.0</maven.license.plugin.version>
     <!-- Library Dependency Versions -->
-    <accumulo.version>1.10.1</accumulo.version>
+    <accumulo.version>1.10.4</accumulo.version>
     <ant.version>1.10.13</ant.version>
     <antlr.version>3.5.2</antlr.version>
     <!-- Make sure to sync it with standalone-metastore/pom.xml -->
@@ -137,7 +137,7 @@
     <commons-compress.version>1.23.0</commons-compress.version>
     <commons-configuration.version>1.10</commons-configuration.version>
     <commons-exec.version>1.1</commons-exec.version>
-    <commons-io.version>2.12.0</commons-io.version>
+    <commons-io.version>2.17.0</commons-io.version>
     <commons-pool2.version>2.11.1</commons-pool2.version>
     <commons-lang3.version>3.12.0</commons-lang3.version>
     <commons-math3.version>3.6.1</commons-math3.version>
@@ -206,7 +206,7 @@
     <parquet.version>1.13.1</parquet.version>
     <pig.version>0.16.0</pig.version>
     <plexus.version>1.5.6</plexus.version>
-    <protobuf.version>3.24.4</protobuf.version>
+    <protobuf.version>3.25.5</protobuf.version>
     <rat.version>0.16.1</rat.version>
     <stax.version>1.0.1</stax.version>
     <slf4j.version>1.7.30</slf4j.version>
@@ -545,6 +545,12 @@
         <groupId>org.apache.accumulo</groupId>
         <artifactId>accumulo-core</artifactId>
         <version>${accumulo.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.accumulo</groupId>
@@ -1698,11 +1704,17 @@
                   <excludes>
                     <!-- Move to SLF4J -->
                     <exclude>commons-logging:commons-logging</exclude>
-                    <exclude>log4j:log4j</exclude>
                     <exclude>ch.qos.reload4j:reload4j</exclude>
                   </excludes>
                   <searchTransitive>false</searchTransitive>
                   <message>A banned logging dependency was found!</message>
+                </bannedDependencies>
+                <bannedDependencies>
+                  <excludes>
+                    <exclude>log4j:log4j</exclude>
+                  </excludes>
+                  <searchTransitive>true</searchTransitive>
+                  <message>Banned log4j:log4j dependency/transitive dependency was found!</message>
                 </bannedDependencies>
               </rules>
               <fail>true</fail>

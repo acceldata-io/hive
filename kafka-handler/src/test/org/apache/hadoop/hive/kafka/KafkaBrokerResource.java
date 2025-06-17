@@ -118,7 +118,7 @@ class KafkaBrokerResource extends ExternalResource {
     kafkaServer.zkClient();
     adminZkClient = new AdminZkClient(kafkaServer.zkClient(), Option.empty());
     LOG.info("Creating kafka TOPIC [{}]", TOPIC);
-    adminZkClient.createTopic(TOPIC, 1, 1, new Properties(), RackAwareMode.Disabled$.MODULE$, false;
+    adminZkClient.createTopic(TOPIC, 1, 1, new Properties(), RackAwareMode.Disabled$.MODULE$, false);
   }
 
   /**
