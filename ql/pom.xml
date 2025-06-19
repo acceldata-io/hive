@@ -34,11 +34,6 @@
     <!-- intra-project -->
     <!-- used for vector code-gen -->
     <dependency>
-      <groupId>io.nats</groupId>
-      <artifactId>jnats</artifactId>
-      <version>2.16.4</version>
-    </dependency>
-    <dependency>
       <groupId>org.apache.atlas</groupId>
       <artifactId>atlas-client-v2</artifactId>
       <version>${atlas.version}</version>
