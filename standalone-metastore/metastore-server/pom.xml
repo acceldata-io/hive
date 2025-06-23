@@ -372,6 +372,10 @@
       <scope>test</scope>
       <exclusions>
         <exclusion>
+          <groupId>org.apache.mina</groupId>
+          <artifactId>mina-core</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>bouncycastle</groupId>
           <artifactId>bcprov-jdk15</artifactId>
         </exclusion>
@@ -382,6 +386,10 @@
       <artifactId>apacheds-test-framework</artifactId>
       <version>${apache-directory-server.version}</version>
       <scope>test</scope>
+      <exclusion>
+        <groupId>org.apache.mina</groupId>
+        <artifactId>mina-core</artifactId>
+      </exclusion>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
