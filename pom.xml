@@ -240,6 +240,7 @@
     <!-- If upgrading, upgrade atlas as well in ql/pom.xml, which brings in some springframework dependencies transitively -->
     <spring.version>5.3.39</spring.version>
     <project.build.outputTimestamp>2024-09-25T07:52:38Z</project.build.outputTimestamp>
+    <opencsv.test.version>5.9</opencsv.test.version>
   </properties>
   <repositories>
     <!-- This needs to be removed before checking in-->

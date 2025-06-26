@@ -892,6 +892,12 @@
       <artifactId>RoaringBitmap</artifactId>
       <version>0.9.22</version>
     </dependency>
+      <dependency>
+          <groupId>com.opencsv</groupId>
+          <artifactId>opencsv</artifactId>
+          <version>${opencsv.test.version}</version>
+          <scope>test</scope>
+      </dependency>
   </dependencies>
   <profiles>
     <profile>
