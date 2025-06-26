@@ -1,3 +1,4 @@
+
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -372,6 +373,10 @@
       <scope>test</scope>
       <exclusions>
         <exclusion>
+          <groupId>org.apache.mina</groupId>
+          <artifactId>mina-core</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>bouncycastle</groupId>
           <artifactId>bcprov-jdk15</artifactId>
         </exclusion>
@@ -382,6 +387,12 @@
       <artifactId>apacheds-test-framework</artifactId>
       <version>${apache-directory-server.version}</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.mina</groupId>
+          <artifactId>mina-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
