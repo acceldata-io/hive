@@ -81,7 +81,8 @@ public class HiveTableOperations extends BaseMetastoreTableOperations
           // but with different names
           GC_ENABLED, "external.table.purge",
           TableProperties.PARQUET_COMPRESSION, ParquetOutputFormat.COMPRESSION,
-          TableProperties.PARQUET_ROW_GROUP_SIZE_BYTES, ParquetOutputFormat.BLOCK_SIZE);
+                      TableProperties.PARQUET_ROW_GROUP_SIZE_BYTES, ParquetOutputFormat.BLOCK_SIZE);
+
   /**
    * Provides key translation where necessary between Iceberg and HMS props. This translation is needed because some
    * properties control the same behaviour but are named differently in Iceberg and Hive. Therefore changes to these
