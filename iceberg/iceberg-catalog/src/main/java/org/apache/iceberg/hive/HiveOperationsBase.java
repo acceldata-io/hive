@@ -209,7 +209,8 @@ public interface HiveOperationsBase {
     }
   }
 
-  static void cleanupMetadataAndUnlock(FileIO io, BaseMetastoreTableOperations.CommitStatus commitStatus, String metadataLocation, HiveLock lock) {
+  static void cleanupMetadataAndUnlock(FileIO io, BaseMetastoreTableOperations.CommitStatus commitStatus,
+      String metadataLocation, HiveLock lock) {
     try {
       if (commitStatus == BaseMetastoreTableOperations.CommitStatus.FAILURE) {
         // If we are sure the commit failed, clean up the uncommitted metadata file
