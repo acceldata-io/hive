@@ -223,7 +223,8 @@ public class IcebergInputFormat<T> extends InputFormat<Void, T> {
         InputFormatConfig.InMemoryDataModel.GENERIC);
 
     long fromVersion = conf.getLong(InputFormatConfig.SNAPSHOT_ID_INTERVAL_FROM, -1);
-    Scan<?, FileScanTask, CombinedScanTask> scan;
+    @SuppressWarnings("rawtypes")
+    Scan scan;
     if (fromVersion != -1) {
       scan = applyConfig(conf, createIncrementalAppendScan(table, conf));
     } else {
