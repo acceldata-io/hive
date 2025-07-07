@@ -57,6 +57,24 @@ public interface HiveOperationsBase {
   String NO_LOCK_EXPECTED_VALUE = "expected_parameter_value";
   String ICEBERG_VIEW_TYPE_VALUE = "iceberg-view";
 
+  /**
+   * Enum representing the type of content (table or view) for Hive operations.
+   */
+  enum ContentType {
+    TABLE("table"),
+    VIEW("view");
+
+    private final String value;
+
+    ContentType(String value) {
+      this.value = value;
+    }
+
+    public String value() {
+      return value;
+    }
+  }
+
   TableType tableType();
 
   ClientPool<IMetaStoreClient, TException> metaClients();
@@ -161,6 +179,25 @@ public interface HiveOperationsBase {
     return storageDescriptor;
   }
 
+  static StorageDescriptor storageDescriptor(Schema schema, String location, boolean hiveEngineEnabled) {
+    final StorageDescriptor storageDescriptor = new StorageDescriptor();
+    storageDescriptor.setCols(HiveSchemaUtil.convert(schema));
+    storageDescriptor.setLocation(location);
+    SerDeInfo serDeInfo = new SerDeInfo();
+    serDeInfo.setParameters(Maps.newHashMap());
+    if (hiveEngineEnabled) {
+      storageDescriptor.setInputFormat("org.apache.iceberg.mr.hive.HiveIcebergInputFormat");
+      storageDescriptor.setOutputFormat("org.apache.iceberg.mr.hive.HiveIcebergOutputFormat");
+      serDeInfo.setSerializationLib("org.apache.iceberg.mr.hive.HiveIcebergSerDe");
+    } else {
+      storageDescriptor.setOutputFormat("org.apache.hadoop.mapred.FileOutputFormat");
+      storageDescriptor.setInputFormat("org.apache.hadoop.mapred.FileInputFormat");
+      serDeInfo.setSerializationLib("org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe");
+    }
+    storageDescriptor.setSerdeInfo(serDeInfo);
+    return storageDescriptor;
+  }
+
   static void cleanupMetadata(FileIO io, String commitStatus, String metadataLocation) {
     try {
       if (commitStatus.equalsIgnoreCase("FAILURE")) {
@@ -169,6 +206,23 @@ public interface HiveOperationsBase {
       }
     } catch (RuntimeException e) {
       LOG.error("Failed to cleanup metadata file at {}", metadataLocation, e);
+    }
+  }
+
+  static void cleanupMetadataAndUnlock(FileIO io, BaseMetastoreTableOperations.CommitStatus commitStatus, String metadataLocation, HiveLock lock) {
+    try {
+      if (commitStatus == BaseMetastoreTableOperations.CommitStatus.FAILURE) {
+        // If we are sure the commit failed, clean up the uncommitted metadata file
+        io.deleteFile(metadataLocation);
+      }
+    } catch (RuntimeException e) {
+      LOG.error("Failed to cleanup metadata file at {}", metadataLocation, e);
+    } finally {
+      try {
+        lock.unlock();
+      } catch (Exception e) {
+        LOG.error("Failed to unlock", e);
+      }
     }
   }
 

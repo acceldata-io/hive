@@ -264,7 +264,7 @@ public class HiveTableOperations extends BaseMetastoreTableOperations
               e);
         }
 
-        commitStatus = BaseMetastoreOperations.CommitStatus.UNKNOWN;
+        commitStatus = BaseMetastoreTableOperations.CommitStatus.UNKNOWN;
         if (e.getMessage() != null && e.getMessage().contains(
                 "The table has been modified. The parameter value for key '" +
                         HiveTableOperations.METADATA_LOCATION_PROP +
@@ -274,7 +274,7 @@ public class HiveTableOperations extends BaseMetastoreTableOperations
           // this is really a concurrent modification. Hitting this exception means no pending
           // requests, if any, can succeed later, so it's safe to check status in strict mode
           commitStatus = checkCommitStatusStrict(newMetadataLocation, metadata);
-          if (commitStatus == BaseMetastoreOperations.CommitStatus.FAILURE) {
+          if (commitStatus == BaseMetastoreTableOperations.CommitStatus.FAILURE) {
             throw new CommitFailedException(
                     e, "The table %s.%s has been modified concurrently", database, tableName);
           }

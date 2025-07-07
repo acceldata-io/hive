@@ -386,4 +386,14 @@ final class HiveViewOperations extends BaseViewOperations implements HiveOperati
   public FileIO io() {
     return fileIO;
   }
+
+  @VisibleForTesting
+  Table loadHmsTable() throws TException, InterruptedException {
+    try {
+      return metaClients.run(client -> client.getTable(database, viewName));
+    } catch (NoSuchObjectException nte) {
+      LOG.trace("View not found {}", fullName, nte);
+      return null;
+    }
+  }
 }
