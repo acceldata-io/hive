@@ -1,5 +1,4 @@
 --! qt:replace:/(File Version:)(.+)/$1#Masked#/
---! qt:replace:/(File length:\s+)\S+(\s+bytes)/$1#Masked#$2/
 set hive.vectorized.execution.enabled=false;
 
 CREATE TABLE `alltypesorc3xcols`(
