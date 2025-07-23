@@ -310,6 +310,11 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
 
   @Override
   public void init() throws MetaException {
+    init(new Warehouse(conf));
+  }
+
+  @VisibleForTesting
+  public void init(Warehouse wh) throws MetaException {
     Metrics.initialize(conf);
     initListeners = MetaStoreServerUtils.getMetaStoreListeners(
         MetaStoreInitListener.class, conf, MetastoreConf.getVar(conf, ConfVars.INIT_HOOKS));
@@ -321,7 +326,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     String alterHandlerName = MetastoreConf.getVar(conf, ConfVars.ALTER_HANDLER);
     alterHandler = ReflectionUtils.newInstance(JavaUtils.getClass(
         alterHandlerName, AlterHandler.class), conf);
-    wh = new Warehouse(conf);
+    this.wh = wh;
 
     synchronized (HMSHandler.class) {
       if (currentUrl == null || !currentUrl.equals(MetaStoreInit.getConnectionURL(conf))) {
@@ -2975,11 +2980,16 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
       tableDataShouldBeDeleted = checkTableDataShouldBeDeleted(tbl, deleteData);
       if (tableDataShouldBeDeleted && tbl.getSd().getLocation() != null) {
         tblPath = new Path(tbl.getSd().getLocation());
+        String target = indexName == null ? "Table" : "Index table";
+	 // HIVE-28804 drop table user should have table path and parent path permission
         if (!wh.isWritable(tblPath.getParent())) {
-          String target = indexName == null ? "Table" : "Index table";
-          throw new MetaException(target + " metadata not deleted since " +
-              tblPath.getParent() + " is not writable by " +
-              SecurityUtils.getUser());
+          throw new MetaException(String.format(
+              "%s metadata not deleted since %s is not writable by %s",
+              target, tblPath.getParent(), SecurityUtils.getUser()));
+        } else if (!wh.isWritable(tblPath)) {
+          throw new MetaException(String.format(
+              "%s metadata not deleted since %s is not writable by %s",
+              target, tblPath, SecurityUtils.getUser()));
         }
       }
 
