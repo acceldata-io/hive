@@ -79,13 +79,6 @@ interface ThriftHiveMetastoreIf extends \FacebookServiceIf
      */
     public function create_database(\metastore\Database $database);
     /**
-     * @param \metastore\CreateDatabaseRequest $createDatabaseRequest
-     * @throws \metastore\AlreadyExistsException
-     * @throws \metastore\InvalidObjectException
-     * @throws \metastore\MetaException
-     */
-    public function create_database_req(\metastore\CreateDatabaseRequest $createDatabaseRequest);
-    /**
      * @param string $name
      * @return \metastore\Database
      * @throws \metastore\NoSuchObjectException
@@ -134,18 +127,12 @@ interface ThriftHiveMetastoreIf extends \FacebookServiceIf
      */
     public function alter_database($dbname, \metastore\Database $db);
     /**
-     * @param \metastore\AlterDatabaseRequest $alterDbReq
-     * @throws \metastore\MetaException
-     * @throws \metastore\NoSuchObjectException
-     */
-    public function alter_database_req(\metastore\AlterDatabaseRequest $alterDbReq);
-    /**
-     * @param \metastore\CreateDataConnectorRequest $connectorReq
+     * @param \metastore\DataConnector $connector
      * @throws \metastore\AlreadyExistsException
      * @throws \metastore\InvalidObjectException
      * @throws \metastore\MetaException
      */
-    public function create_dataconnector_req(\metastore\CreateDataConnectorRequest $connectorReq);
+    public function create_dataconnector(\metastore\DataConnector $connector);
     /**
      * @param \metastore\GetDataConnectorRequest $request
      * @return \metastore\DataConnector
@@ -154,23 +141,26 @@ interface ThriftHiveMetastoreIf extends \FacebookServiceIf
      */
     public function get_dataconnector_req(\metastore\GetDataConnectorRequest $request);
     /**
-     * @param \metastore\DropDataConnectorRequest $dropDcReq
+     * @param string $name
+     * @param bool $ifNotExists
+     * @param bool $checkReferences
      * @throws \metastore\NoSuchObjectException
      * @throws \metastore\InvalidOperationException
      * @throws \metastore\MetaException
      */
-    public function drop_dataconnector_req(\metastore\DropDataConnectorRequest $dropDcReq);
+    public function drop_dataconnector($name, $ifNotExists, $checkReferences);
     /**
      * @return string[]
      * @throws \metastore\MetaException
      */
     public function get_dataconnectors();
     /**
-     * @param \metastore\AlterDataConnectorRequest $alterReq
+     * @param string $name
+     * @param \metastore\DataConnector $connector
      * @throws \metastore\MetaException
      * @throws \metastore\NoSuchObjectException
      */
-    public function alter_dataconnector_req(\metastore\AlterDataConnectorRequest $alterReq);
+    public function alter_dataconnector($name, \metastore\DataConnector $connector);
     /**
      * @param string $name
      * @return \metastore\Type
@@ -361,12 +351,6 @@ interface ThriftHiveMetastoreIf extends \FacebookServiceIf
      */
     public function drop_table_with_environment_context($dbname, $name, $deleteData, \metastore\EnvironmentContext $environment_context);
     /**
-     * @param \metastore\DropTableRequest $dropTableReq
-     * @throws \metastore\NoSuchObjectException
-     * @throws \metastore\MetaException
-     */
-    public function drop_table_req(\metastore\DropTableRequest $dropTableReq);
-    /**
      * @param string $dbName
      * @param string $tableName
      * @param string[] $partNames
@@ -419,6 +403,20 @@ interface ThriftHiveMetastoreIf extends \FacebookServiceIf
      * @throws \metastore\MetaException
      */
     public function get_all_tables($db_name);
+    /**
+     * @param string $dbname
+     * @param string $tbl_name
+     * @return \metastore\Table
+     * @throws \metastore\MetaException
+     * @throws \metastore\NoSuchObjectException
+     */
+    public function get_table($dbname, $tbl_name);
+    /**
+     * @param string $dbname
+     * @param string[] $tbl_names
+     * @return \metastore\Table[]
+     */
+    public function get_table_objects_by_name($dbname, array $tbl_names);
     /**
      * @param \metastore\GetTablesExtRequest $req
      * @return \metastore\ExtendedTableInfo[]
@@ -565,14 +563,6 @@ interface ThriftHiveMetastoreIf extends \FacebookServiceIf
      */
     public function append_partition_with_environment_context($db_name, $tbl_name, array $part_vals, \metastore\EnvironmentContext $environment_context);
     /**
-     * @param \metastore\AppendPartitionsRequest $appendPartitionsReq
-     * @return \metastore\Partition
-     * @throws \metastore\InvalidObjectException
-     * @throws \metastore\AlreadyExistsException
-     * @throws \metastore\MetaException
-     */
-    public function append_partition_req(\metastore\AppendPartitionsRequest $appendPartitionsReq);
-    /**
      * @param string $db_name
      * @param string $tbl_name
      * @param string $part_name
@@ -614,13 +604,6 @@ interface ThriftHiveMetastoreIf extends \FacebookServiceIf
      * @throws \metastore\MetaException
      */
     public function drop_partition_with_environment_context($db_name, $tbl_name, array $part_vals, $deleteData, \metastore\EnvironmentContext $environment_context);
-    /**
-     * @param \metastore\DropPartitionRequest $dropPartitionReq
-     * @return bool
-     * @throws \metastore\NoSuchObjectException
-     * @throws \metastore\MetaException
-     */
-    public function drop_partition_req(\metastore\DropPartitionRequest $dropPartitionReq);
     /**
      * @param string $db_name
      * @param string $tbl_name
@@ -756,13 +739,6 @@ interface ThriftHiveMetastoreIf extends \FacebookServiceIf
      * @throws \metastore\MetaException
      */
     public function get_partition_names($db_name, $tbl_name, $max_parts);
-    /**
-     * @param \metastore\PartitionsRequest $partitionReq
-     * @return string[]
-     * @throws \metastore\NoSuchObjectException
-     * @throws \metastore\MetaException
-     */
-    public function fetch_partition_names_req(\metastore\PartitionsRequest $partitionReq);
     /**
      * @param \metastore\PartitionValuesRequest $request
      * @return \metastore\PartitionValuesResponse
