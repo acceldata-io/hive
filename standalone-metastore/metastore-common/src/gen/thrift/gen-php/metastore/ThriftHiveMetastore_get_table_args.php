@@ -16,36 +16,47 @@ use Thrift\Protocol\TProtocol;
 use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
-class ThriftHiveMetastore_fetch_partition_names_req_args
+class ThriftHiveMetastore_get_table_args
 {
     static public $isValidate = false;
 
     static public $_TSPEC = array(
         1 => array(
-            'var' => 'partitionReq',
+            'var' => 'dbname',
             'isRequired' => false,
-            'type' => TType::STRUCT,
-            'class' => '\metastore\PartitionsRequest',
+            'type' => TType::STRING,
+        ),
+        2 => array(
+            'var' => 'tbl_name',
+            'isRequired' => false,
+            'type' => TType::STRING,
         ),
     );
 
     /**
-     * @var \metastore\PartitionsRequest
+     * @var string
      */
-    public $partitionReq = null;
+    public $dbname = null;
+    /**
+     * @var string
+     */
+    public $tbl_name = null;
 
     public function __construct($vals = null)
     {
         if (is_array($vals)) {
-            if (isset($vals['partitionReq'])) {
-                $this->partitionReq = $vals['partitionReq'];
+            if (isset($vals['dbname'])) {
+                $this->dbname = $vals['dbname'];
+            }
+            if (isset($vals['tbl_name'])) {
+                $this->tbl_name = $vals['tbl_name'];
             }
         }
     }
 
     public function getName()
     {
-        return 'ThriftHiveMetastore_fetch_partition_names_req_args';
+        return 'ThriftHiveMetastore_get_table_args';
     }
 
 
@@ -63,9 +74,15 @@ class ThriftHiveMetastore_fetch_partition_names_req_args
             }
             switch ($fid) {
                 case 1:
-                    if ($ftype == TType::STRUCT) {
-                        $this->partitionReq = new \metastore\PartitionsRequest();
-                        $xfer += $this->partitionReq->read($input);
+                    if ($ftype == TType::STRING) {
+                        $xfer += $input->readString($this->dbname);
+                    } else {
+                        $xfer += $input->skip($ftype);
+                    }
+                    break;
+                case 2:
+                    if ($ftype == TType::STRING) {
+                        $xfer += $input->readString($this->tbl_name);
                     } else {
                         $xfer += $input->skip($ftype);
                     }
@@ -83,13 +100,15 @@ class ThriftHiveMetastore_fetch_partition_names_req_args
     public function write($output)
     {
         $xfer = 0;
-        $xfer += $output->writeStructBegin('ThriftHiveMetastore_fetch_partition_names_req_args');
-        if ($this->partitionReq !== null) {
-            if (!is_object($this->partitionReq)) {
-                throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
-            }
-            $xfer += $output->writeFieldBegin('partitionReq', TType::STRUCT, 1);
-            $xfer += $this->partitionReq->write($output);
+        $xfer += $output->writeStructBegin('ThriftHiveMetastore_get_table_args');
+        if ($this->dbname !== null) {
+            $xfer += $output->writeFieldBegin('dbname', TType::STRING, 1);
+            $xfer += $output->writeString($this->dbname);
+            $xfer += $output->writeFieldEnd();
+        }
+        if ($this->tbl_name !== null) {
+            $xfer += $output->writeFieldBegin('tbl_name', TType::STRING, 2);
+            $xfer += $output->writeString($this->tbl_name);
             $xfer += $output->writeFieldEnd();
         }
         $xfer += $output->writeFieldStop();
