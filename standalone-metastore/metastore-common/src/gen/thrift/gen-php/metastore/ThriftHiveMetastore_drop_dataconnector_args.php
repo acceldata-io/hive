@@ -16,48 +16,59 @@ use Thrift\Protocol\TProtocol;
 use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
-class AlterDataConnectorRequest
+class ThriftHiveMetastore_drop_dataconnector_args
 {
     static public $isValidate = false;
 
     static public $_TSPEC = array(
         1 => array(
-            'var' => 'connectorName',
-            'isRequired' => true,
+            'var' => 'name',
+            'isRequired' => false,
             'type' => TType::STRING,
         ),
         2 => array(
-            'var' => 'newConnector',
-            'isRequired' => true,
-            'type' => TType::STRUCT,
-            'class' => '\metastore\DataConnector',
+            'var' => 'ifNotExists',
+            'isRequired' => false,
+            'type' => TType::BOOL,
+        ),
+        3 => array(
+            'var' => 'checkReferences',
+            'isRequired' => false,
+            'type' => TType::BOOL,
         ),
     );
 
     /**
      * @var string
      */
-    public $connectorName = null;
+    public $name = null;
     /**
-     * @var \metastore\DataConnector
+     * @var bool
      */
-    public $newConnector = null;
+    public $ifNotExists = null;
+    /**
+     * @var bool
+     */
+    public $checkReferences = null;
 
     public function __construct($vals = null)
     {
         if (is_array($vals)) {
-            if (isset($vals['connectorName'])) {
-                $this->connectorName = $vals['connectorName'];
+            if (isset($vals['name'])) {
+                $this->name = $vals['name'];
             }
-            if (isset($vals['newConnector'])) {
-                $this->newConnector = $vals['newConnector'];
+            if (isset($vals['ifNotExists'])) {
+                $this->ifNotExists = $vals['ifNotExists'];
+            }
+            if (isset($vals['checkReferences'])) {
+                $this->checkReferences = $vals['checkReferences'];
             }
         }
     }
 
     public function getName()
     {
-        return 'AlterDataConnectorRequest';
+        return 'ThriftHiveMetastore_drop_dataconnector_args';
     }
 
 
@@ -76,15 +87,21 @@ class AlterDataConnectorRequest
             switch ($fid) {
                 case 1:
                     if ($ftype == TType::STRING) {
-                        $xfer += $input->readString($this->connectorName);
+                        $xfer += $input->readString($this->name);
                     } else {
                         $xfer += $input->skip($ftype);
                     }
                     break;
                 case 2:
-                    if ($ftype == TType::STRUCT) {
-                        $this->newConnector = new \metastore\DataConnector();
-                        $xfer += $this->newConnector->read($input);
+                    if ($ftype == TType::BOOL) {
+                        $xfer += $input->readBool($this->ifNotExists);
+                    } else {
+                        $xfer += $input->skip($ftype);
+                    }
+                    break;
+                case 3:
+                    if ($ftype == TType::BOOL) {
+                        $xfer += $input->readBool($this->checkReferences);
                     } else {
                         $xfer += $input->skip($ftype);
                     }
@@ -102,18 +119,20 @@ class AlterDataConnectorRequest
     public function write($output)
     {
         $xfer = 0;
-        $xfer += $output->writeStructBegin('AlterDataConnectorRequest');
-        if ($this->connectorName !== null) {
-            $xfer += $output->writeFieldBegin('connectorName', TType::STRING, 1);
-            $xfer += $output->writeString($this->connectorName);
+        $xfer += $output->writeStructBegin('ThriftHiveMetastore_drop_dataconnector_args');
+        if ($this->name !== null) {
+            $xfer += $output->writeFieldBegin('name', TType::STRING, 1);
+            $xfer += $output->writeString($this->name);
             $xfer += $output->writeFieldEnd();
         }
-        if ($this->newConnector !== null) {
-            if (!is_object($this->newConnector)) {
-                throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
-            }
-            $xfer += $output->writeFieldBegin('newConnector', TType::STRUCT, 2);
-            $xfer += $this->newConnector->write($output);
+        if ($this->ifNotExists !== null) {
+            $xfer += $output->writeFieldBegin('ifNotExists', TType::BOOL, 2);
+            $xfer += $output->writeBool($this->ifNotExists);
+            $xfer += $output->writeFieldEnd();
+        }
+        if ($this->checkReferences !== null) {
+            $xfer += $output->writeFieldBegin('checkReferences', TType::BOOL, 3);
+            $xfer += $output->writeBool($this->checkReferences);
             $xfer += $output->writeFieldEnd();
         }
         $xfer += $output->writeFieldStop();

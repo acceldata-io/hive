@@ -16,36 +16,49 @@ use Thrift\Protocol\TProtocol;
 use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
-class ThriftHiveMetastore_fetch_partition_names_req_args
+class ThriftHiveMetastore_alter_dataconnector_result
 {
     static public $isValidate = false;
 
     static public $_TSPEC = array(
         1 => array(
-            'var' => 'partitionReq',
+            'var' => 'o1',
             'isRequired' => false,
             'type' => TType::STRUCT,
-            'class' => '\metastore\PartitionsRequest',
+            'class' => '\metastore\MetaException',
+        ),
+        2 => array(
+            'var' => 'o2',
+            'isRequired' => false,
+            'type' => TType::STRUCT,
+            'class' => '\metastore\NoSuchObjectException',
         ),
     );
 
     /**
-     * @var \metastore\PartitionsRequest
+     * @var \metastore\MetaException
      */
-    public $partitionReq = null;
+    public $o1 = null;
+    /**
+     * @var \metastore\NoSuchObjectException
+     */
+    public $o2 = null;
 
     public function __construct($vals = null)
     {
         if (is_array($vals)) {
-            if (isset($vals['partitionReq'])) {
-                $this->partitionReq = $vals['partitionReq'];
+            if (isset($vals['o1'])) {
+                $this->o1 = $vals['o1'];
+            }
+            if (isset($vals['o2'])) {
+                $this->o2 = $vals['o2'];
             }
         }
     }
 
     public function getName()
     {
-        return 'ThriftHiveMetastore_fetch_partition_names_req_args';
+        return 'ThriftHiveMetastore_alter_dataconnector_result';
     }
 
 
@@ -64,8 +77,16 @@ class ThriftHiveMetastore_fetch_partition_names_req_args
             switch ($fid) {
                 case 1:
                     if ($ftype == TType::STRUCT) {
-                        $this->partitionReq = new \metastore\PartitionsRequest();
-                        $xfer += $this->partitionReq->read($input);
+                        $this->o1 = new \metastore\MetaException();
+                        $xfer += $this->o1->read($input);
+                    } else {
+                        $xfer += $input->skip($ftype);
+                    }
+                    break;
+                case 2:
+                    if ($ftype == TType::STRUCT) {
+                        $this->o2 = new \metastore\NoSuchObjectException();
+                        $xfer += $this->o2->read($input);
                     } else {
                         $xfer += $input->skip($ftype);
                     }
@@ -83,13 +104,15 @@ class ThriftHiveMetastore_fetch_partition_names_req_args
     public function write($output)
     {
         $xfer = 0;
-        $xfer += $output->writeStructBegin('ThriftHiveMetastore_fetch_partition_names_req_args');
-        if ($this->partitionReq !== null) {
-            if (!is_object($this->partitionReq)) {
-                throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
-            }
-            $xfer += $output->writeFieldBegin('partitionReq', TType::STRUCT, 1);
-            $xfer += $this->partitionReq->write($output);
+        $xfer += $output->writeStructBegin('ThriftHiveMetastore_alter_dataconnector_result');
+        if ($this->o1 !== null) {
+            $xfer += $output->writeFieldBegin('o1', TType::STRUCT, 1);
+            $xfer += $this->o1->write($output);
+            $xfer += $output->writeFieldEnd();
+        }
+        if ($this->o2 !== null) {
+            $xfer += $output->writeFieldBegin('o2', TType::STRUCT, 2);
+            $xfer += $this->o2->write($output);
             $xfer += $output->writeFieldEnd();
         }
         $xfer += $output->writeFieldStop();

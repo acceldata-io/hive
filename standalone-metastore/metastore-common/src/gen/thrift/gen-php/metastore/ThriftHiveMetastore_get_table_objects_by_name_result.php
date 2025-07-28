@@ -16,36 +16,40 @@ use Thrift\Protocol\TProtocol;
 use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
-class ThriftHiveMetastore_alter_database_req_args
+class ThriftHiveMetastore_get_table_objects_by_name_result
 {
     static public $isValidate = false;
 
     static public $_TSPEC = array(
-        1 => array(
-            'var' => 'alterDbReq',
+        0 => array(
+            'var' => 'success',
             'isRequired' => false,
-            'type' => TType::STRUCT,
-            'class' => '\metastore\AlterDatabaseRequest',
+            'type' => TType::LST,
+            'etype' => TType::STRUCT,
+            'elem' => array(
+                'type' => TType::STRUCT,
+                'class' => '\metastore\Table',
+                ),
         ),
     );
 
     /**
-     * @var \metastore\AlterDatabaseRequest
+     * @var \metastore\Table[]
      */
-    public $alterDbReq = null;
+    public $success = null;
 
     public function __construct($vals = null)
     {
         if (is_array($vals)) {
-            if (isset($vals['alterDbReq'])) {
-                $this->alterDbReq = $vals['alterDbReq'];
+            if (isset($vals['success'])) {
+                $this->success = $vals['success'];
             }
         }
     }
 
     public function getName()
     {
-        return 'ThriftHiveMetastore_alter_database_req_args';
+        return 'ThriftHiveMetastore_get_table_objects_by_name_result';
     }
 
 
@@ -62,10 +66,19 @@ class ThriftHiveMetastore_alter_database_req_args
                 break;
             }
             switch ($fid) {
-                case 1:
-                    if ($ftype == TType::STRUCT) {
-                        $this->alterDbReq = new \metastore\AlterDatabaseRequest();
-                        $xfer += $this->alterDbReq->read($input);
+                case 0:
+                    if ($ftype == TType::LST) {
+                        $this->success = array();
+                        $_size1516 = 0;
+                        $_etype1519 = 0;
+                        $xfer += $input->readListBegin($_etype1519, $_size1516);
+                        for ($_i1520 = 0; $_i1520 < $_size1516; ++$_i1520) {
+                            $elem1521 = null;
+                            $elem1521 = new \metastore\Table();
+                            $xfer += $elem1521->read($input);
+                            $this->success []= $elem1521;
+                        }
+                        $xfer += $input->readListEnd();
                     } else {
                         $xfer += $input->skip($ftype);
                     }
@@ -83,13 +96,17 @@ class ThriftHiveMetastore_alter_database_req_args
     public function write($output)
     {
         $xfer = 0;
-        $xfer += $output->writeStructBegin('ThriftHiveMetastore_alter_database_req_args');
-        if ($this->alterDbReq !== null) {
-            if (!is_object($this->alterDbReq)) {
+        $xfer += $output->writeStructBegin('ThriftHiveMetastore_get_table_objects_by_name_result');
+        if ($this->success !== null) {
+            if (!is_array($this->success)) {
                 throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
             }
-            $xfer += $output->writeFieldBegin('alterDbReq', TType::STRUCT, 1);
-            $xfer += $this->alterDbReq->write($output);
+            $xfer += $output->writeFieldBegin('success', TType::LST, 0);
+            $output->writeListBegin(TType::STRUCT, count($this->success));
+            foreach ($this->success as $iter1522) {
+                $xfer += $iter1522->write($output);
+            }
+            $output->writeListEnd();
             $xfer += $output->writeFieldEnd();
         }
         $xfer += $output->writeFieldStop();

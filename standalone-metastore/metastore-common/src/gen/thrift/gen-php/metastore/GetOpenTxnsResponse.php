@@ -111,13 +111,13 @@ class GetOpenTxnsResponse
                 case 2:
                     if ($ftype == TType::LST) {
                         $this->open_txns = array();
-                        $_size695 = 0;
-                        $_etype698 = 0;
-                        $xfer += $input->readListBegin($_etype698, $_size695);
-                        for ($_i699 = 0; $_i699 < $_size695; ++$_i699) {
-                            $elem700 = null;
-                            $xfer += $input->readI64($elem700);
-                            $this->open_txns []= $elem700;
+                        $_size681 = 0;
+                        $_etype684 = 0;
+                        $xfer += $input->readListBegin($_etype684, $_size681);
+                        for ($_i685 = 0; $_i685 < $_size681; ++$_i685) {
+                            $elem686 = null;
+                            $xfer += $input->readI64($elem686);
+                            $this->open_txns []= $elem686;
                         }
                         $xfer += $input->readListEnd();
                     } else {
@@ -163,8 +163,8 @@ class GetOpenTxnsResponse
             }
             $xfer += $output->writeFieldBegin('open_txns', TType::LST, 2);
             $output->writeListBegin(TType::I64, count($this->open_txns));
-            foreach ($this->open_txns as $iter701) {
-                $xfer += $output->writeI64($iter701);
+            foreach ($this->open_txns as $iter687) {
+                $xfer += $output->writeI64($iter687);
             }
             $output->writeListEnd();
             $xfer += $output->writeFieldEnd();

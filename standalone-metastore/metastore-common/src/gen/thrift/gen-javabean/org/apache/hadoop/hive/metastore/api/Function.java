@@ -1051,14 +1051,14 @@ package org.apache.hadoop.hive.metastore.api;
           case 8: // RESOURCE_URIS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list772 = iprot.readListBegin();
-                struct.resourceUris = new java.util.ArrayList<ResourceUri>(_list772.size);
-                @org.apache.thrift.annotation.Nullable ResourceUri _elem773;
-                for (int _i774 = 0; _i774 < _list772.size; ++_i774)
+                org.apache.thrift.protocol.TList _list756 = iprot.readListBegin();
+                struct.resourceUris = new java.util.ArrayList<ResourceUri>(_list756.size);
+                @org.apache.thrift.annotation.Nullable ResourceUri _elem757;
+                for (int _i758 = 0; _i758 < _list756.size; ++_i758)
                 {
-                  _elem773 = new ResourceUri();
-                  _elem773.read(iprot);
-                  struct.resourceUris.add(_elem773);
+                  _elem757 = new ResourceUri();
+                  _elem757.read(iprot);
+                  struct.resourceUris.add(_elem757);
                 }
                 iprot.readListEnd();
               }
@@ -1125,9 +1125,9 @@ package org.apache.hadoop.hive.metastore.api;
         oprot.writeFieldBegin(RESOURCE_URIS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.resourceUris.size()));
-          for (ResourceUri _iter775 : struct.resourceUris)
+          for (ResourceUri _iter759 : struct.resourceUris)
           {
-            _iter775.write(oprot);
+            _iter759.write(oprot);
           }
           oprot.writeListEnd();
         }
@@ -1210,9 +1210,9 @@ package org.apache.hadoop.hive.metastore.api;
       if (struct.isSetResourceUris()) {
         {
           oprot.writeI32(struct.resourceUris.size());
-          for (ResourceUri _iter776 : struct.resourceUris)
+          for (ResourceUri _iter760 : struct.resourceUris)
           {
-            _iter776.write(oprot);
+            _iter760.write(oprot);
           }
         }
       }
@@ -1255,14 +1255,14 @@ package org.apache.hadoop.hive.metastore.api;
       }
       if (incoming.get(7)) {
         {
-          org.apache.thrift.protocol.TList _list777 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-          struct.resourceUris = new java.util.ArrayList<ResourceUri>(_list777.size);
-          @org.apache.thrift.annotation.Nullable ResourceUri _elem778;
-          for (int _i779 = 0; _i779 < _list777.size; ++_i779)
+          org.apache.thrift.protocol.TList _list761 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+          struct.resourceUris = new java.util.ArrayList<ResourceUri>(_list761.size);
+          @org.apache.thrift.annotation.Nullable ResourceUri _elem762;
+          for (int _i763 = 0; _i763 < _list761.size; ++_i763)
           {
-            _elem778 = new ResourceUri();
-            _elem778.read(iprot);
-            struct.resourceUris.add(_elem778);
+            _elem762 = new ResourceUri();
+            _elem762.read(iprot);
+            struct.resourceUris.add(_elem762);
           }
         }
         struct.setResourceUrisIsSet(true);

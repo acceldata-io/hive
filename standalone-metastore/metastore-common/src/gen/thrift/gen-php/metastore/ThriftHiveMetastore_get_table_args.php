@@ -16,49 +16,47 @@ use Thrift\Protocol\TProtocol;
 use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
-class ThriftHiveMetastore_alter_dataconnector_req_result
+class ThriftHiveMetastore_get_table_args
 {
     static public $isValidate = false;
 
     static public $_TSPEC = array(
         1 => array(
-            'var' => 'o1',
+            'var' => 'dbname',
             'isRequired' => false,
-            'type' => TType::STRUCT,
-            'class' => '\metastore\MetaException',
+            'type' => TType::STRING,
         ),
         2 => array(
-            'var' => 'o2',
+            'var' => 'tbl_name',
             'isRequired' => false,
-            'type' => TType::STRUCT,
-            'class' => '\metastore\NoSuchObjectException',
+            'type' => TType::STRING,
         ),
     );
 
     /**
-     * @var \metastore\MetaException
+     * @var string
      */
-    public $o1 = null;
+    public $dbname = null;
     /**
-     * @var \metastore\NoSuchObjectException
+     * @var string
      */
-    public $o2 = null;
+    public $tbl_name = null;
 
     public function __construct($vals = null)
     {
         if (is_array($vals)) {
-            if (isset($vals['o1'])) {
-                $this->o1 = $vals['o1'];
+            if (isset($vals['dbname'])) {
+                $this->dbname = $vals['dbname'];
             }
-            if (isset($vals['o2'])) {
-                $this->o2 = $vals['o2'];
+            if (isset($vals['tbl_name'])) {
+                $this->tbl_name = $vals['tbl_name'];
             }
         }
     }
 
     public function getName()
     {
-        return 'ThriftHiveMetastore_alter_dataconnector_req_result';
+        return 'ThriftHiveMetastore_get_table_args';
     }
 
 
@@ -76,17 +74,15 @@ class ThriftHiveMetastore_alter_dataconnector_req_result
             }
             switch ($fid) {
                 case 1:
-                    if ($ftype == TType::STRUCT) {
-                        $this->o1 = new \metastore\MetaException();
-                        $xfer += $this->o1->read($input);
+                    if ($ftype == TType::STRING) {
+                        $xfer += $input->readString($this->dbname);
                     } else {
                         $xfer += $input->skip($ftype);
                     }
                     break;
                 case 2:
-                    if ($ftype == TType::STRUCT) {
-                        $this->o2 = new \metastore\NoSuchObjectException();
-                        $xfer += $this->o2->read($input);
+                    if ($ftype == TType::STRING) {
+                        $xfer += $input->readString($this->tbl_name);
                     } else {
                         $xfer += $input->skip($ftype);
                     }
@@ -104,15 +100,15 @@ class ThriftHiveMetastore_alter_dataconnector_req_result
     public function write($output)
     {
         $xfer = 0;
-        $xfer += $output->writeStructBegin('ThriftHiveMetastore_alter_dataconnector_req_result');
-        if ($this->o1 !== null) {
-            $xfer += $output->writeFieldBegin('o1', TType::STRUCT, 1);
-            $xfer += $this->o1->write($output);
+        $xfer += $output->writeStructBegin('ThriftHiveMetastore_get_table_args');
+        if ($this->dbname !== null) {
+            $xfer += $output->writeFieldBegin('dbname', TType::STRING, 1);
+            $xfer += $output->writeString($this->dbname);
             $xfer += $output->writeFieldEnd();
         }
-        if ($this->o2 !== null) {
-            $xfer += $output->writeFieldBegin('o2', TType::STRUCT, 2);
-            $xfer += $this->o2->write($output);
+        if ($this->tbl_name !== null) {
+            $xfer += $output->writeFieldBegin('tbl_name', TType::STRING, 2);
+            $xfer += $output->writeString($this->tbl_name);
             $xfer += $output->writeFieldEnd();
         }
         $xfer += $output->writeFieldStop();
