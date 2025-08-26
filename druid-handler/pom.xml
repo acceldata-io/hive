@@ -17,7 +17,7 @@
   <parent>
     <groupId>org.apache.hive</groupId>
     <artifactId>hive</artifactId>
-    <version>4.0.1.3.3.6.1-SNAPSHOT</version>
+    <version>4.0.1.3.3.6.2-1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>hive-druid-handler</artifactId>
@@ -327,6 +327,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-shade-plugin</artifactId>
+            <version>${maven.shade.plugin.version}</version>
             <executions>
               <!-- we need to shade netty, as there is a conflict between versions
               used by Hadoop (3.6.2.Final) and Druid (3.10.4.Final) -->
