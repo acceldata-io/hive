@@ -1061,11 +1061,10 @@ public class ObjectStore implements RawStore, Configurable {
       openTransaction();
       // Take the pattern and split it on the | to get all the composing
       // patterns
-      String[] subpatterns = pattern.trim().split("\\|");
       StringBuilder filterBuilder = new StringBuilder();
-      List<String> parameterVals = new ArrayList<>(subpatterns.length);
+      List<String> parameterVals = new ArrayList<>();
       appendSimpleCondition(filterBuilder, "catalogName", new String[] {catName}, parameterVals);
-      appendPatternCondition(filterBuilder, "name", subpatterns, parameterVals);
+      appendPatternCondition(filterBuilder, "name", pattern, parameterVals);
       query = pm.newQuery(MDatabase.class, filterBuilder.toString());
       query.setResult("name");
       query.setOrdering("name ascending");
@@ -1113,8 +1112,7 @@ public class ObjectStore implements RawStore, Configurable {
       List<String> parameterVals = new ArrayList<>();
       appendSimpleCondition(filterBuilder, "catalogName", new String[]{catName}, parameterVals);
       if (!(pattern == null || pattern.equals("*"))) {
-        String[] subpatterns = pattern.trim().split("\\|");
-        appendPatternCondition(filterBuilder, "name", subpatterns, parameterVals);
+        appendPatternCondition(filterBuilder, "name", pattern, parameterVals);
       }
       query = pm.newQuery(MDatabase.class, filterBuilder.toString());
       query.setOrdering("name ascending");
@@ -1903,7 +1901,7 @@ public class ObjectStore implements RawStore, Configurable {
         appendPatternCondition(filterBuilder, "tableName", pattern, parameterVals);
       }
       if(tableType != null) {
-        appendPatternCondition(filterBuilder, "tableType", new String[] {tableType.toString()}, parameterVals);
+        appendSimpleCondition(filterBuilder, "tableType", new String[] {tableType.toString()}, parameterVals);
       }
 
       query = pm.newQuery(MTable.class, filterBuilder.toString());
@@ -2066,11 +2064,6 @@ public class ObjectStore implements RawStore, Configurable {
     return metas;
   }
 
-  private StringBuilder appendPatternCondition(StringBuilder filterBuilder, String fieldName,
-      String[] elements, List<String> parameterVals) {
-    return appendCondition(filterBuilder, fieldName, elements, true, parameterVals);
-  }
-
   protected StringBuilder appendPatternCondition(StringBuilder builder,
       String fieldName, String elements, List<String> parameters) {
       elements = normalizeIdentifier(elements);
@@ -2091,7 +2084,7 @@ public class ObjectStore implements RawStore, Configurable {
     int length = builder.length();
     for (String element : elements) {
       if (pattern) {
-        element = "(?i)" + element.replaceAll("\\*", ".*");
+        element = element.replaceAll("\\*", ".*");
       }
       parameters.add(element);
       if (builder.length() > length) {
@@ -2198,7 +2191,6 @@ public class ObjectStore implements RawStore, Configurable {
 
     try {
       openTransaction();
-      db = normalizeIdentifier(db);
       catName = normalizeIdentifier(catName);
 
       List<String> lowered_tbl_names = new ArrayList<>();
@@ -2211,7 +2203,7 @@ public class ObjectStore implements RawStore, Configurable {
 
       StringBuilder filterBuilder = new StringBuilder();
       List<String> parameterVals = new ArrayList<>();
-      appendPatternCondition(filterBuilder, "database.name", new String[] {db}, parameterVals);
+      appendPatternCondition(filterBuilder, "database.name", db, parameterVals);
       appendSimpleCondition(filterBuilder, "database.catalogName", new String[] {catName}, parameterVals);
       if(tbl_names != null){
         appendSimpleCondition(filterBuilder, "tableName", lowered_tbl_names.toArray(new String[0]), parameterVals);
