@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
+import scala.Option;
 
 /**
  * Test Helper Class to start and stop a kafka broker.
@@ -72,7 +73,7 @@ class KafkaBrokerResource extends ExternalResource {
     kafkaServer = TestUtils.createServer(config, Time.SYSTEM);
     kafkaServer.startup();
     kafkaServer.zkClient();
-    adminZkClient = new AdminZkClient(kafkaServer.zkClient());
+    adminZkClient = new AdminZkClient(kafkaServer.zkClient(), Option.empty());
     LOG.info("Creating kafka TOPIC [{}]", TOPIC);
     adminZkClient.createTopic(TOPIC, 1, 1, new Properties(), RackAwareMode.Disabled$.MODULE$, false);
   }
