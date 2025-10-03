@@ -21,7 +21,7 @@
   </parent>
   <groupId>org.apache.hive</groupId>
   <artifactId>hive</artifactId>
-  <version>4.0.1.3.3.6.2-SNAPSHOT</version>
+  <version>4.0.1.3.3.6.3-1</version>
   <packaging>pom</packaging>
   <name>Hive</name>
   <url>https://hive.apache.org</url>
@@ -74,7 +74,7 @@
    </snapshotRepository>
  </distributionManagement>
   <properties>
-    <standalone-metastore.version>4.0.1.3.3.6.2-SNAPSHOT</standalone-metastore.version>
+    <standalone-metastore.version>4.0.1.3.3.6.3-1</standalone-metastore.version>
     <hive.version.shortname>4.0.1</hive.version.shortname>
     <!-- Build Properties -->
     <maven.compiler.source>11</maven.compiler.source>
@@ -146,16 +146,16 @@
     <derby.version>10.14.2.0</derby.version>
     <dropwizard.version>3.1.0</dropwizard.version>
     <dropwizard-metrics-hadoop-metrics2-reporter.version>0.1.2</dropwizard-metrics-hadoop-metrics2-reporter.version>
-    <druid.version>29.0.1.3.3.6.2-SNAPSHOT</druid.version>
+    <druid.version>29.0.1.3.3.6.3-1</druid.version>
     <esri.version>2.2.4</esri.version>
     <flatbuffers.version>1.12.0</flatbuffers.version>
     <guava.version>32.0.1-jre</guava.version>
     <groovy.version>2.4.21</groovy.version>
     <h2database.version>2.2.220</h2database.version>
-    <hadoop.version>3.3.6.3.3.6.2-SNAPSHOT</hadoop.version>
+    <hadoop.version>3.3.6.3.3.6.3-1</hadoop.version>
     <hadoop.bin.path>${basedir}/${hive.path.to.root}/testutils/hadoop</hadoop.bin.path>
     <hamcrest.version>1.3</hamcrest.version>
-    <hbase.version>2.6.2.3.3.6.2-SNAPSHOT</hbase.version>
+    <hbase.version>2.6.2.3.3.6.3-1</hbase.version>
     <hppc.version>0.7.2</hppc.version>
     <!-- required for logging test to avoid including hbase which pulls disruptor transitively -->
     <disruptor.version>3.3.7</disruptor.version>
@@ -180,10 +180,10 @@
     <junit.version>4.13.2</junit.version>
     <junit.jupiter.version>5.6.2</junit.jupiter.version>
     <junit.vintage.version>5.6.3</junit.vintage.version>
-    <kafka.version>3.7.2.3.3.6.2-SNAPSHOT</kafka.version>
+    <kafka.version>3.7.2.3.3.6.3-1</kafka.version>
     <kryo.version>5.5.0</kryo.version>
     <reflectasm.version>1.11.9</reflectasm.version>
-    <kudu.version>1.17.0.3.3.6.2-SNAPSHOT</kudu.version>
+    <kudu.version>1.17.0.3.3.6.3-1</kudu.version>
     <!-- Leaving libfb303 at 0.9.3 regardless of libthrift: As per THRIFT-4613 The Apache Thrift project does not publish items related to fb303 at this point -->
     <libfb303.version>0.9.3</libfb303.version>
     <libthrift.version>0.16.0</libthrift.version>
@@ -211,8 +211,8 @@
     <stax.version>1.0.1</stax.version>
     <slf4j.version>1.7.30</slf4j.version>
     <ST4.version>4.0.4</ST4.version>
-    <storage-api.version>4.0.1.3.3.6.2-SNAPSHOT</storage-api.version>
-    <tez.version>0.10.4.3.3.6.2-SNAPSHOT</tez.version>
+    <storage-api.version>4.0.1.3.3.6.3-1</storage-api.version>
+    <tez.version>0.10.4.3.3.6.3-1</tez.version>
     <super-csv.version>2.2.0</super-csv.version>
     <tempus-fugit.version>1.1</tempus-fugit.version>
     <snappy.version>1.1.10.4</snappy.version>
@@ -220,7 +220,7 @@
     <velocity.version>2.3</velocity.version>
     <xerces.version>2.12.2</xerces.version>
     <xmlsec.version>2.3.4</xmlsec.version>
-    <zookeeper.version>3.8.4.3.3.6.2-SNAPSHOT</zookeeper.version>
+    <zookeeper.version>3.8.4.3.3.6.3-1</zookeeper.version>
     <jpam.version>1.1</jpam.version>
     <felix.version>2.4.0</felix.version>
     <curator.version>5.2.0</curator.version>
