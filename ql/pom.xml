@@ -1183,6 +1183,14 @@
                     <exclude>META-INF/licenses/slf4j*/**</exclude>
                   </excludes>
                 </filter>
+                <filter>
+                  <artifact>com.fasterxml.jackson.core:jackson-core</artifact>
+                  <excludes>
+                    <exclude>META-INF/versions/11/**</exclude>
+                    <exclude>META-INF/versions/17/**</exclude>
+                    <exclude>META-INF/versions/21/**</exclude>
+                  </excludes>
+                </filter>
               </filters>
               <relocations>
                 <relocation>
