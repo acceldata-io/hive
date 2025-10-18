@@ -84,6 +84,15 @@
       </includes>
     </dependencySet>
     <dependencySet>
+        <outputDirectory>lib</outputDirectory>
+        <unpack>false</unpack>
+        <useProjectArtifact>false</useProjectArtifact>
+        <useStrictFiltering>true</useStrictFiltering>
+        <includes>
+            <include>org.apache.htrace:htrace-core4</include>
+        </includes>
+    </dependencySet>
+    <dependencySet>
       <outputDirectory>hcatalog/share/hcatalog</outputDirectory>
       <unpack>false</unpack>
       <useProjectArtifact>false</useProjectArtifact>
