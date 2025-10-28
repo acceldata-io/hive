@@ -878,6 +878,8 @@ public class HiveMetaStoreClient implements IMetaStoreClient, AutoCloseable {
           LOG.error(errMsg, e);
         }
         if (isConnected) {
+          // Set the beeline session modified metaConfVars for new HMS connection
+          overlaySessionModifiedMetaConf();
           break;
         }
       }
@@ -908,6 +910,23 @@ public class HiveMetaStoreClient implements IMetaStoreClient, AutoCloseable {
 
     // Propagate S3A credentials to HMS so it can access cloud storage
     propagateS3ACredentialsToHMS();
+  }
+
+  private void overlaySessionModifiedMetaConf() {
+    for (MetastoreConf.ConfVars confVar : MetastoreConf.metaConfVars) {
+      String confVal = conf.get(confVar.getVarname());
+      if (!org.apache.commons.lang3.StringUtils.isBlank(confVal)) {
+        try {
+          setMetaConf(confVar.getVarname(), confVal);
+        } catch (TException e) {
+          LOG.error(
+              "Failed to set metastore config for {} with value {}",
+              confVar.getVarname(),
+              confVal,
+              e);
+        }
+      }
+    }
   }
 
   // wraps the underlyingTransport in the appropriate transport based on mode of authentication
