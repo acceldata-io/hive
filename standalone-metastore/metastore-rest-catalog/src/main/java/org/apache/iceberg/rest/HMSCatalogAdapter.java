@@ -19,9 +19,7 @@
 
 package org.apache.iceberg.rest;
 
-import com.codahale.metrics.Counter;
 import com.google.common.base.Preconditions;
-import org.apache.hadoop.hive.metastore.metrics.Metrics;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -81,8 +79,6 @@ import org.apache.iceberg.util.PropertyUtil;
  * Adaptor class to translate REST requests into {@link Catalog} API calls.
  */
 public class HMSCatalogAdapter implements RESTClient {
-  /**  The metric names prefix. */
-  static final String HMS_METRIC_PREFIX = "hmscatalog.";
   private static final Splitter SLASH = Splitter.on('/');
 
   private static final Map<Class<? extends Exception>, Integer> EXCEPTION_ERROR_CODES =
@@ -224,14 +220,6 @@ public class HMSCatalogAdapter implements RESTClient {
     public Class<? extends RESTRequest> requestClass() {
       return requestClass;
     }
-  }
-
-  /**
-   * @param route a route/api-call name
-   * @return the metric counter name for the api-call
-   */
-  static String hmsCatalogMetricCount(String route) {
-    return HMS_METRIC_PREFIX + route.toLowerCase() + ".count";
   }
 
   private ConfigResponse config() {
@@ -462,12 +450,6 @@ public class HMSCatalogAdapter implements RESTClient {
   @SuppressWarnings({"MethodLength", "unchecked"})
   private <T extends RESTResponse> T handleRequest(
       Route route, Map<String, String> vars, Object body) {
-    // update HMS catalog route counter metric
-    final String metricName = hmsCatalogMetricCount(route.name());
-    Counter counter = Metrics.getOrCreateCounter(metricName);
-    if (counter != null) {
-      counter.inc();
-    }
     switch (route) {
       case TOKENS:
         return (T) tokens(body);
