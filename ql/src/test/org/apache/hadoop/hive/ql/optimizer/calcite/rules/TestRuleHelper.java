@@ -69,7 +69,7 @@ public class TestRuleHelper {
     final List<String> name;
 
     public HiveTableMock(List<String> name, Class<?> recordClass, PlanFixture mockBuilder) {
-      this.name = List.copyOf(name);
+      this.name = Collections.unmodifiableList(new ArrayList<>(name));
       this.recordClass = recordClass;
       tableMock = mock(RelOptHiveTable.class);
       hiveTableMock = mock(Table.class);
@@ -105,7 +105,7 @@ public class TestRuleHelper {
      * Register a table in the schema, using the attributes of the class as columns.
      */
     public PlanFixture registerTable(String name, Class<?> recordClass) {
-      return registerTable(List.of(name), recordClass);
+      return registerTable(Collections.singletonList(name), recordClass);
     }
 
     /**
@@ -114,7 +114,7 @@ public class TestRuleHelper {
      * See {@link RelOptTable#getQualifiedName()}.
      */
     public PlanFixture registerTable(List<String> name, Class<?> recordClass) {
-      name = List.copyOf(name);
+      name = Collections.unmodifiableList(new ArrayList<>(name));
       tables.put(name, new HiveTableMock(name, recordClass, this));
       return this;
     }
