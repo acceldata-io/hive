@@ -21,7 +21,7 @@
   <parent>
     <artifactId>hive-it</artifactId>
     <groupId>org.apache.hive</groupId>
-    <version>3.1.4.3.2.3.3-SNAPSHOT</version>
+    <version>3.1.4.3.2.3.4-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>hive-it-druid</artifactId>
@@ -33,7 +33,7 @@
     <druid.avatica.version>1.15.0</druid.avatica.version>
     <druid.curator.version>5.2.0</druid.curator.version>
     <druid.jersey.version>1.19.3</druid.jersey.version>
-    <druid.jetty.version>9.4.10.v20180503</druid.jetty.version>
+    <druid.jetty.version>9.4.57.v20241219</druid.jetty.version>
     <druid.derby.version>10.11.1.1</druid.derby.version>
     <druid.guava.version>32.0.1-jre</druid.guava.version>
     <druid.guice.version>4.1.0</druid.guice.version>

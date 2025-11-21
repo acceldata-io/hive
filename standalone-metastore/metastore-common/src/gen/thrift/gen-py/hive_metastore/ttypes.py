@@ -6157,7 +6157,7 @@ class ColumnStatistics(object):
     """
 
 
-    def __init__(self, statsDesc=None, statsObj=None, isStatsCompliant=None, engine=None,):
+    def __init__(self, statsDesc=None, statsObj=None, isStatsCompliant=None, engine="hive",):
         self.statsDesc = statsDesc
         self.statsObj = statsObj
         self.isStatsCompliant = isStatsCompliant
@@ -7634,7 +7634,7 @@ class SetPartitionsStatsRequest(object):
     """
 
 
-    def __init__(self, colStats=None, needMerge=None, writeId=-1, validWriteIdList=None, engine=None,):
+    def __init__(self, colStats=None, needMerge=None, writeId=-1, validWriteIdList=None, engine="hive",):
         self.colStats = colStats
         self.needMerge = needMerge
         self.writeId = writeId
@@ -7720,8 +7720,6 @@ class SetPartitionsStatsRequest(object):
     def validate(self):
         if self.colStats is None:
             raise TProtocolException(message='Required field colStats is unset!')
-        if self.engine is None:
-            raise TProtocolException(message='Required field engine is unset!')
         return
 
     def __repr__(self):
@@ -10112,7 +10110,7 @@ class TableStatsRequest(object):
     """
 
 
-    def __init__(self, dbName=None, tblName=None, colNames=None, catName=None, validWriteIdList=None, engine=None, id=-1,):
+    def __init__(self, dbName=None, tblName=None, colNames=None, catName=None, validWriteIdList=None, engine="hive", id=-1,):
         self.dbName = dbName
         self.tblName = tblName
         self.colNames = colNames
@@ -10221,8 +10219,6 @@ class TableStatsRequest(object):
             raise TProtocolException(message='Required field tblName is unset!')
         if self.colNames is None:
             raise TProtocolException(message='Required field colNames is unset!')
-        if self.engine is None:
-            raise TProtocolException(message='Required field engine is unset!')
         return
 
     def __repr__(self):
@@ -10251,7 +10247,7 @@ class PartitionsStatsRequest(object):
     """
 
 
-    def __init__(self, dbName=None, tblName=None, colNames=None, partNames=None, catName=None, validWriteIdList=None, engine=None,):
+    def __init__(self, dbName=None, tblName=None, colNames=None, partNames=None, catName=None, validWriteIdList=None, engine="hive",):
         self.dbName = dbName
         self.tblName = tblName
         self.colNames = colNames
@@ -10370,8 +10366,6 @@ class PartitionsStatsRequest(object):
             raise TProtocolException(message='Required field colNames is unset!')
         if self.partNames is None:
             raise TProtocolException(message='Required field partNames is unset!')
-        if self.engine is None:
-            raise TProtocolException(message='Required field engine is unset!')
         return
 
     def __repr__(self):
@@ -11309,7 +11303,7 @@ class GetPartitionsByNamesRequest(object):
     """
 
 
-    def __init__(self, db_name=None, tbl_name=None, names=None, get_col_stats=None, processorCapabilities=None, processorIdentifier=None, engine=None, validWriteIdList=None, getFileMetadata=None, id=-1,):
+    def __init__(self, db_name=None, tbl_name=None, names=None, get_col_stats=None, processorCapabilities=None, processorIdentifier=None, engine="hive", validWriteIdList=None, getFileMetadata=None, id=-1, skipColumnSchemaForPartition=None, includeParamKeyPattern=None, excludeParamKeyPattern=None,):
         self.db_name = db_name
         self.tbl_name = tbl_name
         self.names = names
@@ -19175,7 +19169,7 @@ class GetTableRequest(object):
     """
 
 
-    def __init__(self, dbName=None, tblName=None, capabilities=None, catName=None, validWriteIdList=None, getColumnStats=None, processorCapabilities=None, processorIdentifier=None, engine=None, id=-1,):
+    def __init__(self, dbName=None, tblName=None, capabilities=None, catName=None, validWriteIdList=None, getColumnStats=None, processorCapabilities=None, processorIdentifier=None, engine="hive", id=-1,):
         self.dbName = dbName
         self.tblName = tblName
         self.capabilities = capabilities
@@ -30015,7 +30009,7 @@ ColumnStatistics.thrift_spec = (
     (1, TType.STRUCT, 'statsDesc', [ColumnStatisticsDesc, None], None, ),  # 1
     (2, TType.LIST, 'statsObj', (TType.STRUCT, [ColumnStatisticsObj, None], False), None, ),  # 2
     (3, TType.BOOL, 'isStatsCompliant', None, None, ),  # 3
-    (4, TType.STRING, 'engine', 'UTF8', None, ),  # 4
+    (4, TType.STRING, 'engine', 'UTF8', "hive", ),  # 4
 )
 all_structs.append(FileMetadata)
 FileMetadata.thrift_spec = (
@@ -30133,7 +30127,7 @@ SetPartitionsStatsRequest.thrift_spec = (
     (2, TType.BOOL, 'needMerge', None, None, ),  # 2
     (3, TType.I64, 'writeId', None, -1, ),  # 3
     (4, TType.STRING, 'validWriteIdList', 'UTF8', None, ),  # 4
-    (5, TType.STRING, 'engine', 'UTF8', None, ),  # 5
+    (5, TType.STRING, 'engine', 'UTF8', "hive", ),  # 5
 )
 all_structs.append(SetPartitionsStatsResponse)
 SetPartitionsStatsResponse.thrift_spec = (
@@ -30329,7 +30323,7 @@ TableStatsRequest.thrift_spec = (
     (3, TType.LIST, 'colNames', (TType.STRING, 'UTF8', False), None, ),  # 3
     (4, TType.STRING, 'catName', 'UTF8', None, ),  # 4
     (5, TType.STRING, 'validWriteIdList', 'UTF8', None, ),  # 5
-    (6, TType.STRING, 'engine', 'UTF8', None, ),  # 6
+    (6, TType.STRING, 'engine', 'UTF8', "hive", ),  # 6
     (7, TType.I64, 'id', None, -1, ),  # 7
 )
 all_structs.append(PartitionsStatsRequest)
@@ -30341,7 +30335,7 @@ PartitionsStatsRequest.thrift_spec = (
     (4, TType.LIST, 'partNames', (TType.STRING, 'UTF8', False), None, ),  # 4
     (5, TType.STRING, 'catName', 'UTF8', None, ),  # 5
     (6, TType.STRING, 'validWriteIdList', 'UTF8', None, ),  # 6
-    (7, TType.STRING, 'engine', 'UTF8', None, ),  # 7
+    (7, TType.STRING, 'engine', 'UTF8', "hive", ),  # 7
 )
 all_structs.append(AddPartitionsResult)
 AddPartitionsResult.thrift_spec = (
@@ -30423,7 +30417,7 @@ GetPartitionsByNamesRequest.thrift_spec = (
     (4, TType.BOOL, 'get_col_stats', None, None, ),  # 4
     (5, TType.LIST, 'processorCapabilities', (TType.STRING, 'UTF8', False), None, ),  # 5
     (6, TType.STRING, 'processorIdentifier', 'UTF8', None, ),  # 6
-    (7, TType.STRING, 'engine', 'UTF8', None, ),  # 7
+    (7, TType.STRING, 'engine', 'UTF8', "hive", ),  # 7
     (8, TType.STRING, 'validWriteIdList', 'UTF8', None, ),  # 8
     (9, TType.BOOL, 'getFileMetadata', None, None, ),  # 9
     (10, TType.I64, 'id', None, -1, ),  # 10
@@ -31059,7 +31053,7 @@ GetTableRequest.thrift_spec = (
     (7, TType.BOOL, 'getColumnStats', None, None, ),  # 7
     (8, TType.LIST, 'processorCapabilities', (TType.STRING, 'UTF8', False), None, ),  # 8
     (9, TType.STRING, 'processorIdentifier', 'UTF8', None, ),  # 9
-    (10, TType.STRING, 'engine', 'UTF8', None, ),  # 10
+    (10, TType.STRING, 'engine', 'UTF8', "hive", ),  # 10
     (11, TType.I64, 'id', None, -1, ),  # 11
 )
 all_structs.append(GetTableResult)
