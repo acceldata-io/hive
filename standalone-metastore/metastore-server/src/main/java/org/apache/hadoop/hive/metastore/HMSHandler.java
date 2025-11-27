@@ -172,6 +172,8 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
         logAndAudit("Done cleaning up thread local RawStore");
       }
       HMSHandlerContext.clear();
+      // remove thread local conf in Warehouse
+      Warehouse.removeWhThreadConf();
     }
   }
 
@@ -523,6 +525,8 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     if (ConfVars.TRY_DIRECT_SQL == confVar) {
       HMSHandler.LOG.info("Direct SQL optimization = {}",  value);
     }
+    // set thread local conf for Warehouse
+    wh.setWhConf(configuration);
   }
 
   @Override
