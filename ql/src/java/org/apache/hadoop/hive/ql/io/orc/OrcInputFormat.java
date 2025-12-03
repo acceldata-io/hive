@@ -18,7 +18,7 @@
 
 package org.apache.hadoop.hive.ql.io.orc;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.hadoop.hdfs.protocol.HdfsLocatedFileStatus;
 import org.apache.hadoop.hive.common.BlobStorageUtils;
 import org.apache.hadoop.hive.common.NoDynamicValuesException;
@@ -1726,14 +1726,14 @@ public class OrcInputFormat implements InputFormat<NullWritable, OrcStruct>,
 
     private long computeProjectionSize(List<OrcProto.Type> fileTypes,
           List<OrcProto.ColumnStatistics> stats, boolean[] fileIncluded) throws FileFormatException {
-      // Exclude ORC <root> and ACID <row> struct elements to avoid full schema size estimation  
+      // Exclude ORC <root> and ACID <row> struct elements to avoid full schema size estimation
       final List<Integer> internalColIds;
       if (fileIncluded == null) {
         internalColIds = IntStream.range(1, fileTypes.size())
             .boxed().collect(Collectors.toList());
       } else {
         internalColIds = IntStream.range(1, fileTypes.size()).filter(i -> fileIncluded[i])
-            .filter(i -> i != OrcRecordUpdater.ROW + 1 || isOriginal) 
+            .filter(i -> i != OrcRecordUpdater.ROW + 1 || isOriginal)
             .boxed().collect(Collectors.toList());
       }
       return ReaderImpl.getRawDataSizeFromColIndices(internalColIds, fileTypes, stats);
