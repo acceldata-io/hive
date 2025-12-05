@@ -6095,7 +6095,8 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
 
     try {
       ret = getMS().getTables(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], pattern);
-      if(ret !=  null && !ret.isEmpty()) {
+      // OCR-2033 PERF: Only fetch table objects if server-side filtering is enabled
+      if (isServerFilterEnabled && ret != null && !ret.isEmpty()) {
         List<Table> tableInfo = new ArrayList<>();
         tableInfo = getMS().getTableObjectsByName(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], ret);
         tableInfo = FilterUtils.filterTablesIfEnabled(isServerFilterEnabled, filterHook, tableInfo);// tableInfo object has the owner information of the table which is being passed to FilterUtils.
