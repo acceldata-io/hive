@@ -1152,6 +1152,10 @@ public class MetastoreConf {
             + "This property doesn't work for the temporary table."),
     METASTORE_CLIENT_FILTER_ENABLED("metastore.client.filter.enabled", "hive.metastore.client.filter.enabled", true,
         "Enable filtering the metadata read results at HMS client. Default is true."),
+    METASTORE_CLIENT_LIST_TABLES_FAST_MODE("metastore.client.list.tables.fast.mode",
+        "hive.metastore.client.list.tables.fast.mode", false,
+        "When enabled, SHOW TABLES uses get_tables API returning only table names instead of " +
+        "fetching full table objects. Improves performance for large table counts. Default is false."),
     METASTORE_SERVER_FILTER_ENABLED("metastore.server.filter.enabled", "hive.metastore.server.filter.enabled", false,
         "Enable filtering the metadata read results at HMS server. Default is false."),
     MOVE_EXPORTED_METADATA_TO_TRASH("metastore.metadata.move.exported.metadata.to.trash",

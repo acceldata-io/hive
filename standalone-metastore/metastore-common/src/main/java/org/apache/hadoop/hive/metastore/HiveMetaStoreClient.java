@@ -2914,6 +2914,12 @@ public class HiveMetaStoreClient implements IMetaStoreClient, AutoCloseable {
   @Override
   public List<String> getTables(String catName, String dbName, String tablePattern)
       throws TException {
+    // OCR-2033 PERF: Fast path - use get_tables API which returns only table names (not full objects)
+    // Enable via: hive.metastore.client.list.tables.fast.mode=true
+    if (MetastoreConf.getBoolVar(conf, MetastoreConf.ConfVars.METASTORE_CLIENT_LIST_TABLES_FAST_MODE)) {
+      List<String> tables = client.get_tables(prependCatalogToDbName(catName, dbName, conf), tablePattern);
+      return FilterUtils.filterTableNamesIfEnabled(isClientFilterEnabled, filterHook, catName, dbName, tables);
+    }
     List<String> tables = new ArrayList<>();
     GetProjectionsSpec projectionsSpec = new GetProjectionsSpec();
     projectionsSpec.setFieldList(Arrays.asList("dbName", "tableName", "owner", "ownerType"));
