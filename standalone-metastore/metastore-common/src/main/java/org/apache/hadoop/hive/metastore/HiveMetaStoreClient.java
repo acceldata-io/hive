@@ -2914,13 +2914,41 @@ public class HiveMetaStoreClient implements IMetaStoreClient, AutoCloseable {
   @Override
   public List<String> getTables(String catName, String dbName, String tablePattern)
       throws TException {
-    // Performance fix: Use get_tables API which returns only table names (strings)
-    // instead of get_table_objects_by_name_req which fetches full table objects
     if (tablePattern == null) {
       tablePattern = ".*";
     }
-    List<String> tables = client.get_tables(prependCatalogToDbName(catName, dbName, conf), tablePattern);
-    return FilterUtils.filterTableNamesIfEnabled(isClientFilterEnabled, filterHook, catName, dbName, tables);
+    
+    // Performance optimization: When hive.metastore.client.list.tables.fast.mode is enabled,
+    // use get_tables API which returns only table names (strings) instead of fetching full
+    // table objects. This dramatically improves SHOW TABLES performance for large table counts.
+    boolean fastMode = MetastoreConf.getBoolVar(conf, MetastoreConf.ConfVars.CLIENT_LIST_TABLES_FAST_MODE);
+    if (fastMode) {
+      List<String> tables = client.get_tables(prependCatalogToDbName(catName, dbName, conf), tablePattern);
+      return FilterUtils.filterTableNamesIfEnabled(isClientFilterEnabled, filterHook, catName, dbName, tables);
+    }
+    
+    // Original behavior: fetch table objects with projection spec for filtering
+    List<String> tables = new ArrayList<>();
+    GetProjectionsSpec projectionsSpec = new GetProjectionsSpec();
+    projectionsSpec.setFieldList(Arrays.asList("dbName", "tableName", "owner", "ownerType"));
+    GetTablesRequest req = new GetTablesRequest(dbName);
+    req.setCatName(catName);
+    req.setCapabilities(version);
+    req.setTblNames(null);
+    req.setTablesPattern(tablePattern);
+    if (processorCapabilities != null) {
+      req.setProcessorCapabilities(new ArrayList<String>(Arrays.asList(processorCapabilities)));
+    }
+    if (processorIdentifier != null) {
+      req.setProcessorIdentifier(processorIdentifier);
+    }
+    req.setProjectionSpec(projectionsSpec);
+    List<Table> tableObjects = client.get_table_objects_by_name_req(req).getTables();
+    tableObjects = deepCopyTables(FilterUtils.filterTablesIfEnabled(isClientFilterEnabled, filterHook, tableObjects));
+    for (Table tbl : tableObjects) {
+      tables.add(tbl.getTableName());
+    }
+    return tables;
   }
 
   @Override
