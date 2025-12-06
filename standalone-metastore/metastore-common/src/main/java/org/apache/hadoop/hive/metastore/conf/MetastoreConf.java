@@ -262,7 +262,8 @@ public class MetastoreConf {
       ConfVars.EXPRESSION_PROXY_CLASS,
       ConfVars.HIVE_FS_S3A_ACCESS_KEY,
       ConfVars.HIVE_FS_S3A_SECRET_KEY,
-      ConfVars.HIVE_FS_S3A_ENDPOINT
+      ConfVars.HIVE_FS_S3A_ENDPOINT,
+      ConfVars.HIVE_FS_S3A_CREDENTIALS_PATH
   };
 
   static {
@@ -1802,6 +1803,8 @@ public class MetastoreConf {
             "SecretKey for accessing S3A-compatible blobstore."),
     HIVE_FS_S3A_ENDPOINT("fs.s3a.endpoint", "fs.s3a.endpoint", "s3.amazonaws.com",
             "AWS S3 endpoint means where the data is stored."),
+    HIVE_FS_S3A_CREDENTIALS_PATH("fs.s3a.security.credential.provider.path", "fs.s3a.security.credential.provider.path", "",
+            "AWS S3 credentials provider path"),
 
     // Property-maps
     PROPERTIES_CACHE_CAPACITY("hive.metastore.properties.cache.capacity",
