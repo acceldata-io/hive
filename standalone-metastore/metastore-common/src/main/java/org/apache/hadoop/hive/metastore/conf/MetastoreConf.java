@@ -249,7 +249,11 @@ public class MetastoreConf {
       ConfVars.PARTITION_NAME_WHITELIST_PATTERN,
       ConfVars.CAPABILITY_CHECK,
       ConfVars.DISALLOW_INCOMPATIBLE_COL_TYPE_CHANGES,
-      ConfVars.EXPRESSION_PROXY_CLASS
+      ConfVars.EXPRESSION_PROXY_CLASS,
+      ConfVars.HIVE_FS_S3A_ACCESS_KEY,
+      ConfVars.HIVE_FS_S3A_SECRET_KEY,
+      ConfVars.HIVE_FS_S3A_ENDPOINT,
+      ConfVars.HIVE_FS_S3A_CREDENTIALS_PATH
   };
 
   static {
@@ -1645,6 +1649,15 @@ public class MetastoreConf {
           "metastore.use.custom.database.product is set to true."),
     HIVE_BLOBSTORE_SUPPORTED_SCHEMES("hive.blobstore.supported.schemes", "hive.blobstore.supported.schemes", "s3,s3a,s3n",
             "Comma-separated list of supported blobstore schemes."),
+    // support set s3a properties in hms side
+    HIVE_FS_S3A_ACCESS_KEY("fs.s3a.access.key", "fs.s3a.access.key", "",
+            "AccessKey for accessing S3A-compatible blobstore."),
+    HIVE_FS_S3A_SECRET_KEY("fs.s3a.secret.key", "fs.s3a.secret.key", "",
+            "SecretKey for accessing S3A-compatible blobstore."),
+    HIVE_FS_S3A_ENDPOINT("fs.s3a.endpoint", "fs.s3a.endpoint", "s3.amazonaws.com",
+            "AWS S3 endpoint means where the data is stored."),
+    HIVE_FS_S3A_CREDENTIALS_PATH("fs.s3a.security.credential.provider.path", "fs.s3a.security.credential.provider.path", "",
+            "AWS S3 credentials provider path"),
 
     // Deprecated Hive values that we are keeping for backwards compatibility.
     @Deprecated
