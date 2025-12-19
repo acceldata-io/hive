@@ -101,6 +101,28 @@ public class Warehouse {
     isTenantBasedStorage = MetastoreConf.getBoolVar(conf, ConfVars.ALLOW_TENANT_BASED_STORAGE);
   }
 
+  // Thread local configuration is needed as many threads could make changes
+  // to the conf using the connection hook
+  private static final ThreadLocal<Configuration> threadLocalWhConf =
+          ThreadLocal.withInitial(() -> null);
+
+  public void setWhConf(Configuration conf) {
+    threadLocalWhConf.set(conf);
+  }
+
+  public Configuration getWhConf() {
+    Configuration conf = threadLocalWhConf.get();
+    if (conf == null) {
+      conf = new Configuration(this.conf);
+      threadLocalWhConf.set(conf);
+    }
+    return conf;
+  }
+
+  public static void removeWhThreadConf() {
+    threadLocalWhConf.remove();
+  }
+
   private MetaStoreFS getMetaStoreFsHandler(Configuration conf)
       throws MetaException {
     String handlerClassStr = MetastoreConf.getVar(conf, ConfVars.FS_HANDLER_CLS);
@@ -129,7 +151,7 @@ public class Warehouse {
   }
 
   public FileSystem getFs(Path f) throws MetaException {
-    return getFs(f, conf);
+    return getFs(f, getWhConf());
   }
 
 
@@ -167,7 +189,7 @@ public class Warehouse {
   }
 
   public Path getDnsPath(Path path) throws MetaException {
-    return getDnsPath(path, conf);
+    return getDnsPath(path, getWhConf());
   }
 
   /**
@@ -436,7 +458,7 @@ public class Warehouse {
       FileSystem srcFs = getFs(sourcePath);
       FileSystem destFs = getFs(destPath);
       // TODO: this operation can be expensive depending on the size of data. 
-      return FileUtils.copy(srcFs, sourcePath, destFs, destPath, false, false, conf);
+      return FileUtils.copy(srcFs, sourcePath, destFs, destPath, false, false, getWhConf());
     } catch (Exception ex) {
       MetaStoreUtils.throwMetaException(ex);
     }
@@ -472,7 +494,7 @@ public class Warehouse {
       LOG.warn("Har path {} is not supported to delete, skipping it.", f);
       return true;
     }
-    return fsHandler.deleteDir(fs, f, recursive, ifPurge, conf);
+    return fsHandler.deleteDir(fs, f, recursive, ifPurge, getWhConf());
   }
 
   public void recycleDirToCmPath(Path f, boolean ifPurge) throws MetaException {
@@ -849,7 +871,7 @@ public class Warehouse {
       throws MetaException {
     try {
       Path path = new Path(location);
-      FileSystem fileSys = path.getFileSystem(conf);
+      FileSystem fileSys = path.getFileSystem(getWhConf());
       return FileUtils.getFileStatusRecurse(path, fileSys);
     } catch (IOException ioe) {
       MetaStoreUtils.throwMetaException(ioe);
@@ -867,7 +889,7 @@ public class Warehouse {
       throws MetaException {
     Path tablePath = getDnsPath(new Path(table.getSd().getLocation()));
     try {
-      FileSystem fileSys = tablePath.getFileSystem(conf);
+      FileSystem fileSys = tablePath.getFileSystem(getWhConf());
       return FileUtils.getFileStatusRecurse(tablePath, fileSys);
     } catch (IOException ioe) {
       MetaStoreUtils.throwMetaException(ioe);
