@@ -834,6 +834,9 @@ public class HiveMetaStoreClient implements IMetaStoreClient, AutoCloseable {
     }
 
     snapshotActiveConf();
+
+    // Propagate S3A credentials to HMS so it can access cloud storage
+    propagateS3ACredentialsToHMS();
   }
 
   // wraps the underlyingTransport in the appropriate transport based on mode of authentication
@@ -932,6 +935,35 @@ public class HiveMetaStoreClient implements IMetaStoreClient, AutoCloseable {
     currentMetaVars = new HashMap<>(MetastoreConf.metaVars.length);
     for (ConfVars oneVar : MetastoreConf.metaVars) {
       currentMetaVars.put(oneVar.getVarname(), MetastoreConf.getAsString(conf, oneVar));
+    }
+  }
+
+  /**
+   * Propagates S3A-related metaConf settings from the client configuration to HMS.
+   * This is needed so that HMS can access S3 storage using credentials provided by the client.
+   * The settings are propagated via setMetaConf() Thrift calls.
+   */
+  private void propagateS3ACredentialsToHMS() {
+    // List of S3A-related configuration keys that can be propagated to HMS
+    String[] s3aMetaConfKeys = {
+        ConfVars.HIVE_FS_S3A_ACCESS_KEY.getVarname(),
+        ConfVars.HIVE_FS_S3A_SECRET_KEY.getVarname(),
+        ConfVars.HIVE_FS_S3A_ENDPOINT.getVarname(),
+        ConfVars.HIVE_FS_S3A_CREDENTIALS_PATH.getVarname()
+    };
+
+    for (String key : s3aMetaConfKeys) {
+      String value = conf.get(key);
+      if (value != null && !value.isEmpty()) {
+        try {
+          client.setMetaConf(key, value);
+          LOG.debug("Propagated S3A configuration to HMS: {}={}", key,
+              key.contains("secret") || key.contains("key") ? "***" : value);
+        } catch (TException e) {
+          // Log but don't fail - the setting may not be supported by older HMS versions
+          LOG.warn("Failed to propagate S3A configuration '{}' to HMS: {}", key, e.getMessage());
+        }
+      }
     }
   }
 
