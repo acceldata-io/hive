@@ -1014,6 +1014,7 @@ public class HiveMetaStoreClient implements IMetaStoreClient, AutoCloseable {
     String[] s3aMetaConfKeys = {
         ConfVars.HIVE_FS_S3A_ACCESS_KEY.getVarname(),
         ConfVars.HIVE_FS_S3A_SECRET_KEY.getVarname(),
+        ConfVars.HIVE_FS_S3A_SESSION_TOKEN.getVarname(),
         ConfVars.HIVE_FS_S3A_ENDPOINT.getVarname(),
         ConfVars.HIVE_FS_S3A_CREDENTIALS_PATH.getVarname()
     };
@@ -1024,7 +1025,7 @@ public class HiveMetaStoreClient implements IMetaStoreClient, AutoCloseable {
         try {
           client.setMetaConf(key, value);
           LOG.debug("Propagated S3A configuration to HMS: {}={}", key,
-              key.contains("secret") || key.contains("key") ? "***" : value);
+                  MetastoreConf.isPrintable(key) ? "***" : value);
         } catch (TException e) {
           // Log but don't fail - the setting may not be supported by older HMS versions
           LOG.warn("Failed to propagate S3A configuration to HMS: {}", e.getMessage());
