@@ -16,6 +16,10 @@
     <value></value>
   </property>
   <property>
+    <name>fs.s3a.session.token</name>
+    <value></value>
+  </property>
+  <property>
     <name>test.blobstore.path</name>
     <value></value>
   </property>
