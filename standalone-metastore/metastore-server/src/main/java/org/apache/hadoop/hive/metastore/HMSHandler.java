@@ -4332,6 +4332,11 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
       throw new RuntimeException(e);
     }
 
+    // Capture the current thread's Warehouse configuration to propagate to worker threads.
+    // This is needed because metaconf settings (like S3 credentials) are stored in ThreadLocal
+    // and won't be available in thread pool workers otherwise.
+    final Configuration parentThreadWhConf = wh.getWhConf();
+
     for (final Partition partition : partitionsToAdd) {
       initializePartitionParameters(table, partition);
 
@@ -4339,6 +4344,9 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
         if (failureOccurred.get()) {
           return null;
         }
+        // Propagate the parent thread's Warehouse configuration to this worker thread
+        wh.setWhConf(parentThreadWhConf);
+        try {
         ugi.doAs((PrivilegedExceptionAction<Partition>) () -> {
           try {
             boolean madeDir = createLocationForAddedPartition(table, partition);
@@ -4350,6 +4358,10 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
           return null;
         });
         return partition;
+        } finally {
+          // Clean up ThreadLocal to prevent memory leaks in thread pool
+          Warehouse.removeWhThreadConf();
+        }
       }));
     }
 
