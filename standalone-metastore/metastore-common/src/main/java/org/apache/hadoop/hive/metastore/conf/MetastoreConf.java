@@ -264,7 +264,8 @@ public class MetastoreConf {
       ConfVars.HIVE_FS_S3A_SECRET_KEY,
       ConfVars.HIVE_FS_S3A_ENDPOINT,
       ConfVars.HIVE_FS_S3A_CREDENTIALS_PATH,
-      ConfVars.HIVE_FS_S3A_SESSION_TOKEN
+      ConfVars.HIVE_FS_S3A_SESSION_TOKEN,
+      ConfVars.HIVE_FS_S3A_AWS_CREDENTIALS_PROVIDER
   };
 
   static {
@@ -1814,6 +1815,8 @@ public class MetastoreConf {
             "AWS S3 credentials provider path"),
     HIVE_FS_S3A_SESSION_TOKEN("fs.s3a.session.token", "fs.s3a.session.token", "",
             "Session token for accessing S3A-compatible blobstore with temporary credentials."),
+    HIVE_FS_S3A_AWS_CREDENTIALS_PROVIDER("fs.s3a.aws.credentials.provider", "fs.s3a.aws.credentials.provider", "",
+          "AWS S3 credentials provider class name"),
 
     // Property-maps
     PROPERTIES_CACHE_CAPACITY("hive.metastore.properties.cache.capacity",
