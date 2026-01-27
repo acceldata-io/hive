@@ -263,7 +263,8 @@ public class MetastoreConf {
       ConfVars.HIVE_FS_S3A_ACCESS_KEY,
       ConfVars.HIVE_FS_S3A_SECRET_KEY,
       ConfVars.HIVE_FS_S3A_ENDPOINT,
-      ConfVars.HIVE_FS_S3A_CREDENTIALS_PATH
+      ConfVars.HIVE_FS_S3A_CREDENTIALS_PATH,
+      ConfVars.HIVE_FS_S3A_SESSION_TOKEN
   };
 
   static {
@@ -288,7 +289,13 @@ public class MetastoreConf {
       ConfVars.THRIFT_ZOOKEEPER_SSL_KEYSTORE_PASSWORD.varname,
       ConfVars.THRIFT_ZOOKEEPER_SSL_KEYSTORE_PASSWORD.hiveName,
       ConfVars.THRIFT_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD.varname,
-      ConfVars.THRIFT_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD.hiveName
+      ConfVars.THRIFT_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD.hiveName,
+      ConfVars.HIVE_FS_S3A_ACCESS_KEY.varname,
+      ConfVars.HIVE_FS_S3A_ACCESS_KEY.hiveName,
+      ConfVars.HIVE_FS_S3A_SECRET_KEY.varname,
+      ConfVars.HIVE_FS_S3A_SECRET_KEY.hiveName,
+      ConfVars.HIVE_FS_S3A_SESSION_TOKEN.varname,
+      ConfVars.HIVE_FS_S3A_SESSION_TOKEN.hiveName
   );
 
   public static ConfVars getMetaConf(String name) {
@@ -1805,6 +1812,8 @@ public class MetastoreConf {
             "AWS S3 endpoint means where the data is stored."),
     HIVE_FS_S3A_CREDENTIALS_PATH("fs.s3a.security.credential.provider.path", "fs.s3a.security.credential.provider.path", "",
             "AWS S3 credentials provider path"),
+    HIVE_FS_S3A_SESSION_TOKEN("fs.s3a.session.token", "fs.s3a.session.token", "",
+            "Session token for accessing S3A-compatible blobstore with temporary credentials."),
 
     // Property-maps
     PROPERTIES_CACHE_CAPACITY("hive.metastore.properties.cache.capacity",
