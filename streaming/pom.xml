@@ -17,7 +17,7 @@
   <parent>
     <groupId>org.apache.hive</groupId>
     <artifactId>hive</artifactId>
-    <version>3.1.4.3.2.3.4-SNAPSHOT</version>
+    <version>3.1.4.3.2.3.5-2</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>hive-streaming</artifactId>
@@ -124,8 +124,14 @@
     <dependency>
       <groupId>org.apache.hive</groupId>
       <artifactId>hive-standalone-metastore-server</artifactId>
-      <version>3.1.4.3.2.3.4-SNAPSHOT</version>
+      <version>3.1.4.3.2.3.5-2</version>
       <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-mapreduce-client-jobclient</artifactId>
+      <version>${hadoop.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

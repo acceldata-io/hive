@@ -249,7 +249,12 @@ public class MetastoreConf {
       ConfVars.PARTITION_NAME_WHITELIST_PATTERN,
       ConfVars.CAPABILITY_CHECK,
       ConfVars.DISALLOW_INCOMPATIBLE_COL_TYPE_CHANGES,
-      ConfVars.EXPRESSION_PROXY_CLASS
+      ConfVars.EXPRESSION_PROXY_CLASS,
+      ConfVars.HIVE_FS_S3A_ACCESS_KEY,
+      ConfVars.HIVE_FS_S3A_SECRET_KEY,
+      ConfVars.HIVE_FS_S3A_ENDPOINT,
+      ConfVars.HIVE_FS_S3A_CREDENTIALS_PATH,
+      ConfVars.HIVE_FS_S3A_SESSION_TOKEN
   };
 
   static {
@@ -274,7 +279,13 @@ public class MetastoreConf {
       ConfVars.THRIFT_ZOOKEEPER_SSL_KEYSTORE_PASSWORD.varname,
       ConfVars.THRIFT_ZOOKEEPER_SSL_KEYSTORE_PASSWORD.hiveName,
       ConfVars.THRIFT_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD.varname,
-      ConfVars.THRIFT_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD.hiveName
+      ConfVars.THRIFT_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD.hiveName,
+      ConfVars.HIVE_FS_S3A_ACCESS_KEY.varname,
+      ConfVars.HIVE_FS_S3A_ACCESS_KEY.hiveName,
+      ConfVars.HIVE_FS_S3A_SECRET_KEY.varname,
+      ConfVars.HIVE_FS_S3A_SECRET_KEY.hiveName,
+      ConfVars.HIVE_FS_S3A_SESSION_TOKEN.varname,
+      ConfVars.HIVE_FS_S3A_SESSION_TOKEN.hiveName
   );
 
   public static ConfVars getMetaConf(String name) {
@@ -1645,6 +1656,17 @@ public class MetastoreConf {
           "metastore.use.custom.database.product is set to true."),
     HIVE_BLOBSTORE_SUPPORTED_SCHEMES("hive.blobstore.supported.schemes", "hive.blobstore.supported.schemes", "s3,s3a,s3n",
             "Comma-separated list of supported blobstore schemes."),
+    // support set s3a properties in hms side
+    HIVE_FS_S3A_ACCESS_KEY("fs.s3a.access.key", "fs.s3a.access.key", "",
+            "AccessKey for accessing S3A-compatible blobstore."),
+    HIVE_FS_S3A_SECRET_KEY("fs.s3a.secret.key", "fs.s3a.secret.key", "",
+            "SecretKey for accessing S3A-compatible blobstore."),
+    HIVE_FS_S3A_ENDPOINT("fs.s3a.endpoint", "fs.s3a.endpoint", "s3.amazonaws.com",
+            "AWS S3 endpoint means where the data is stored."),
+    HIVE_FS_S3A_CREDENTIALS_PATH("fs.s3a.security.credential.provider.path", "fs.s3a.security.credential.provider.path", "",
+            "AWS S3 credentials provider path"),
+    HIVE_FS_S3A_SESSION_TOKEN("fs.s3a.session.token", "fs.s3a.session.token", "",
+            "Session token for accessing S3A-compatible blobstore with temporary credentials."),
 
     // Deprecated Hive values that we are keeping for backwards compatibility.
     @Deprecated
@@ -1919,7 +1941,7 @@ public class MetastoreConf {
        * this 'if' is pretty lame - QTestUtil.QTestUtil() uses hiveSiteURL to load a specific
        * hive-site.xml from data/conf/<subdir> so this makes it follow the same logic - otherwise
        * HiveConf and MetastoreConf may load different hive-site.xml  ( For example,
-       * HiveConf uses data/conf/spark/hive-site.xml and MetastoreConf data/conf/hive-site.xml)
+       * HiveConf uses data/conf/tez/hive-site.xml and MetastoreConf data/conf/hive-site.xml)
        */
       hiveSiteURL = findConfigFile(classLoader, "hive-site.xml");
     }
