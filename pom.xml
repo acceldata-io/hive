@@ -124,7 +124,7 @@
     <arrow.version>16.0.0</arrow.version>
     <avatica.version>1.27.0</avatica.version>
     <avro.version>1.11.5</avro.version>
-    <bcprov-jdk15on.version>1.78</bcprov-jdk15on.version>
+    <bcprov-jdk18on.version>1.82</bcprov-jdk18on.version>
     <calcite.version>1.25.0</calcite.version>
     <datanucleus-api-jdo.version>5.2.8</datanucleus-api-jdo.version>
     <datanucleus-core.version>5.2.10</datanucleus-core.version>
