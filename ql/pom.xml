@@ -1051,6 +1051,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
+        <version>3.5.1</version>
         <executions>
           <execution>
             <id>build-exec-bundle</id>
@@ -1136,6 +1137,13 @@
                     <exclude>META-INF/versions/11/**</exclude>
                     <exclude>META-INF/versions/17/**</exclude>
                     <exclude>META-INF/versions/21/**</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/versions/**</exclude>
+                    <exclude>**/module-info.class</exclude>
                   </excludes>
                 </filter>
               </filters>
