@@ -30,6 +30,7 @@ import org.apache.hadoop.security.Credentials;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.hadoop.security.token.Token;
 import org.apache.logging.slf4j.Log4jMarker;
+import org.apache.logging.slf4j.Log4jMarkerFactory;
 import org.apache.tez.common.CallableWithNdc;
 
 import org.apache.hadoop.service.AbstractService;
@@ -70,7 +71,7 @@ public class QueryTracker extends AbstractService {
 
   private static final Logger LOG = LoggerFactory.getLogger(QueryTracker.class);
   private static final Marker QUERY_COMPLETE_MARKER =
-      new Log4jMarker(new Log4jQueryCompleteMarker());
+      new Log4jMarker(new Log4jMarkerFactory(), new Log4jQueryCompleteMarker());
 
   /// Shared singleton MetricsSource instance for all DAG locks
   private static final MetricsSource LOCK_METRICS;
