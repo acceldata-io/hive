@@ -25,7 +25,7 @@ import org.apache.hadoop.security.Credentials;
 import org.apache.hadoop.security.token.Token;
 import org.apache.hive.testutils.junit.extensions.DoNothingTCPServer;
 import org.apache.hive.testutils.junit.extensions.DoNothingTCPServerExtension;
-import org.apache.hive.testutils.junit.extensions.Log4jConfig;
+import org.apache.logging.log4j.core.test.junit.LoggerContextSource;
 import org.apache.tez.common.security.TokenCache;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,7 +47,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TestLlapDaemonLogging {
 
   @Test
-  @Log4jConfig("llap-daemon-routing-log4j2.properties")
   @ExtendWith(LlapDaemonExtension.class)
   @ExtendWith(DoNothingTCPServerExtension.class)
   void testQueryRoutingNoLeakFileDescriptors(LlapDaemon daemon, DoNothingTCPServer amMockServer)
@@ -74,7 +73,6 @@ public class TestLlapDaemonLogging {
   }
 
   @Test
-  @Log4jConfig("llap-daemon-routing-log4j2.properties")
   @ExtendWith(LlapDaemonExtension.class)
   @ExtendWith(DoNothingTCPServerExtension.class)
   void testQueryRoutingLogFileNameOnIncompleteQuery(LlapDaemon daemon, DoNothingTCPServer amMockServer)
