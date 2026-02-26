@@ -40,6 +40,7 @@ import org.apache.hadoop.hive.metastore.client.builder.DatabaseBuilder;
 import org.apache.hadoop.hive.metastore.client.builder.PartitionBuilder;
 import org.apache.hadoop.hive.metastore.client.builder.TableBuilder;
 import org.apache.hadoop.hive.metastore.conf.MetastoreConf;
+import org.apache.logging.log4j.core.test.appender.ListAppender;
 import org.apache.thrift.TException;
 import org.hamcrest.core.IsNot;
 import org.junit.Assert;
