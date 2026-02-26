@@ -47,7 +47,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TestLlapDaemonLogging {
 
   @Test
-  @Log4jConfig("llap-daemon-routing-log4j2.properties")
   @ExtendWith(LlapDaemonExtension.class)
   @ExtendWith(DoNothingTCPServerExtension.class)
   void testQueryRoutingNoLeakFileDescriptors(LlapDaemon daemon, DoNothingTCPServer amMockServer)
@@ -74,7 +73,6 @@ public class TestLlapDaemonLogging {
   }
 
   @Test
-  @Log4jConfig("llap-daemon-routing-log4j2.properties")
   @ExtendWith(LlapDaemonExtension.class)
   @ExtendWith(DoNothingTCPServerExtension.class)
   void testQueryRoutingLogFileNameOnIncompleteQuery(LlapDaemon daemon, DoNothingTCPServer amMockServer)
