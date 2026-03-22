@@ -1503,8 +1503,12 @@ public class StatsUtils {
           Statistics parentStats, RowSchema rowSchema) {
 
     List<ColStatistics> cs = Lists.newArrayList();
+    List<ColStatistics> parentColStats = parentStats.getColumnStats();
+    if (parentColStats == null) {
+      return cs;
+    }
 
-    for (ColStatistics parentColStat : parentStats.getColumnStats()) {
+    for (ColStatistics parentColStat : parentColStats) {
       ColStatistics colStat;
       colStat = parentColStat.clone();
       if (colStat != null) {
@@ -2064,6 +2068,9 @@ public class StatsUtils {
 
     if (useColStats) {
       List<ColStatistics> colStats = stats.getColumnStats();
+      if (colStats == null) {
+        colStats = Collections.emptyList();
+      }
       for (ColStatistics cs : colStats) {
         long oldDV = cs.getCountDistint();
         if (affectedColumns.contains(cs.getColumnName())) {
