@@ -2601,6 +2601,9 @@ public class StatsRulesProcFactory {
       // stats for columns from 1st parent should be scaled down by 200/10 = 20x
       // and stats for columns from 2nd parent should be scaled down by 200x
       List<ColStatistics> colStats = stats.getColumnStats();
+      if (colStats == null) {
+        colStats = Collections.emptyList();
+      }
       Set<String> colNameStatsAvailable = new HashSet<>();
       for (ColStatistics cs : colStats) {
         colNameStatsAvailable.add(cs.getColumnName());

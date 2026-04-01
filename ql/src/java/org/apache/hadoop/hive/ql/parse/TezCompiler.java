@@ -1931,7 +1931,9 @@ public class TezCompiler extends TaskCompiler {
           semijoinRsToRemove.add(rs);
         } else {
           // This semijoin qualifies, add it to the result set
-          if (filterStats != null) {
+          // Only proceed if filterStats has column statistics available, as updateStats
+          // will be called with useColStats=true later
+          if (filterStats != null && filterStats.getColumnStats() != null) {
             ImmutableSet.Builder<String> colNames = ImmutableSet.builder();
             for (ExprNodeDesc tsExpr : targetColumns) {
               Set<ExprNodeColumnDesc> allReferencedColumns = ExprNodeDescUtils.findAllColumnDescs(tsExpr);
