@@ -25,7 +25,7 @@
   <name>Hive Service</name>
   <properties>
     <hive.path.to.root>..</hive.path.to.root>
-    <nimbus-jose-jwt.version>9.37.3</nimbus-jose-jwt.version>
+    <nimbus-jose-jwt.version>9.37.4</nimbus-jose-jwt.version>
   </properties>
   <dependencies>
     <!-- dependencies are always listed in sorted order by groupId, artifactId -->
@@ -111,13 +111,7 @@
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-runner</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.mortbay.jasper</groupId>
-          <artifactId>apache-jsp</artifactId>
-        </exclusion>
-      </exclusions>
+      <artifactId>apache-jsp</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
