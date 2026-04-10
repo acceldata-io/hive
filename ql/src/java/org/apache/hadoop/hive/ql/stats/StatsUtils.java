@@ -1503,12 +1503,8 @@ public class StatsUtils {
           Statistics parentStats, RowSchema rowSchema) {
 
     List<ColStatistics> cs = Lists.newArrayList();
-    List<ColStatistics> parentColStats = parentStats.getColumnStats();
-    if (parentColStats == null) {
-      return cs;
-    }
 
-    for (ColStatistics parentColStat : parentColStats) {
+    for (ColStatistics parentColStat : parentStats.getColumnStats()) {
       ColStatistics colStat;
       colStat = parentColStat.clone();
       if (colStat != null) {
@@ -2068,38 +2064,31 @@ public class StatsUtils {
 
     if (useColStats) {
       List<ColStatistics> colStats = stats.getColumnStats();
-      if (colStats != null && !colStats.isEmpty()) {
-        for (ColStatistics cs : colStats) {
-          long oldDV = cs.getCountDistint();
-          if (affectedColumns.contains(cs.getColumnName())) {
-            long newDV = oldDV;
+      for (ColStatistics cs : colStats) {
+        long oldDV = cs.getCountDistint();
+        if (affectedColumns.contains(cs.getColumnName())) {
+          long newDV = oldDV;
 
-            // if ratio is greater than 1, then number of rows increases. This can happen
-            // when some operators like GROUPBY duplicates the input rows in which case
-            // number of distincts should not change. Update the distinct count only when
-            // the output number of rows is less than input number of rows.
-            if (ratio <= 1.0) {
-              newDV = (long) Math.ceil(ratio * oldDV);
-            }
-            cs.setCountDistint(newDV);
-            cs.setFilterColumn();
-            oldDV = newDV;
+          // if ratio is greater than 1, then number of rows increases. This can happen
+          // when some operators like GROUPBY duplicates the input rows in which case
+          // number of distincts should not change. Update the distinct count only when
+          // the output number of rows is less than input number of rows.
+          if (ratio <= 1.0) {
+            newDV = (long) Math.ceil(ratio * oldDV);
           }
-          if (oldDV > newNumRows) {
-            cs.setCountDistint(newNumRows);
-          }
-          long newNumNulls = Math.round(ratio * cs.getNumNulls());
-          cs.setNumNulls(newNumNulls > newNumRows ? newNumRows: newNumNulls);
+          cs.setCountDistint(newDV);
+          cs.setFilterColumn();
+          oldDV = newDV;
         }
-        stats.setColumnStats(colStats);
-        long newDataSize = StatsUtils.getDataSizeFromColumnStats(newNumRows, colStats);
-        stats.setDataSize(StatsUtils.getMaxIfOverflow(newDataSize));
-      } else {
-        LOG.warn("STATS-" + op.toString() + ": Column statistics requested but unavailable, " +
-            "falling back to row-based data size estimation");
-        long newDataSize = (long) (ratio * stats.getDataSize());
-        stats.setDataSize(StatsUtils.getMaxIfOverflow(newDataSize));
+        if (oldDV > newNumRows) {
+          cs.setCountDistint(newNumRows);
+        }
+        long newNumNulls = Math.round(ratio * cs.getNumNulls());
+        cs.setNumNulls(newNumNulls > newNumRows ? newNumRows: newNumNulls);
       }
+      stats.setColumnStats(colStats);
+      long newDataSize = StatsUtils.getDataSizeFromColumnStats(newNumRows, colStats);
+      stats.setDataSize(StatsUtils.getMaxIfOverflow(newDataSize));
     } else {
       long newDataSize = (long) (ratio * stats.getDataSize());
       stats.setDataSize(StatsUtils.getMaxIfOverflow(newDataSize));
