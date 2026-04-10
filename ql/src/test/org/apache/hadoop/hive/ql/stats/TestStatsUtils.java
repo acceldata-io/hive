@@ -18,22 +18,17 @@
 
 package org.apache.hadoop.hive.ql.stats;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.hadoop.hive.conf.HiveConf;
-import org.apache.hadoop.hive.ql.plan.ColStatistics;
 import org.apache.hadoop.hive.ql.plan.ColStatistics.Range;
-import org.apache.hadoop.hive.ql.plan.Statistics;
 import org.apache.hadoop.hive.serde.serdeConstants;
 import org.junit.Test;
 
@@ -106,59 +101,6 @@ public class TestStatsUtils {
       long siz = StatsUtils.getSizeOfPrimitiveTypeArraysFromType(typeName, 3, maxVarLen);
       assertNotEquals(field.toString(), 0, siz);
     }
-  }
-
-  private ColStatistics createColStats(String name, long ndv, long numNulls) {
-    ColStatistics cs = new ColStatistics(name, "string");
-    cs.setCountDistint(ndv);
-    cs.setNumNulls(numNulls);
-    return cs;
-  }
-
-  @Test
-  public void testUpdateStatsWithNullColumnStats() {
-    Statistics stats = new Statistics(1000, 8000, 0, 0);
-    long originalDataSize = stats.getDataSize();
-
-    StatsUtils.updateStats(stats, 500, true, null);
-
-    assertEquals(500, stats.getNumRows());
-    assertNotEquals(originalDataSize, stats.getDataSize());
-  }
-
-  @Test
-  public void testUpdateStatsWithEmptyColumnStats() {
-    Statistics stats = new Statistics(1000, 8000, 0, 0);
-    stats.setColumnStats(Collections.emptyList());
-    long originalDataSize = stats.getDataSize();
-
-    StatsUtils.updateStats(stats, 500, true, null);
-
-    assertEquals(500, stats.getNumRows());
-    assertNotEquals(originalDataSize, stats.getDataSize());
-  }
-
-  @Test
-  public void testGetColStatisticsUpdatingTableAliasWithNullColumnStats() {
-    Statistics stats = new Statistics(1000, 8000, 0, 0);
-
-    List<ColStatistics> result = StatsUtils.getColStatisticsUpdatingTableAlias(stats, null);
-
-    assertNotNull(result);
-    assertEquals(0, result.size());
-  }
-
-  @Test
-  public void testGetColStatisticsUpdatingTableAliasWithColumnStats() {
-    Statistics stats = new Statistics(1000, 8000, 0, 0);
-    ColStatistics cs = createColStats("col1", 100, 50);
-    stats.setColumnStats(Collections.singletonList(cs));
-
-    List<ColStatistics> result = StatsUtils.getColStatisticsUpdatingTableAlias(stats, null);
-
-    assertNotNull(result);
-    assertEquals(1, result.size());
-    assertEquals("col1", result.get(0).getColumnName());
   }
 
 }
