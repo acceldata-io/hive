@@ -1128,6 +1128,7 @@
                   <excludes>
                     <exclude>META-INF/versions/11/**</exclude>
                     <exclude>META-INF/versions/12/**</exclude>
+                    <exclude>META-INF/versions/21/**</exclude>
                   </excludes>
                 </filter>
                 <filter>
