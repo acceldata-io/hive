@@ -1127,6 +1127,7 @@
                   <artifact>org.apache.parquet:parquet-hadoop-bundle</artifact>
                   <excludes>
                     <exclude>META-INF/versions/11/**</exclude>
+                    <exclude>META-INF/versions/12/**</exclude>
                   </excludes>
                 </filter>
                 <filter>
