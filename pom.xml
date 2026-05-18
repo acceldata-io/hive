@@ -21,7 +21,7 @@
   </parent>
   <groupId>org.apache.hive</groupId>
   <artifactId>hive</artifactId>
-  <version>4.0.1.3.3.6.3-SNAPSHOT</version>
+  <version>4.0.1.3.3.6.4-1</version>
   <packaging>pom</packaging>
   <name>Hive</name>
   <url>https://hive.apache.org</url>
@@ -74,7 +74,7 @@
    </snapshotRepository>
  </distributionManagement>
   <properties>
-    <standalone-metastore.version>4.0.1.3.3.6.3-SNAPSHOT</standalone-metastore.version>
+    <standalone-metastore.version>4.0.1.3.3.6.4-1</standalone-metastore.version>
     <hive.version.shortname>4.0.1</hive.version.shortname>
     <!-- Build Properties -->
     <maven.compiler.source>11</maven.compiler.source>
@@ -122,7 +122,7 @@
     <apache-directory-server.version>1.5.7</apache-directory-server.version>
     <!-- Include arrow for LlapOutputFormatService -->
     <arrow.version>16.0.0</arrow.version>
-    <avatica.version>1.12.0</avatica.version>
+    <avatica.version>1.27.0</avatica.version>
     <avro.version>1.11.4</avro.version>
     <bcprov-jdk18on.version>1.78</bcprov-jdk18on.version>
     <calcite.version>1.25.0</calcite.version>
@@ -134,28 +134,28 @@
     <commons-codec.version>1.15</commons-codec.version>
     <commons-collections.version>3.2.2</commons-collections.version>
     <commons-collections4.version>4.1</commons-collections4.version>
-    <commons-compress.version>1.23.0</commons-compress.version>
+    <commons-compress.version>1.26.0</commons-compress.version>
     <commons-configuration.version>1.10</commons-configuration.version>
     <commons-exec.version>1.1</commons-exec.version>
     <commons-io.version>2.17.0</commons-io.version>
     <commons-pool2.version>2.11.1</commons-pool2.version>
-    <commons-lang3.version>3.12.0</commons-lang3.version>
+    <commons-lang3.version>3.18.0</commons-lang3.version>
     <commons-math3.version>3.6.1</commons-math3.version>
     <commons-dbcp2.version>2.9.0</commons-dbcp2.version>
     <commons-text.version>1.10.0</commons-text.version>
     <derby.version>10.14.2.0</derby.version>
     <dropwizard.version>3.1.0</dropwizard.version>
     <dropwizard-metrics-hadoop-metrics2-reporter.version>0.1.2</dropwizard-metrics-hadoop-metrics2-reporter.version>
-    <druid.version>29.0.1.3.3.6.3-SNAPSHOT</druid.version>
+    <druid.version>29.0.1.3.3.6.4-1</druid.version>
     <esri.version>2.2.4</esri.version>
     <flatbuffers.version>1.12.0</flatbuffers.version>
     <guava.version>32.0.1-jre</guava.version>
     <groovy.version>2.4.21</groovy.version>
     <h2database.version>2.2.220</h2database.version>
-    <hadoop.version>3.3.6.3.3.6.3-SNAPSHOT</hadoop.version>
+    <hadoop.version>3.3.6.3.3.6.4-1</hadoop.version>
     <hadoop.bin.path>${basedir}/${hive.path.to.root}/testutils/hadoop</hadoop.bin.path>
     <hamcrest.version>1.3</hamcrest.version>
-    <hbase.version>2.6.2.3.3.6.3-SNAPSHOT</hbase.version>
+    <hbase.version>2.6.2.3.3.6.4-1</hbase.version>
     <hppc.version>0.7.2</hppc.version>
     <!-- required for logging test to avoid including hbase which pulls disruptor transitively -->
     <disruptor.version>3.3.7</disruptor.version>
@@ -170,7 +170,7 @@
     <javax-servlet.version>3.1.0</javax-servlet.version>
     <javolution.version>5.5.1</javolution.version>
     <jettison.version>1.5.4</jettison.version>
-    <jetty.version>9.4.56.v20240826</jetty.version>
+    <jetty.version>9.4.58.v20250814</jetty.version>
     <jersey.version>1.19.4</jersey.version>
     <jline.version>2.14.6</jline.version>
     <jms.version>2.0.2</jms.version>
@@ -180,25 +180,25 @@
     <junit.version>4.13.2</junit.version>
     <junit.jupiter.version>5.6.2</junit.jupiter.version>
     <junit.vintage.version>5.6.3</junit.vintage.version>
-    <kafka.version>3.7.2.3.3.6.3-SNAPSHOT</kafka.version>
+    <kafka.version>3.7.2.3.3.6.4-1</kafka.version>
     <kryo.version>5.5.0</kryo.version>
     <reflectasm.version>1.11.9</reflectasm.version>
-    <kudu.version>1.17.0.3.3.6.3-SNAPSHOT</kudu.version>
+    <kudu.version>1.17.0.3.3.6.4-1</kudu.version>
     <!-- Leaving libfb303 at 0.9.3 regardless of libthrift: As per THRIFT-4613 The Apache Thrift project does not publish items related to fb303 at this point -->
     <libfb303.version>0.9.3</libfb303.version>
     <libthrift.version>0.16.0</libthrift.version>
-    <log4j2.version>2.18.0</log4j2.version>
+    <log4j2.version>2.25.3</log4j2.version>
     <mariadb.version>2.5.0</mariadb.version>
     <mssql.version>6.2.1.jre8</mssql.version>
     <mysql.version>8.0.31</mysql.version>
     <postgres.version>42.5.1</postgres.version>
     <oracle.version>21.3.0.0</oracle.version>
     <opencsv.version>2.3</opencsv.version>
-    <orc.version>1.8.5</orc.version>
+    <orc.version>1.9.8</orc.version>
     <mockito-core.version>3.4.4</mockito-core.version>
     <mockito-inline.version>4.11.0</mockito-inline.version>
     <mina.version>2.2.4</mina.version>
-    <netty.version>4.1.119.Final</netty.version>
+    <netty.version>4.1.132.Final</netty.version>
     <netty3.version>3.10.6.Final</netty3.version>
     <!-- used by druid storage handler -->
     <pac4j-saml.version>4.5.5</pac4j-saml.version>
@@ -211,16 +211,16 @@
     <stax.version>1.0.1</stax.version>
     <slf4j.version>1.7.30</slf4j.version>
     <ST4.version>4.0.4</ST4.version>
-    <storage-api.version>4.0.1.3.3.6.3-SNAPSHOT</storage-api.version>
-    <tez.version>0.10.4.3.3.6.3-SNAPSHOT</tez.version>
+    <storage-api.version>4.0.1.3.3.6.4-1</storage-api.version>
+    <tez.version>0.10.4.3.3.6.4-1</tez.version>
     <super-csv.version>2.2.0</super-csv.version>
     <tempus-fugit.version>1.1</tempus-fugit.version>
     <snappy.version>1.1.10.4</snappy.version>
     <wadl-resourcedoc-doclet.version>1.4</wadl-resourcedoc-doclet.version>
-    <velocity.version>2.3</velocity.version>
+    <velocity.version>2.4.1</velocity.version>
     <xerces.version>2.12.2</xerces.version>
     <xmlsec.version>2.3.4</xmlsec.version>
-    <zookeeper.version>3.8.4.3.3.6.3-SNAPSHOT</zookeeper.version>
+    <zookeeper.version>3.8.4.3.3.6.4-1</zookeeper.version>
     <jpam.version>1.1</jpam.version>
     <felix.version>2.4.0</felix.version>
     <curator.version>5.2.0</curator.version>
@@ -834,7 +834,7 @@
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-runner</artifactId>
+        <artifactId>apache-jsp</artifactId>
         <version>${jetty.version}</version>
       </dependency>
       <dependency>
@@ -1826,7 +1826,6 @@
             <mapred.job.tracker>local</mapred.job.tracker>
             <log4j.configurationFile>${test.log4j.scheme}${test.conf.dir}/hive-log4j2.properties</log4j.configurationFile>
             <hive.test.console.log.level>${test.console.log.level}</hive.test.console.log.level>
-            <log4j.debug>true</log4j.debug>
             <!-- don't dirty up /tmp -->
             <java.io.tmpdir>${test.tmp.dir}</java.io.tmpdir>
             <!-- Hadoop's minidfs class uses this -->
