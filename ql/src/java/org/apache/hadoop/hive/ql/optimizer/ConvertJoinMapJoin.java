@@ -1003,10 +1003,22 @@ public class ConvertJoinMapJoin implements SemanticNodeProcessor {
    * in {@code getMapJoinConversion} ({@code maxSize}, which is
    * {@link MemoryMonitorInfo#getAdjustedNoConditionalTaskSize()} on LLAP). NDV-based cardinality
    * can overshoot row counts on tiny tables while bytes remain broadcast-safe.
+   *
+   * <p>Requires basic stats to be {@link Statistics.State#COMPLETE}; with only a row estimate
+   * and no real {@code dataSize}, {@link #computeOnlineDataSize} returns hash-table overhead
+   * arithmetic that is always small and would silently override the conservative row cap.
    */
   @VisibleForTesting
   boolean crossProductBuildSideWithinBroadcastBudget(Statistics parentStats,
       long xprodRowThreshold, long broadcastBudgetBytes) {
+    if (parentStats.getBasicStatsState() != Statistics.State.COMPLETE) {
+      LOG.debug(
+          "Cross-product map join: row estimate {} exceeds {} but basic stats state is {} "
+              + "(dataSize={}); rejecting map join (byte fallback requires COMPLETE stats)",
+          parentStats.getNumRows(), xprodRowThreshold, parentStats.getBasicStatsState(),
+          parentStats.getDataSize());
+      return false;
+    }
     long onlineBytes = computeOnlineDataSize(parentStats);
     if (onlineBytes <= 0) {
       LOG.debug(

@@ -19,6 +19,7 @@
 package org.apache.hadoop.hive.ql.optimizer;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.hadoop.hive.ql.plan.Statistics;
@@ -125,5 +126,34 @@ class TestConvertJoinMapJoin {
         && converter.crossProductBuildSideWithinBroadcastBudget(
             stats, xprodRowThreshold, broadcastBudgetBytes);
     assertFalse(allowed);
+  }
+
+  /**
+   * When {@code dataSize == 0} (table has a row estimate but no real byte stats — common for
+   * tables without ANALYZE column-size info), {@code Statistics.basicStatsState} is
+   * {@code PARTIAL}. {@code computeOnlineDataSize} would still return a tiny positive number
+   * from hash-table overhead arithmetic, which would always fit the broadcast budget and
+   * silently bypass the row cap. The helper must reject this shape.
+   */
+  @Test
+  void crossProductByteFallback_rejectsWhenBasicStatsPartialDueToMissingDataSize() {
+    Statistics stats = new Statistics(2L, 0L, 0L, 0L);
+    assertSame(Statistics.State.PARTIAL, stats.getBasicStatsState());
+    assertFalse(
+        newConverter().crossProductBuildSideWithinBroadcastBudget(stats, 1L, 10_000_000L));
+  }
+
+  /**
+   * Sanity check the contrapositive: identical row estimate but with a real {@code dataSize}
+   * (state {@code COMPLETE}) is admitted. Documents that the fix in
+   * {@link #crossProductByteFallback_rejectsWhenBasicStatsPartialDueToMissingDataSize} doesn't
+   * over-tighten and reject COMPLETE stats.
+   */
+  @Test
+  void crossProductByteFallback_admitsWhenBasicStatsComplete() {
+    Statistics stats = new Statistics(2L, 500L, 0L, 0L);
+    assertSame(Statistics.State.COMPLETE, stats.getBasicStatsState());
+    assertTrue(
+        newConverter().crossProductBuildSideWithinBroadcastBudget(stats, 1L, 10_000_000L));
   }
 }
