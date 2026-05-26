@@ -1247,7 +1247,7 @@ public class ConvertJoinMapJoin implements SemanticNodeProcessor {
       HiveConf.getBoolVar(context.conf, HiveConf.ConfVars.TEZ_CARTESIAN_PRODUCT_EDGE_ENABLED);
     if (cartesianProductEdgeEnabled && !hasOuterJoin(joinOp) && isCrossProduct(joinOp)) {
       final long xprodRowThreshold =
-          HiveConf.getIntVar(context.conf, HiveConf.ConfVars.XPROD_SMALL_TABLE_ROWS_THRESHOLD);
+          HiveConf.getIntVar(context.conf, HiveConf.ConfVars.XPRODSMALLTABLEROWSTHRESHOLD);
       // Any small side over budget disables the broadcast, so iterate all non-big parents and
       // bail on the first failure.
       for (int i = 0 ; i < joinOp.getParentOperators().size(); i ++) {
