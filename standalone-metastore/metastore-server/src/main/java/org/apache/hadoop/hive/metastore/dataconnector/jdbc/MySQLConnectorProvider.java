@@ -33,7 +33,7 @@ import java.util.List;
 public class MySQLConnectorProvider extends AbstractJDBCConnectorProvider {
   private static Logger LOG = LoggerFactory.getLogger(MySQLConnectorProvider.class);
 
-  private static final String DRIVER_CLASS = "org.mariadb.jdbc.Driver";
+  private static final String DRIVER_CLASS = "com.mysql.jdbc.Driver";
 
   public MySQLConnectorProvider(String dbName, DataConnector dataConn) {
     super(dbName, dataConn, DRIVER_CLASS);

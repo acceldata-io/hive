@@ -36,6 +36,7 @@ import org.apache.hadoop.hive.conf.Validator.SizeValidator;
 import org.apache.hadoop.hive.conf.Validator.StringSet;
 import org.apache.hadoop.hive.conf.Validator.TimeValidator;
 import org.apache.hadoop.hive.conf.Validator.WritableDirectoryValidator;
+import org.apache.hadoop.hive.ql.parse.SemanticException;
 import org.apache.hadoop.hive.shims.ShimLoader;
 import org.apache.hadoop.hive.shims.Utils;
 import org.apache.hadoop.mapred.JobConf;
@@ -1814,6 +1815,10 @@ public class HiveConf extends Configuration {
     HIVE_STRICT_CHECKS_BUCKETING("hive.strict.checks.bucketing", true,
         "Enabling strict bucketing checks disallows the following:\n" +
         "  Load into bucketed tables."),
+    HIVE_STRICT_CHECKS_OFFSET_NO_ORDERBY("hive.strict.checks.offset.no.orderby", false,
+        "Enabling strict offset checks disallows the following:\n" +
+        "  OFFSET without ORDER BY.\n" +
+        "OFFSET is mostly meaningless when a result set doesn't have a total order."),
     HIVE_STRICT_TIMESTAMP_CONVERSION("hive.strict.timestamp.conversion", true,
         "Restricts unsafe numeric to timestamp conversions"),
     HIVE_LOAD_DATA_OWNER("hive.load.data.owner", "",
@@ -2359,7 +2364,7 @@ public class HiveConf extends Configuration {
         "If this parameter is on, and the sum of size for n-1 of the tables/partitions for a n-way join is smaller than the\n" +
         "specified size, the join is directly converted to a mapjoin (there is no conditional task)."),
     HIVE_CONVERT_ANTI_JOIN("hive.auto.convert.anti.join", true,
-        "Whether Hive enables the optimization about converting join with null filter to anti join"),
+        "Whether Hive enables the optimization about converting join with null filter to anti join."),
     HIVECONVERTJOINNOCONDITIONALTASKTHRESHOLD("hive.auto.convert.join.noconditionaltask.size",
         10000000L,
         "If hive.auto.convert.join.noconditionaltask is off, this parameter does not take affect. \n" +
@@ -3657,7 +3662,12 @@ public class HiveConf extends Configuration {
     HIVE_EXPLAIN_USER("hive.explain.user", true,
         "Whether to show explain result at user level.\n" +
         "When enabled, will log EXPLAIN output for the query at user level. Tez only."),
-
+    HIVE_EXPLAIN_NODE_VISIT_LIMIT("hive.explain.node.visit.limit", 256, new RangeValidator(1, Integer.MAX_VALUE),
+        "Maximum number of times an operator/node can be visited during the construction of the EXPLAIN "
+            + "output; an error is thrown when the limit is reached. In some cases, the EXPLAIN statement visits (and "
+            + "prints) the same node multiple times. The number of visits can become exponential and make the server "
+            + "crash or become unresponsive so this limit acts as a safety net to fail-fast the problematic query and "
+            + "avoid bringing down the entire server."),
     // prefix used to auto generated column aliases (this should be started with '_')
     HIVE_AUTOGEN_COLUMNALIAS_PREFIX_LABEL("hive.autogen.columnalias.prefix.label", "_c",
         "String used as a prefix when auto generating column alias.\n" +
@@ -6869,6 +6879,8 @@ public class HiveConf extends Configuration {
         "Cartesian products", ConfVars.HIVE_STRICT_CHECKS_CARTESIAN);
     private static final String NO_BUCKETING_MSG = makeMessage(
         "Load into bucketed tables", ConfVars.HIVE_STRICT_CHECKS_BUCKETING);
+    private static final String NO_OFFSET_WITHOUT_ORDERBY_MSG = makeMessage(
+        "OFFSET without ORDER BY", ConfVars.HIVE_STRICT_CHECKS_OFFSET_NO_ORDERBY);
 
     private static String makeMessage(String what, ConfVars setting) {
       return what + " are disabled for safety reasons. If you know what you are doing, please set "
@@ -6896,6 +6908,12 @@ public class HiveConf extends Configuration {
 
     public static String checkBucketing(Configuration conf) {
       return isAllowed(conf, ConfVars.HIVE_STRICT_CHECKS_BUCKETING) ? null : NO_BUCKETING_MSG;
+    }
+
+    public static void checkOffsetWithoutOrderBy(Configuration conf) throws SemanticException {
+      if (!isAllowed(conf, ConfVars.HIVE_STRICT_CHECKS_OFFSET_NO_ORDERBY)) {
+        throw new SemanticException(NO_OFFSET_WITHOUT_ORDERBY_MSG);
+      }
     }
 
     private static boolean isAllowed(Configuration conf, ConfVars setting) {
