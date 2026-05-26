@@ -106,4 +106,24 @@ class TestConvertJoinMapJoin {
     }
     assertFalse(allWithinBudget);
   }
+
+  /**
+   * Pins the hard-disable semantics for {@code xprodRowThreshold <= 0}: the caller short-circuits
+   * the byte fallback when the operator has zeroed the row cap, so a stats shape that would
+   * otherwise fit the broadcast budget must still reject. Mirrors the caller guard in
+   * {@code getMapJoinConversion} so a future refactor that drops the guard fails here.
+   */
+  @Test
+  void crossProductByteFallback_rejectsWhenRowThresholdZero() {
+    ConvertJoinMapJoin converter = newConverter();
+    final long xprodRowThreshold = 0L;
+    final long broadcastBudgetBytes = 10_000_000L;
+    Statistics stats = new Statistics(2L, 500L, 0L, 0L);
+
+    boolean allowed = stats.getNumRows() > xprodRowThreshold
+        && xprodRowThreshold > 0L
+        && converter.crossProductBuildSideWithinBroadcastBudget(
+            stats, xprodRowThreshold, broadcastBudgetBytes);
+    assertFalse(allowed);
+  }
 }
