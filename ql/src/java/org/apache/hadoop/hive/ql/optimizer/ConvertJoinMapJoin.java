@@ -997,30 +997,32 @@ public class ConvertJoinMapJoin implements SemanticNodeProcessor {
   }
 
   /**
-   * When estimated rows already exceed {@link ConfVars#XPRODSMALLTABLEROWSTHRESHOLD}, still allow
-   * cross-product map join if {@link #computeOnlineDataSize} fits within the unconditional map-join
-   * byte budget ({@link ConfVars#HIVECONVERTJOINNOCONDITIONALTASKTHRESHOLD}). NDV-based cardinality
+   * Byte-budget fallback applied after the row-count check in the cross-product gate of
+   * {@link #getMapJoinConversion} fails. Admits the broadcast when
+   * {@link #computeOnlineDataSize} on the small side fits the same byte budget used elsewhere
+   * in {@code getMapJoinConversion} ({@code maxSize}, which is
+   * {@link MemoryMonitorInfo#getAdjustedNoConditionalTaskSize()} on LLAP). NDV-based cardinality
    * can overshoot row counts on tiny tables while bytes remain broadcast-safe.
    */
   @VisibleForTesting
-  boolean crossProductBuildSideWithinBroadcastBudgetAfterRowCheck(Statistics parentStats,
-      long xprodRowThreshold, long noconditionalMaxBytes) {
+  boolean crossProductBuildSideWithinBroadcastBudget(Statistics parentStats,
+      long xprodRowThreshold, long broadcastBudgetBytes) {
     long onlineBytes = computeOnlineDataSize(parentStats);
     if (onlineBytes <= 0) {
       LOG.debug(
-          "Cross-product map join: row estimate {} exceeds {} but online size unavailable; not applying byte fallback",
+          "Cross-product map join: row estimate {} exceeds {} and online size unavailable; rejecting map join",
           parentStats.getNumRows(), xprodRowThreshold);
       return false;
     }
-    if (onlineBytes <= noconditionalMaxBytes) {
+    if (onlineBytes <= broadcastBudgetBytes) {
       LOG.info(
           "Cross-product map join: row estimate {} exceeds {} but online size {} within broadcast budget {}; allowing map join",
-          parentStats.getNumRows(), xprodRowThreshold, onlineBytes, noconditionalMaxBytes);
+          parentStats.getNumRows(), xprodRowThreshold, onlineBytes, broadcastBudgetBytes);
       return true;
     }
     LOG.debug(
-        "Cross-product map join: row estimate {} exceeds {} and online size {} exceeds budget {}",
-        parentStats.getNumRows(), xprodRowThreshold, onlineBytes, noconditionalMaxBytes);
+        "Cross-product map join: row estimate {} exceeds {} and online size {} exceeds budget {}; rejecting map join",
+        parentStats.getNumRows(), xprodRowThreshold, onlineBytes, broadcastBudgetBytes);
     return false;
   }
 
@@ -1245,18 +1247,18 @@ public class ConvertJoinMapJoin implements SemanticNodeProcessor {
       HiveConf.getBoolVar(context.conf, HiveConf.ConfVars.TEZ_CARTESIAN_PRODUCT_EDGE_ENABLED);
     if (cartesianProductEdgeEnabled && !hasOuterJoin(joinOp) && isCrossProduct(joinOp)) {
       final long xprodRowThreshold =
-          HiveConf.getIntVar(context.conf, HiveConf.ConfVars.XPRODSMALLTABLEROWSTHRESHOLD);
-      final long noconditionalBroadcastBudget =
-          HiveConf.getLongVar(context.conf, HiveConf.ConfVars.HIVECONVERTJOINNOCONDITIONALTASKTHRESHOLD);
+          HiveConf.getIntVar(context.conf, HiveConf.ConfVars.XPROD_SMALL_TABLE_ROWS_THRESHOLD);
+      // Any small side over budget disables the broadcast, so iterate all non-big parents and
+      // bail on the first failure.
       for (int i = 0 ; i < joinOp.getParentOperators().size(); i ++) {
         if (i != bigTablePosition) {
           Statistics parentStats = joinOp.getParentOperators().get(i).getStatistics();
           if (parentStats.getNumRows() > xprodRowThreshold) {
             // NDV-based filters often estimate a few rows on tiny lookups (e.g. 2 vs 1); row count
-            // alone can reject a safe broadcast. If estimated online size still fits the same
-            // unconditional map-join byte budget, allow conversion (same knob as noconditionaltask).
-            if (!crossProductBuildSideWithinBroadcastBudgetAfterRowCheck(parentStats, xprodRowThreshold,
-                noconditionalBroadcastBudget)) {
+            // alone can reject a safe broadcast. Use the same byte budget the rest of this method
+            // already uses (maxSize == maxJoinMemory, LLAP-adjusted) so cross-product decisions
+            // stay aligned with every other map-join sizing check above.
+            if (!crossProductBuildSideWithinBroadcastBudget(parentStats, xprodRowThreshold, maxSize)) {
               return null;
             }
           }

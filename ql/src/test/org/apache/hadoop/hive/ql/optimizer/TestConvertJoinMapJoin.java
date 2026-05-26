@@ -26,30 +26,30 @@ import org.junit.jupiter.api.Test;
 
 class TestConvertJoinMapJoin {
 
-  @Test
-  void crossProductByteFallback_allowsWhenOnlineSizeWithinBudget() {
+  private static ConvertJoinMapJoin newConverter() {
     ConvertJoinMapJoin converter = new ConvertJoinMapJoin();
     converter.hashTableLoadFactor = 0.75f;
+    return converter;
+  }
+
+  @Test
+  void crossProductByteFallback_allowsWhenOnlineSizeWithinBudget() {
     Statistics stats = new Statistics(2L, 500L, 0L, 0L);
     assertTrue(
-        converter.crossProductBuildSideWithinBroadcastBudgetAfterRowCheck(stats, 1L, 10_000_000L));
+        newConverter().crossProductBuildSideWithinBroadcastBudget(stats, 1L, 10_000_000L));
   }
 
   @Test
   void crossProductByteFallback_rejectsWhenOnlineSizeExceedsBudget() {
-    ConvertJoinMapJoin converter = new ConvertJoinMapJoin();
-    converter.hashTableLoadFactor = 0.75f;
     Statistics stats = new Statistics(50_000L, 50_000_000L, 0L, 0L);
     assertFalse(
-        converter.crossProductBuildSideWithinBroadcastBudgetAfterRowCheck(stats, 1L, 10_000_000L));
+        newConverter().crossProductBuildSideWithinBroadcastBudget(stats, 1L, 10_000_000L));
   }
 
   @Test
   void crossProductByteFallback_rejectsWhenBudgetTooSmallForEstimatedSize() {
-    ConvertJoinMapJoin converter = new ConvertJoinMapJoin();
-    converter.hashTableLoadFactor = 0.75f;
     Statistics stats = new Statistics(2L, 500L, 0L, 0L);
-    assertFalse(converter.crossProductBuildSideWithinBroadcastBudgetAfterRowCheck(stats, 1L, 1L));
+    assertFalse(newConverter().crossProductBuildSideWithinBroadcastBudget(stats, 1L, 1L));
   }
 
   /**
@@ -60,15 +60,13 @@ class TestConvertJoinMapJoin {
    */
   @Test
   void crossProductByteFallback_twoRowsTinyOnlineSize() {
-    ConvertJoinMapJoin converter = new ConvertJoinMapJoin();
-    converter.hashTableLoadFactor = 0.75f;
     final long ndvDrivenRowEstimate = 2L;
     final long tinyDataSizeBytes = 296L;
     Statistics stats = new Statistics(ndvDrivenRowEstimate, tinyDataSizeBytes, 0L, 0L);
     final long xprodRowThreshold = 1L;
-    final long noconditionalBudgetBytes = 10_000_000L;
-    assertTrue(converter.crossProductBuildSideWithinBroadcastBudgetAfterRowCheck(
-        stats, xprodRowThreshold, noconditionalBudgetBytes));
+    final long broadcastBudgetBytes = 10_000_000L;
+    assertTrue(newConverter().crossProductBuildSideWithinBroadcastBudget(
+        stats, xprodRowThreshold, broadcastBudgetBytes));
   }
 
   /**
@@ -78,10 +76,34 @@ class TestConvertJoinMapJoin {
    */
   @Test
   void crossProductByteFallback_rejectsTwoRowsWhenEstimatedPayloadExceedsBudget() {
-    ConvertJoinMapJoin converter = new ConvertJoinMapJoin();
-    converter.hashTableLoadFactor = 0.75f;
     Statistics stats = new Statistics(2L, 50_000_000L, 0L, 0L);
-    assertFalse(converter.crossProductBuildSideWithinBroadcastBudgetAfterRowCheck(
+    assertFalse(newConverter().crossProductBuildSideWithinBroadcastBudget(
         stats, 1L, 10_000_000L));
+  }
+
+  /**
+   * Pins the caller-side contract: {@code getMapJoinConversion} iterates every non-big parent
+   * and rejects the whole broadcast on the first small side that fails the helper. Simulating
+   * that loop here means any future refactor that lets a single safe side mask an unsafe sibling
+   * will fail this test.
+   */
+  @Test
+  void crossProductByteFallback_anySmallSideOverBudgetRejectsBroadcast() {
+    ConvertJoinMapJoin converter = newConverter();
+    final long xprodRowThreshold = 1L;
+    final long broadcastBudgetBytes = 10_000_000L;
+    Statistics safeSide = new Statistics(2L, 500L, 0L, 0L);
+    Statistics oversizedSide = new Statistics(50_000L, 50_000_000L, 0L, 0L);
+
+    boolean allWithinBudget = true;
+    for (Statistics smallSide : new Statistics[] {safeSide, oversizedSide}) {
+      if (smallSide.getNumRows() > xprodRowThreshold
+          && !converter.crossProductBuildSideWithinBroadcastBudget(
+              smallSide, xprodRowThreshold, broadcastBudgetBytes)) {
+        allWithinBudget = false;
+        break;
+      }
+    }
+    assertFalse(allWithinBudget);
   }
 }
