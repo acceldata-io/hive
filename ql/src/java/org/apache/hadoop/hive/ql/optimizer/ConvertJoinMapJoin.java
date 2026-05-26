@@ -1293,7 +1293,11 @@ public class ConvertJoinMapJoin implements SemanticNodeProcessor {
             // alone can reject a safe broadcast. Use the same byte budget the rest of this method
             // already uses (maxSize == maxJoinMemory, LLAP-adjusted) so cross-product decisions
             // stay aligned with every other map-join sizing check above.
-            if (!crossProductBuildSideWithinBroadcastBudget(parentStats, xprodRowThreshold, maxSize)) {
+            // xprodRowThreshold <= 0 is treated as a hard disable of the broadcast: an operator
+            // who set the row cap to zero means "no broadcast for this shape," so skip the byte
+            // fallback and keep the strict reject.
+            if (xprodRowThreshold <= 0
+                || !crossProductBuildSideWithinBroadcastBudget(parentStats, xprodRowThreshold, maxSize)) {
               return null;
             }
           }
