@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.apache.hadoop.hive.conf.HiveConf.ConfVars;
+import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.HIVE_DATETIME_FORMATTER;
 import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.HIVE_EXPLAIN_NODE_VISIT_LIMIT;
 import static org.junit.Assert.assertEquals;
 
