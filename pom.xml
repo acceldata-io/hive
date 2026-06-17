@@ -117,7 +117,7 @@
     <arrow.version>2.0.0</arrow.version>
     <avatica.version>1.23.0</avatica.version>
     <avro.version>1.11.5</avro.version>
-    <bcprov-jdk18on.version>1.82</bcprov-jdk18on.version>
+    <bcprov-jdk18on.version>1.84</bcprov-jdk18on.version>
     <calcite.version>1.25.0</calcite.version>
     <datanucleus-api-jdo.version>5.2.4</datanucleus-api-jdo.version>
     <datanucleus-core.version>5.2.4</datanucleus-core.version>
@@ -127,7 +127,7 @@
     <commons-codec.version>1.15</commons-codec.version>
     <commons-collections.version>3.2.2</commons-collections.version>
     <commons-collections4.version>4.1</commons-collections4.version>
-    <commons-compress.version>1.26.0</commons-compress.version>
+    <commons-compress.version>1.26.1</commons-compress.version>
     <commons-configuration.version>1.10</commons-configuration.version>
     <commons-exec.version>1.1</commons-exec.version>
     <commons-io.version>2.16.1</commons-io.version>
