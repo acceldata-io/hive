@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.hadoop.hive.common.FileUtils;
 import org.apache.hive.common.util.Ref;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -224,7 +223,7 @@ public class HdfsUtils {
       return null;
     }
     if (filter == null) {
-      filter = FileUtils.HIDDEN_FILES_PATH_FILTER;
+      filter = AcidUtils.hiddenFileFilter;
     }
 
     List<HadoopShims.HdfsFileStatusWithId> childrenWithId = null;

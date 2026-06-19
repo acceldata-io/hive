@@ -39,7 +39,6 @@ import org.apache.hadoop.hive.ql.hooks.HiveProtoLoggingHook.ExecutionMode;
 import org.apache.hadoop.hive.ql.hooks.TestHiveProtoLoggingHook;
 import org.apache.hadoop.hive.ql.hooks.proto.HiveHookEvents;
 import org.apache.hadoop.hive.ql.io.AcidUtils;
-import org.apache.hadoop.hive.common.FileUtils;
 import org.apache.tez.dag.history.logging.proto.ProtoMessageReader;
 import org.junit.Assert;
 import org.junit.Test;
@@ -151,13 +150,12 @@ public class TestMmCompactorOnTez extends CompactorOnTezTest {
         Collections.singletonList(newDeltaName), actualDeltasAfterComp);
     // Verify number of files in directory
     FileStatus[] files = fs.listStatus(new Path(table.getSd().getLocation(), newDeltaName),
-       FileUtils.HIDDEN_FILES_PATH_FILTER);
+        AcidUtils.hiddenFileFilter);
     Assert.assertEquals("Incorrect number of bucket files", 2, files.length);
     // Verify bucket files in delta dirs
     List<String> expectedBucketFiles = Arrays.asList("000000_0", "000001_0");
     Assert.assertEquals("Bucket names are not matching after compaction", expectedBucketFiles,
         CompactorTestUtil.getBucketFileNamesForMMTables(fs, table, null, actualDeltasAfterComp.get(0)));
-
     verifyAllContents(tableName, testDataProvider, expectedData);
     // Clean up
     testDataProvider.dropTable(tableName);
