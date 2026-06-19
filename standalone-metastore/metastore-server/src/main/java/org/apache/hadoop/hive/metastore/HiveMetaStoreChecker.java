@@ -28,6 +28,7 @@ import static org.apache.hadoop.hive.metastore.utils.MetaStoreServerUtils.getPar
 import static org.apache.hadoop.hive.metastore.utils.MetaStoreServerUtils.getPartCols;
 import static org.apache.hadoop.hive.metastore.utils.MetaStoreServerUtils.getPartitionListByFilterExp;
 import static org.apache.hadoop.hive.metastore.utils.MetaStoreServerUtils.getPartitionName;
+import static org.apache.hadoop.hive.metastore.utils.MetaStoreServerUtils.getPartitionSpec;
 import static org.apache.hadoop.hive.metastore.utils.MetaStoreServerUtils.getPartitionColtoTypeMap;
 import static org.apache.hadoop.hive.metastore.utils.MetaStoreServerUtils.getPartitionsByProjectSpec;
 import static org.apache.hadoop.hive.metastore.utils.MetaStoreServerUtils.getPath;
@@ -58,7 +59,6 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
-import org.apache.hadoop.fs.RemoteIterator;
 import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.metastore.api.GetPartitionsFilterSpec;
 import org.apache.hadoop.hive.metastore.api.GetPartitionsRequest;
@@ -73,7 +73,6 @@ import org.apache.hadoop.hive.metastore.client.builder.GetPartitionProjectionsSp
 import org.apache.hadoop.hive.metastore.conf.MetastoreConf;
 import org.apache.hadoop.hive.metastore.txn.TxnUtils;
 import org.apache.hadoop.hive.metastore.utils.FileUtils;
-import org.apache.hadoop.util.functional.RemoteIterators;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -597,16 +596,10 @@ public class HiveMetaStoreChecker {
       if (currentDepth == partColNames.size()) {
         return currentPath;
       }
-      List<FileStatus> fileStatuses = new ArrayList<>();
-      RemoteIterator<FileStatus> fileIterator =
-          RemoteIterators.filteringRemoteIterator(fs.listStatusIterator(currentPath),
-            fileStatus -> HIDDEN_FILES_PATH_FILTER.accept(fileStatus.getPath()));
-      while (fileIterator.hasNext()) {
-        fileStatuses.add(fileIterator.next());
-      }
+      FileStatus[] fileStatuses = fs.listStatus(currentPath, FileUtils.HIDDEN_FILES_PATH_FILTER);
       // found no files under a sub-directory under table base path; it is possible that the table
       // is empty and hence there are no partition sub-directories created under base path
-      if (fileStatuses.size() == 0 && currentDepth > 0) {
+      if (fileStatuses.length == 0 && currentDepth > 0) {
         // since maxDepth is not yet reached, we are missing partition
         // columns in currentPath
         logOrThrowExceptionWithMsg(

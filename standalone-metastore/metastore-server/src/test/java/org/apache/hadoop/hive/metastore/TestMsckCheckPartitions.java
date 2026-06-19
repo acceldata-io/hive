@@ -22,10 +22,11 @@ package org.apache.hadoop.hive.metastore;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.LocalFileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.RemoteIterator;
+import org.apache.hadoop.fs.PathFilter;
 import org.apache.hadoop.hive.metastore.annotation.MetastoreUnitTest;
 import org.apache.hadoop.hive.metastore.api.MetastoreException;
 import org.apache.hadoop.hive.metastore.conf.MetastoreConf;
+import org.apache.hadoop.hive.metastore.utils.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -78,27 +79,28 @@ public class TestMsckCheckPartitions {
 
     //level 1 listing
     FileStatus[] allCountries = getMockFileStatus(countryUS, countryIND);
-    mockListStatusIterator(mockFs, tableLocation, allCountries);
+    when(mockFs.listStatus(tableLocation, FileUtils.HIDDEN_FILES_PATH_FILTER))
+        .thenReturn(allCountries);
 
     //level 2 listing
     FileStatus[] filesInUS = getMockFileStatus(cityPA, citySF);
-    mockListStatusIterator(mockFs, countryUS, filesInUS);
+    when(mockFs.listStatus(countryUS, FileUtils.HIDDEN_FILES_PATH_FILTER)).thenReturn(filesInUS);
 
     FileStatus[] filesInInd = getMockFileStatus(cityBOM, cityDEL);
-    mockListStatusIterator(mockFs, countryIND, filesInInd);
+    when(mockFs.listStatus(countryIND, FileUtils.HIDDEN_FILES_PATH_FILTER)).thenReturn(filesInInd);
 
     //level 3 listing
     FileStatus[] paFiles = getMockFileStatus(paData);
-    mockListStatusIterator(mockFs, cityPA, paFiles);
+    when(mockFs.listStatus(cityPA, FileUtils.HIDDEN_FILES_PATH_FILTER)).thenReturn(paFiles);
 
     FileStatus[] sfFiles = getMockFileStatus(sfData);
-    mockListStatusIterator(mockFs, citySF, sfFiles);
+    when(mockFs.listStatus(citySF, FileUtils.HIDDEN_FILES_PATH_FILTER)).thenReturn(sfFiles);
 
     FileStatus[] bomFiles = getMockFileStatus(bomData);
-    mockListStatusIterator(mockFs, cityBOM, bomFiles);
+    when(mockFs.listStatus(cityBOM, FileUtils.HIDDEN_FILES_PATH_FILTER)).thenReturn(bomFiles);
 
     FileStatus[] delFiles = getMockFileStatus(delData);
-    mockListStatusIterator(mockFs, cityDEL, delFiles);
+    when(mockFs.listStatus(cityDEL, FileUtils.HIDDEN_FILES_PATH_FILTER)).thenReturn(delFiles);
 
     HiveMetaStoreChecker checker = new HiveMetaStoreChecker(Mockito.mock(IMetaStoreClient.class),
         MetastoreConf.newMetastoreConf());
@@ -110,24 +112,8 @@ public class TestMsckCheckPartitions {
     // must be equal
     // to (numDirsAtLevel1) + (numDirsAtLevel2) + ... + (numDirAtLeveln-1)
     // in this case it should 1 (table level) + 2 (US, IND)
-    verify(mockFs, times(3)).listStatusIterator(any(Path.class));
+    verify(mockFs, times(3)).listStatus(any(Path.class), any(PathFilter.class));
     Assert.assertEquals("msck should have found 4 unknown partitions", 4, result.size());
-  }
-
-  private void mockListStatusIterator(LocalFileSystem mockFs, Path location,
-      FileStatus[] fileStatuses) throws IOException {
-    when(mockFs.listStatusIterator(location)).thenReturn(
-      new RemoteIterator<FileStatus>() {
-        private int i = 0;
-        @Override
-        public boolean hasNext() throws IOException {
-          return this.i < fileStatuses.length;
-        }
-        @Override
-        public FileStatus next() throws IOException {
-          return fileStatuses[this.i++];
-        }
-      });
   }
 
   private FileStatus[] getMockFileStatus(Path... paths) throws IOException {
