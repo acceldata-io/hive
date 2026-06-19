@@ -52,7 +52,9 @@ import org.apache.hadoop.hive.ql.io.orc.OrcSerde;
 import org.apache.hadoop.hive.ql.metadata.Table;
 import org.apache.hadoop.hive.serde.serdeConstants;
 import org.apache.hadoop.hive.serde2.columnar.LazyBinaryColumnarSerDe;
+import org.apache.hadoop.hive.shims.Utils;
 import org.apache.hadoop.mapred.TextInputFormat;
+import org.apache.hadoop.security.authorize.ProxyUsers;
 import org.apache.hive.hcatalog.DerbyPolicy;
 import org.apache.hive.hcatalog.api.repl.Command;
 import org.apache.hive.hcatalog.api.repl.ReplicationTask;
@@ -231,7 +233,7 @@ public class TestHCatClient {
       table2.getSerdeParams().get(serdeConstants.COLLECTION_DELIM));
     assertEquals("checking " + serdeConstants.SERIALIZATION_NULL_FORMAT, Character.toString('\006'),
       table2.getSerdeParams().get(serdeConstants.SERIALIZATION_NULL_FORMAT));
-    
+
     assertTrue(table2.getLocation().toLowerCase().matches(".*" + ("/" + db + ".db/" + tableTwo).toLowerCase()));
 
     HCatCreateTableDesc tableDesc3 = HCatCreateTableDesc.create(db,

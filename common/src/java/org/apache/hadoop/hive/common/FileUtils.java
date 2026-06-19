@@ -1388,4 +1388,163 @@ public final class FileUtils {
       LOG.debug("Unable to delete {}", path, e);
     }
   }
+
+  public static RemoteIterator<LocatedFileStatus> listFiles(FileSystem fs, Path path, boolean recursive, PathFilter filter) throws IOException {
+
+    RemoteIterator<LocatedFileStatus> source = fs.listFiles(path, recursive);
+    return new RemoteIterator<LocatedFileStatus>() {
+
+      private LocatedFileStatus next;
+
+      private void advance() throws IOException {
+        while (next == null && source.hasNext()) {
+          LocatedFileStatus candidate = source.next();
+          if (filter.accept(candidate.getPath())) {
+            next = candidate;
+          }
+        }
+      }
+
+      @Override
+      public boolean hasNext() throws IOException {
+        advance();
+        return next != null;
+      }
+
+      @Override
+      public LocatedFileStatus next() throws IOException {
+        advance();
+        if (next == null) {
+          throw new java.util.NoSuchElementException();
+        }
+
+        LocatedFileStatus result = next;
+        next = null;
+        return result;
+      }
+    };
+  }
+
+  /**
+   * Resolves a symlink on a local filesystem. In case of any exceptions or scheme other than "file"
+   * it simply returns the original path. Refer to DEBUG level logs for further details.
+   * @param path input path to be resolved
+   * @param conf a Configuration instance to be used while e.g. resolving the FileSystem if necessary
+   * @return the resolved target Path or the original if the input Path is not a symlink
+   * @throws IOException
+   */
+  public static Path resolveSymlinks(Path path, Configuration conf) throws IOException {
+    if (path == null) {
+      throw new IllegalArgumentException("Cannot resolve symlink for a null Path");
+    }
+
+    URI uri = path.toUri();
+    String scheme = uri.getScheme();
+
+    /*
+     * If you're about to extend this method to e.g. HDFS, simply remove this check.
+     * There is a known exception reproduced by whroot_external1.q, which can be referred to,
+     * which is because java.nio is not prepared by default for other schemes like "hdfs".
+     */
+    if (scheme != null && !"file".equalsIgnoreCase(scheme)) {
+      LOG.debug("scheme '{}' is not supported for resolving symlinks", scheme);
+      return path;
+    }
+
+    // we're expecting 'file' scheme, so if scheme == null, we need to add it to path before resolving,
+    // otherwise Paths.get will fail with java.lang.IllegalArgumentException: Missing scheme
+    if (scheme == null) {
+      try {
+        uri =  new URI("file", uri.getAuthority(), uri.toString(), null, null);
+      } catch (URISyntaxException e) {
+        // e.g. in case of relative URI, we cannot create a new URI
+        LOG.debug("URISyntaxException while creating uri from path without scheme {}", path, e);
+        return path;
+      }
+    }
+
+    try {
+      java.nio.file.Path srcPath = Paths.get(uri);
+      URI targetUri = srcPath.toRealPath().toUri();
+      // stick to the original scheme
+      return new Path(scheme, targetUri.getAuthority(),
+          Path.getPathWithoutSchemeAndAuthority(new Path(targetUri)).toString());
+    } catch (Exception e) {
+      LOG.debug("Exception while calling toRealPath of {}", path, e);
+      return path;
+    }
+  }
+
+  public static class AdaptingIterator<T> implements Iterator<T> {
+
+    private final RemoteIterator<T> iterator;
+
+    @Override
+    public boolean hasNext() {
+      try {
+        return iterator.hasNext();
+      } catch (IOException e) {
+        throw new UncheckedIOException(e);
+      }
+    }
+
+    @Override
+    public T next() {
+      try {
+        if (iterator.hasNext()) {
+          return iterator.next();
+        } else {
+          throw new NoSuchElementException();
+        }
+      } catch (IOException e) {
+        throw new UncheckedIOException(e);
+      }
+    }
+
+    public AdaptingIterator(RemoteIterator<T> iterator) {
+      this.iterator = iterator;
+    }
+  }
+
+  /**
+   * Checks whether the filesystem are equal, if they are equal and belongs to ozone then check if they belong to
+   * same bucket and volume.
+   * @param srcFs source filesystem
+   * @param destFs target filesystem
+   * @param src source path
+   * @param dest target path
+   * @return true if filesystems are equal, if Ozone fs, then the path belongs to same bucket-volume.
+   */
+  public static boolean isEqualFileSystemAndSameOzoneBucket(FileSystem srcFs, FileSystem destFs, Path src, Path dest) {
+    if (!equalsFileSystem(srcFs, destFs)) {
+      return false;
+    }
+    if (srcFs.getScheme().equalsIgnoreCase("ofs") || srcFs.getScheme().equalsIgnoreCase("o3fs")) {
+      return isSameOzoneBucket(src, dest);
+    }
+    return true;
+  }
+
+  public static boolean isSameOzoneBucket(Path src, Path dst) {
+    String[] src1 = getVolumeAndBucket(src);
+    String[] dst1 = getVolumeAndBucket(dst);
+
+    return ((src1[0] == null && dst1[0] == null) || (src1[0] != null && src1[0].equalsIgnoreCase(dst1[0]))) &&
+        ((src1[1] == null && dst1[1] == null) || (src1[1] != null && src1[1].equalsIgnoreCase(dst1[1])));
+  }
+
+  private static String[] getVolumeAndBucket(Path path) {
+    URI uri = path.toUri();
+    final String pathStr = uri.getPath();
+    StringTokenizer token = new StringTokenizer(pathStr, "/");
+    int numToken = token.countTokens();
+
+    if (numToken >= 2) {
+      return new String[] { token.nextToken(), token.nextToken() };
+    } else if (numToken == 1) {
+      return new String[] { token.nextToken(), null };
+    } else {
+      return new String[] { null, null };
+    }
+  }
 }

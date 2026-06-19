@@ -25,8 +25,9 @@ import java.util.Date;
 import java.util.List;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.LocatedFileStatus;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.util.functional.RemoteIterators;
+import org.apache.hadoop.fs.RemoteIterator;
 import org.apache.iceberg.FileFormat;
 import org.apache.iceberg.Table;
 import org.apache.iceberg.catalog.TableIdentifier;
@@ -162,15 +163,15 @@ public class TestHiveIcebergExpireSnapshots extends HiveIcebergStorageHandlerWit
     fs.create(orphanDataFile).close();
     fs.create(orphanMetadataFile).close();
 
-    int numDataFiles = RemoteIterators.toList(fs.listFiles(new Path(table.location(), "data"), true)).size();
-    int numMetadataFiles = RemoteIterators.toList(fs.listFiles(new Path(table.location(), "metadata"), true)).size();
+    int numDataFiles = countRemote(fs.listFiles(new Path(table.location(), "data"), true));
+    int numMetadataFiles = countRemote(fs.listFiles(new Path(table.location(), "metadata"), true));
     shell.executeStatement("ALTER TABLE " + identifier.name() + " EXECUTE DELETE ORPHAN-FILES");
 
     Assert.assertEquals(numDataFiles,
-        RemoteIterators.toList(fs.listFiles(new Path(table.location(), "data"), true)).size());
+        countRemote(fs.listFiles(new Path(table.location(), "data"), true)));
 
     Assert.assertEquals(numMetadataFiles,
-        RemoteIterators.toList(fs.listFiles(new Path(table.location(), "metadata"), true)).size());
+        countRemote(fs.listFiles(new Path(table.location(), "metadata"), true)));
 
     Assert.assertTrue(fs.exists(orphanDataFile));
     Assert.assertTrue(fs.exists(orphanDataFile));
@@ -182,10 +183,10 @@ public class TestHiveIcebergExpireSnapshots extends HiveIcebergStorageHandlerWit
         "ALTER TABLE " + identifier.name() + " EXECUTE DELETE ORPHAN-FILES OLDER THAN ('" + timeStamp + "')");
 
     Assert.assertEquals(numDataFiles - 1,
-        RemoteIterators.toList(fs.listFiles(new Path(table.location(), "data"), true)).size());
+        countRemote(fs.listFiles(new Path(table.location(), "data"), true)));
 
     Assert.assertEquals(numMetadataFiles - 1,
-        RemoteIterators.toList(fs.listFiles(new Path(table.location(), "metadata"), true)).size());
+        countRemote(fs.listFiles(new Path(table.location(), "metadata"), true)));
 
     Assert.assertFalse(fs.exists(orphanDataFile));
     Assert.assertFalse(fs.exists(orphanDataFile));
@@ -194,5 +195,14 @@ public class TestHiveIcebergExpireSnapshots extends HiveIcebergStorageHandlerWit
     rows = shell.executeStatement("SELECT * FROM " + identifier.name());
     List<Record> records = HiveIcebergTestUtils.valueForRow(table.schema(), rows);
     HiveIcebergTestUtils.validateData(originalRecords, records, 0);
+  }
+
+  private static int countRemote(RemoteIterator<LocatedFileStatus> iter) throws IOException {
+    int count = 0;
+    while (iter.hasNext()) {
+      iter.next();
+      count++;
+    }
+    return count;
   }
 }

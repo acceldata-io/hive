@@ -110,6 +110,7 @@ import org.apache.thrift.TException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -1364,7 +1365,7 @@ public class TestStreaming {
       .withRecordWriter(writer)
       .withHiveConf(conf)
       .connect();
-    
+
     HiveConf houseKeeperConf = new HiveConf(conf);
     //ensure txn timesout
     houseKeeperConf.setTimeVar(HiveConf.ConfVars.HIVE_TXN_TIMEOUT, 100, TimeUnit.MILLISECONDS);
