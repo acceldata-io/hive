@@ -874,12 +874,5 @@ public class TezTask extends Task<TezWork> {
         return dagClient.waitForCompletionWithStatusUpdates(statusGetOpts);
       }
     }
-
-    @Override
-    public String getWebUIAddress() throws IOException, TezException {
-      synchronized (dagClient) {
-        return dagClient.getWebUIAddress();
-      }
-    }
   }
 }

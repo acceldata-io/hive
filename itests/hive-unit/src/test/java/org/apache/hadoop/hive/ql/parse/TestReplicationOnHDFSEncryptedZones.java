@@ -27,6 +27,7 @@ import org.apache.hadoop.security.UserGroupInformation;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -58,8 +59,8 @@ public class TestReplicationOnHDFSEncryptedZones {
   @BeforeClass
   public static void beforeClassSetup() throws Exception {
     System.setProperty("jceks.key.serialFilter", "java.lang.Enum;java.security.KeyRep;" +
-        "java.security.KeyRep$Type;javax.crypto.spec.SecretKeySpec;" +
-        "org.apache.hadoop.crypto.key.JavaKeyStoreProvider$KeyMetadata;!*");
+            "java.security.KeyRep$Type;javax.crypto.spec.SecretKeySpec;" +
+            "org.apache.hadoop.crypto.key.JavaKeyStoreProvider$KeyMetadata;!*");
     conf = new Configuration();
     conf.set("dfs.client.use.datanode.hostname", "true");
     conf.set("hadoop.proxyuser." + Utils.getUGI().getShortUserName() + ".hosts", "*");
@@ -93,7 +94,7 @@ public class TestReplicationOnHDFSEncryptedZones {
     primaryDbName = testName.getMethodName() + "_" + +System.currentTimeMillis();
     replicatedDbName = "replicated_" + primaryDbName;
     primary.run("create database " + primaryDbName + " WITH DBPROPERTIES ( '" +
-        SOURCE_OF_REPLICATION + "' = '1,2,3')");
+            SOURCE_OF_REPLICATION + "' = '1,2,3')");
   }
 
   @Test
@@ -107,7 +108,7 @@ public class TestReplicationOnHDFSEncryptedZones {
     replicaConf.setBoolean("dfs.namenode.delegation.token.always-use", true);
 
     MiniDFSCluster miniReplicaDFSCluster =
-        new MiniDFSCluster.Builder(replicaConf).numDataNodes(2).format(true).build();
+            new MiniDFSCluster.Builder(replicaConf).numDataNodes(2).format(true).build();
     replicaConf.setBoolean(METASTORE_AGGREGATE_STATS_CACHE_ENABLED.varname, false);
 
     DFSTestUtil.createKey("test_key123", miniReplicaDFSCluster, replicaConf);
@@ -122,23 +123,23 @@ public class TestReplicationOnHDFSEncryptedZones {
         }}, "test_key123");
 
     //read should pass without raw-byte distcp
-    List<String> dumpWithClause = Arrays.asList( "'" + HiveConf.ConfVars.REPL_EXTERNAL_TABLE_BASE_DIR.varname + "'='"
-        + replica.externalTableWarehouseRoot + "'");
-    WarehouseInstance.Tuple tuple =
-        primary.run("use " + primaryDbName)
+    dumpWithClause = Arrays.asList( "'" + HiveConf.ConfVars.REPL_EXTERNAL_TABLE_BASE_DIR.varname + "'='"
+            + replica.externalTableWarehouseRoot + "'");
+    tuple = primary.run("use " + primaryDbName)
             .run("create external table encrypted_table2 (id int, value string)")
             .run("insert into table encrypted_table2 values (1,'value1')")
             .run("insert into table encrypted_table2 values (2,'value2')")
             .dump(primaryDbName, dumpWithClause);
 
     replica
-        .run("repl load " + primaryDbName + " into " + replicatedDbName
-            + " with('hive.repl.replica.external.table.base.dir'='" + replica.externalTableWarehouseRoot + "', "
-            + "'hive.exec.copyfile.maxsize'='0', 'distcp.options.skipcrccheck'='')")
-        .run("use " + replicatedDbName)
-        .run("repl status " + replicatedDbName)
-        .run("select value from encrypted_table2")
-        .verifyResults(new String[] { "value1", "value2" });
+            .run("repl load " + primaryDbName + " into " + replicatedDbName
+                    + " with('hive.repl.replica.external.table.base.dir'='" + replica.externalTableWarehouseRoot + "', "
+                    + "'hive.exec.copyfile.maxsize'='0', 'distcp.options.skipcrccheck'='')")
+            .run("use " + replicatedDbName)
+            .run("repl status " + replicatedDbName)
+            .verifyResult(tuple.lastReplicationId)
+            .run("select value from encrypted_table2")
+            .verifyResults(new String[] { "value1", "value2" });
   }
 
   @Test
@@ -152,7 +153,7 @@ public class TestReplicationOnHDFSEncryptedZones {
     replicaConf.setBoolean("dfs.namenode.delegation.token.always-use", true);
 
     MiniDFSCluster miniReplicaDFSCluster =
-        new MiniDFSCluster.Builder(replicaConf).numDataNodes(2).format(true).build();
+            new MiniDFSCluster.Builder(replicaConf).numDataNodes(2).format(true).build();
     replicaConf.setBoolean(METASTORE_AGGREGATE_STATS_CACHE_ENABLED.varname, false);
 
     WarehouseInstance replica = new WarehouseInstance(LOG, miniReplicaDFSCluster,
@@ -165,13 +166,13 @@ public class TestReplicationOnHDFSEncryptedZones {
         }}, "test_key");
 
     List<String> dumpWithClause = Arrays.asList(
-        "'hive.repl.add.raw.reserved.namespace'='true'",
-        "'" + HiveConf.ConfVars.REPL_EXTERNAL_TABLE_BASE_DIR.varname + "'='"
-            + replica.externalTableWarehouseRoot + "'",
-        "'distcp.options.skipcrccheck'=''",
-        "'" + HiveConf.ConfVars.HIVE_SERVER2_ENABLE_DOAS.varname + "'='false'",
-        "'" + HiveConf.ConfVars.HIVE_DISTCP_DOAS_USER.varname + "'='"
-            + UserGroupInformation.getCurrentUser().getUserName() +"'");
+            "'hive.repl.add.raw.reserved.namespace'='true'",
+            "'" + HiveConf.ConfVars.REPL_EXTERNAL_TABLE_BASE_DIR.varname + "'='"
+                    + replica.externalTableWarehouseRoot + "'",
+            "'distcp.options.skipcrccheck'=''",
+            "'" + HiveConf.ConfVars.HIVE_SERVER2_ENABLE_DOAS.varname + "'='false'",
+            "'" + HiveConf.ConfVars.HIVE_DISTCP_DOAS_USER.varname + "'='"
+                    + UserGroupInformation.getCurrentUser().getUserName() +"'");
 
     WarehouseInstance.Tuple tuple =
         primary.run("use " + primaryDbName)

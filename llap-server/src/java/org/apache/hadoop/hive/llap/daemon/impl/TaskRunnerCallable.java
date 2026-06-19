@@ -339,7 +339,7 @@ public class TaskRunnerCallable extends CallableWithNdc<TaskRunner2Result> {
     StringBuilder sb = new StringBuilder();
     TezTaskID taskId = taskAttemptId.getTaskID();
     TezVertexID vertexId = taskId.getVertexID();
-    TezDAGID dagId = vertexId.getDAGID();
+    TezDAGID dagId = vertexId.getDAGId();
     ApplicationId appId = dagId.getApplicationId();
     long clusterTs = appId.getClusterTimestamp();
     long clusterTsShort = clusterTs % 1_000_000L;

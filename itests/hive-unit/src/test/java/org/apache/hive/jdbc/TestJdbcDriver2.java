@@ -2816,12 +2816,11 @@ public class TestJdbcDriver2 {
     String sql = "select count(*) from " + tableName;
 
     // Verify the fetched log (from the beginning of log file)
-    List<String> logs;
-    try (HiveStatement stmt = (HiveStatement) con.createStatement()) {
-      assertNotNull("Statement is null", stmt);
-      stmt.executeQuery(sql);
-      logs = stmt.getQueryLog(false, 200000);
-    }
+    HiveStatement stmt = (HiveStatement)con.createStatement();
+    assertNotNull("Statement is null", stmt);
+    stmt.executeQuery(sql);
+    List<String> logs = stmt.getQueryLog(false, 10000);
+    stmt.close();
     verifyFetchedLog(logs, expectedLogs);
 
     // Verify the fetched log (incrementally)
@@ -3012,7 +3011,8 @@ public class TestJdbcDriver2 {
     }
     String accumulatedLogs = stringBuilder.toString();
     for (String expectedLog : expectedLogs) {
-      assertTrue("Failed to find match for " + expectedLog, accumulatedLogs.contains(expectedLog));
+      LOG.info("Checking match for " + expectedLog);
+      assertTrue(accumulatedLogs.contains(expectedLog));
     }
   }
 

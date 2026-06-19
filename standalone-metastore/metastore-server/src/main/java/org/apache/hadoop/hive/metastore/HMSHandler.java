@@ -112,7 +112,6 @@ import static org.apache.hadoop.hive.metastore.Warehouse.DEFAULT_DATABASE_COMMEN
 import static org.apache.hadoop.hive.metastore.Warehouse.DEFAULT_DATABASE_NAME;
 import static org.apache.hadoop.hive.metastore.Warehouse.getCatalogQualifiedTableName;
 import static org.apache.hadoop.hive.metastore.api.hive_metastoreConstants.TABLE_IS_CTLT;
-import static org.apache.hadoop.hive.metastore.conf.MetastoreConf.ConfVars.HIVE_IN_TEST;
 import static org.apache.hadoop.hive.metastore.utils.MetaStoreUtils.CAT_NAME;
 import static org.apache.hadoop.hive.metastore.utils.MetaStoreUtils.DB_NAME;
 import static org.apache.hadoop.hive.metastore.utils.MetaStoreUtils.getDefaultCatalog;
@@ -278,7 +277,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   public HMSHandler(String name, Configuration conf) {
     super(name);
     this.conf = conf;
-    isInTest = MetastoreConf.getBoolVar(this.conf, HIVE_IN_TEST);
+    isInTest = MetastoreConf.getBoolVar(this.conf, ConfVars.HIVE_IN_TEST);
     if (threadPool == null) {
       synchronized (HMSHandler.class) {
         if (threadPool == null) {
@@ -9442,8 +9441,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   private void authorizeProxyPrivilege() throws TException {
     // Skip the auth in embedded mode or if the auth is disabled
     if (!HiveMetaStore.isMetaStoreRemote() ||
-        !MetastoreConf.getBoolVar(conf, ConfVars.EVENT_DB_NOTIFICATION_API_AUTH) || conf.getBoolean(HIVE_IN_TEST.getVarname(),
-        false)) {
+        !MetastoreConf.getBoolVar(conf, ConfVars.EVENT_DB_NOTIFICATION_API_AUTH)) {
       return;
     }
     String user = null;
