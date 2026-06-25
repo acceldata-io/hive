@@ -21,7 +21,7 @@
   <parent>
     <artifactId>hive-it</artifactId>
     <groupId>org.apache.hive</groupId>
-    <version>4.1.0</version>
+    <version>4.1.0.3.3.6.4-1000</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>hive-it-druid</artifactId>
@@ -36,9 +36,9 @@
     <druid.jetty.version>9.4.57.v20241219</druid.jetty.version>
     <druid.derby.version>10.11.1.1</druid.derby.version>
     <druid.guava.version>16.0.1</druid.guava.version>
-    <druid.guice.version>4.1.0</druid.guice.version>
+    <druid.guice.version>4.1.0.3.3.6.4-1000</druid.guice.version>
     <kafka.test.version>2.5.0</kafka.test.version>
-    <druid.guice.version>4.1.0</druid.guice.version>
+    <druid.guice.version>4.1.0.3.3.6.4-1000</druid.guice.version>
     <slf4j.version>1.7.30</slf4j.version>
   </properties>
   <dependencies>
