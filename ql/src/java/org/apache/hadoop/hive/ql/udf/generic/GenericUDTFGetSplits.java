@@ -624,7 +624,7 @@ public class GenericUDTFGetSplits extends GenericUDTF {
       JobTokenIdentifier identifier = new JobTokenIdentifier(new Text(
           tokenIdentifier));
       Token<JobTokenIdentifier> sessionToken = new Token<JobTokenIdentifier>(identifier,
-          new JobTokenSecretManager(new Configuration()));
+          new JobTokenSecretManager());
       sessionToken.setService(identifier.getJobId());
       return sessionToken;
     }

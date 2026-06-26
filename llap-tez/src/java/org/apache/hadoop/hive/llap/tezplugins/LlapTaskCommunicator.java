@@ -251,7 +251,7 @@ public class LlapTaskCommunicator extends TezTaskCommunicatorImpl {
     Configuration conf = getConf();
     try {
       JobTokenSecretManager jobTokenSecretManager =
-          new JobTokenSecretManager(conf);
+          new JobTokenSecretManager();
       jobTokenSecretManager.addTokenForJob(tokenIdentifier, sessionToken);
 
       int numHandlers =
