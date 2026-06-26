@@ -32,6 +32,18 @@
     <module>metastore-rest-catalog</module>
     <module>packaging</module>
   </modules>
+  <distributionManagement>
+    <repository>
+      <id>nexus-releases</id>
+      <name>Releases</name>
+      <url>https://repo1.acceldata.dev/repository/odp-release/</url>
+    </repository>
+    <snapshotRepository>
+      <id>nexus-snapshots</id>
+      <name>Snapshot</name>
+      <url>https://repo1.acceldata.dev/repository/odp-snapshot/</url>
+    </snapshotRepository>
+  </distributionManagement>
   <properties>
     <hive.version>4.1.0.3.3.6.4-1000</hive.version>
     <hive.version.shortname>4.1.0.3.3.6.4-1000</hive.version.shortname>
@@ -128,6 +140,30 @@
     <wiremock.jre8.standalone.version>2.32.0</wiremock.jre8.standalone.version>
     <project.build.outputTimestamp>2025-01-01T00:00:00Z</project.build.outputTimestamp>
   </properties>
+  <repositories>
+    <repository>
+      <id>acceldata repo</id>
+      <name>acceldata repo</name>
+      <url>https://repo1.acceldata.dev/repository/odp-central/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+            <id>acceldata staging repo</id>
+            <name>acceldata staging repo</name>
+            <url>https://repo1.acceldata.dev/repository/odp-central/</url>
+            <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
   <dependencyManagement>
     <dependencies>
       <dependency>
