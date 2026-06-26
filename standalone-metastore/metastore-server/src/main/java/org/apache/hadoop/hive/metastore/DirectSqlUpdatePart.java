@@ -793,7 +793,7 @@ class DirectSqlUpdatePart {
     updateBucketColsInBatch(idToBucketCols, validSdIds);
     updateSortColsInBatch(idToSortCols, validSdIds);
     updateSkewedInfoInBatch(idToSkewedInfo, validSdIds);
-    Map<Long, Long> sdIdToNewCdId = updateCDInBatch(cdIds.stream().toList(), validSdIds, sdIdToCdId, sdIdToNewColumns);
+    Map<Long, Long> sdIdToNewCdId = updateCDInBatch(cdIds.stream().collect(Collectors.toList()), validSdIds, sdIdToCdId, sdIdToNewColumns);
     updateSerdeInBatch(serdeIds, serdeIdToSerde);
     updateParamTableInBatch("\"SERDE_PARAMS\"", "\"SERDE_ID\"", serdeIds, serdeParamsOpt);
 

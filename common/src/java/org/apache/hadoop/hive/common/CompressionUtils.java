@@ -173,7 +173,7 @@ public class CompressionUtils {
           if (!outputFile.exists()) {
             LOG.debug("Attempting to create output directory {}.", outputFile.getAbsolutePath());
             if (!outputFile.mkdirs()) {
-              throw new IllegalStateException("Couldn't create directory %s.".formatted(
+              throw new IllegalStateException(String.format("Couldn't create directory %s.",
                   outputFile.getAbsolutePath()));
             }
           }
@@ -186,7 +186,7 @@ public class CompressionUtils {
           } else if (!outputFile.getParentFile().exists()) {
             LOG.debug("Attempting to create output directory {}.", outputFile.getParentFile().getAbsoluteFile());
             if (!outputFile.getParentFile().getAbsoluteFile().mkdirs()) {
-              throw new IllegalStateException("Couldn't create directory %s.".formatted(
+              throw new IllegalStateException(String.format("Couldn't create directory %s.",
                   outputFile.getParentFile().getAbsolutePath()));
             }
             LOG.debug("Creating output file {}.", outputFile.getAbsolutePath());

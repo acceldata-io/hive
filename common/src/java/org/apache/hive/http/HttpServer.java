@@ -457,10 +457,8 @@ public class HttpServer {
     if (remoteUser == null) {
       if (response != null) {
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-                           """
-                           Unauthenticated users are not \
-                           authorized to access this page.\
-                           """);
+                           "Unauthenticated users are not " +
+                           "authorized to access this page.");
       }
       return false;
     }
@@ -844,11 +842,11 @@ public class HttpServer {
     LoggerContext context = (LoggerContext)LogManager.getContext(false);
     for (Logger logger: context.getLoggers()) {
       for (Appender appender: logger.getAppenders().values()) {
-        if (appender instanceof AbstractOutputStreamAppender outputAppender) {
+        if (appender instanceof AbstractOutputStreamAppender) {
           OutputStreamManager manager =
-            outputAppender.getManager();
-          if (manager instanceof FileManager fileManager) {
-            String fileName = fileManager.getFileName();
+            ((AbstractOutputStreamAppender<?>)appender).getManager();
+          if (manager instanceof FileManager) {
+            String fileName = ((FileManager)manager).getFileName();
             if (fileName != null) {
               return fileName.substring(0, fileName.lastIndexOf('/'));
             }

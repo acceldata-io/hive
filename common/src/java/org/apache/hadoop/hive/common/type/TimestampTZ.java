@@ -77,7 +77,8 @@ public class TimestampTZ implements Comparable<TimestampTZ> {
 
   @Override
   public boolean equals(Object other) {
-    if (other instanceof TimestampTZ timestamp) {
+    if (other instanceof TimestampTZ) {
+      TimestampTZ timestamp = (TimestampTZ) other;
       return compareTo(timestamp) == 0;
     }
     return false;

@@ -131,7 +131,8 @@ public class SplitGrouper {
         String [] locations = split.getLocations();
         if (locations != null && locations.length > 0) {
           // Worthwhile only if more than 1 split, consistentGroupingEnabled and is a FileSplit
-          if (consistentLocations && locations.length > 1 && split instanceof FileSplit fileSplit) {
+          if (consistentLocations && locations.length > 1 && split instanceof FileSplit) {
+            FileSplit fileSplit = (FileSplit) split;
             Arrays.sort(locations);
             Path path = fileSplit.getPath();
             long startLocation = fileSplit.getStart();
@@ -189,7 +190,8 @@ public class SplitGrouper {
         List<String> aliases = mapWork.getPathToAliases().get(path);
         if ((aliases != null) && (aliases.size() == 1)) {
           Operator<? extends OperatorDesc> op = mapWork.getAliasToWork().get(aliases.get(0));
-          if (op instanceof TableScanOperator tableScan) {
+          if (op instanceof TableScanOperator) {
+            TableScanOperator tableScan = (TableScanOperator) op;
             PartitionDesc partitionDesc = mapWork.getAliasToPartnInfo().get(aliases.get(0));
             isMinorCompaction &= AcidUtils.isCompactionTable(partitionDesc.getTableDesc().getProperties());
             if (!tableScan.getConf().isTranscationalTable() && !isMinorCompaction) {
@@ -204,11 +206,11 @@ public class SplitGrouper {
         }
       }
       /**
-       * The expectation is that each InputSplit is a {@link org.apache.hadoop.hive.ql.io.HiveInputFormat.HiveInputSplit} 
-       * wrapping an OrcSplit. So group these splits by bucketId and within each bucketId, sort by writeId, stmtId, 
-       * rowIdOffset or splitStart. For 'original' splits (w/o acid meta cols in the file) SyntheticBucketProperties 
-       * should always be there and so rowIdOffset is there. For 'native' acid files, OrcSplit doesn't have 
-       * the 1st rowid in the split, so splitStart is used to sort. This should achieve the required sorting invariance 
+       * The expectation is that each InputSplit is a {@link org.apache.hadoop.hive.ql.io.HiveInputFormat.HiveInputSplit}
+       * wrapping an OrcSplit. So group these splits by bucketId and within each bucketId, sort by writeId, stmtId,
+       * rowIdOffset or splitStart. For 'original' splits (w/o acid meta cols in the file) SyntheticBucketProperties
+       * should always be there and so rowIdOffset is there. For 'native' acid files, OrcSplit doesn't have
+       * the 1st rowid in the split, so splitStart is used to sort. This should achieve the required sorting invariance
        * (sort by: writeId, stmtId, rowIdOffset within each bucket) needed for Acid tables.
        * See: {@link org.apache.hadoop.hive.ql.io.AcidInputFormat}
        * Create a TezGroupedSplit for each bucketId and return.
@@ -233,14 +235,14 @@ public class SplitGrouper {
         this.group(jobConf, schemaGroupedSplitMultiMap, availableSlots, waves, locationProvider);
     return groupedSplits;
   }
-  
+
   // Returns the path of the first split in this list for logging purposes
   private String getFirstSplitPath(InputSplit[] splits) {
     if (splits.length == 0) {
       throw new RuntimeException("The list of splits provided for grouping is empty.");
     }
     Path splitPath = ((FileSplit) splits[0]).getPath();
-   
+
     return splitPath.toString();
   }
 
@@ -251,7 +253,7 @@ public class SplitGrouper {
    */
   Multimap<Integer, InputSplit> getCompactorSplitGroups(InputSplit[] rawSplits, Configuration conf,
       boolean isMinorCompaction) {
-    // Note: For our case, this multimap will essentially contain one value (one TezGroupedSplit) per key 
+    // Note: For our case, this multimap will essentially contain one value (one TezGroupedSplit) per key
     Multimap<Integer, InputSplit> bucketSplitMultiMap = ArrayListMultimap.create();
     HiveInputFormat.HiveInputSplit[] splits = new HiveInputFormat.HiveInputSplit[rawSplits.length];
     int i = 0;
@@ -293,7 +295,7 @@ public class SplitGrouper {
     }
     return bucketSplitMultiMap;
   }
-  
+
   static class ComparatorCompactor implements Comparator<HiveInputFormat.HiveInputSplit>, Serializable {
 
     @Override
@@ -354,11 +356,12 @@ public class SplitGrouper {
         // the case of SMB join. So in this case, we can do an early exit by not doing the
         // calculation for bucketSizeMap. Each bucket will assume it can fill availableSlots * waves
         // (preset to 0.5) for SMB join.
-        if (!(s instanceof FileSplit fsplit)) {
+        if (!(s instanceof FileSplit)) {
           bucketTaskMap.put(bucketId, (int) (availableSlots * waves));
           earlyExit = true;
           continue;
         }
+        FileSplit fsplit = (FileSplit) s;
         size += fsplit.getLength();
         totalSize += fsplit.getLength();
       }

@@ -117,7 +117,8 @@ public class Date implements Comparable<Date> {
 
   @Override
   public boolean equals(Object other) {
-    if (other instanceof Date date) {
+    if (other instanceof Date) {
+      Date date = (Date) other;
       return compareTo(date) == 0;
     }
     return false;
@@ -193,7 +194,7 @@ public class Date implements Comparable<Date> {
           throw new DateTimeParseException("Text '" + trimedText + "' could not be parsed, unparsed text found at index " + pos.getIndex(), trimedText,
               pos.getIndex());
         }
-      }  
+      }
       return new Date(LocalDate.of(t.get(YEAR), t.get(MONTH_OF_YEAR), t.get(DAY_OF_MONTH)));
     } catch (DateTimeException e) {
       throw new IllegalArgumentException("Cannot create date, parsing error");

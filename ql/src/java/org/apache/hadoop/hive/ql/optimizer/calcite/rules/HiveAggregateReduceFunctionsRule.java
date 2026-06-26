@@ -522,15 +522,21 @@ public class HiveAggregateReduceFunctionsRule extends RelOptRule {
     RelDataType oldArgType = SqlTypeUtil.projectTypes(
         oldAggRel.getInput().getRowType(), oldCall.getArgList()).get(0);
 
-    final RexNode correctedDiff =
-        switch (oldArgType.getSqlTypeName()){
-          case DOUBLE, DECIMAL ->
+    final RexNode correctedDiff;
+
+    switch (oldArgType.getSqlTypeName()) {
+      case DOUBLE:
+      case DECIMAL:
+        correctedDiff =
             rexBuilder.makeCall(
                 SqlLibraryOperators.GREATEST,
                 rexBuilder.makeExactLiteral(BigDecimal.ZERO),
                 diff);
-          default -> diff;
-        };
+        break;
+      default:
+        correctedDiff = diff;
+        break;
+    }
 
     final RexNode denominator;
     if (biased) {

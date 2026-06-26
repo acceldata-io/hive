@@ -1094,10 +1094,8 @@ public final class FileUtils {
     if (childStatus.getOwner().equals(user)) {
       return;
     }
-    String msg = ("""
-        Permission Denied: User %s can't delete %s because sticky bit is\
-         set on the parent dir and user does not own this file or its parent\
-        """).formatted(user, path);
+    String msg = String.format("Permission Denied: User %s can't delete %s because sticky bit is" +
+        "set on the parent dir and user does not own this file or its parent", user, path);
     throw new IOException(msg);
 
   }

@@ -75,10 +75,8 @@ public class TestVertex {
 
   @Test
   public void testExtractOpOneChild() throws Exception {
-    String jsonString = """
-            {"opName":{"children":{"childName":\
-            {"OperatorId:":"child-operator-id"}}}}\
-            """;
+    String jsonString = "{\"opName\":{\"children\":{\"childName\":\n"
+        + "{\"OperatorId:\":\"child-operator-id\"}}}}";
     JSONObject operator = new JSONObject(jsonString);
 
     Vertex uut = new Vertex("name", null, null, tezJsonParser);
@@ -92,11 +90,9 @@ public class TestVertex {
 
   @Test
   public void testExtractOpMultipleChildren() throws Exception {
-    String jsonString = """
-            {"opName":{"children":[\
-            {"childName1":{"OperatorId:":"child-operator-id1"}},\
-            {"childName2":{"OperatorId:":"child-operator-id2"}}]}}\
-            """;
+    String jsonString = "{\"opName\":{\"children\":[\n"
+        + "{\"childName1\":{\"OperatorId:\":\"child-operator-id1\"}},\n"
+        + "{\"childName2\":{\"OperatorId:\":\"child-operator-id2\"}}]}}";
     JSONObject operator = new JSONObject(jsonString);
 
     Vertex uut = new Vertex("name", null, null, tezJsonParser);

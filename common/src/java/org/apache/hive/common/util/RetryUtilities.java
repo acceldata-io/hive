@@ -64,17 +64,17 @@ public class RetryUtilities {
     public ExponentiallyDecayingBatchWork(int batchSize, int reducingFactor, int maxRetries) {
       if (batchSize <= 0) {
         throw new IllegalArgumentException(
-            "Invalid batch size %d provided. Batch size must be greater than 0".formatted(batchSize));
+            String.format("Invalid batch size %d provided. Batch size must be greater than 0", batchSize));
       }
       this.batchSize = batchSize;
       if (reducingFactor <= 1) {
         throw new IllegalArgumentException(
-            "Invalid decaying factor %d provided. Decaying factor must be greater than 1".formatted(
+            String.format("Invalid decaying factor %d provided. Decaying factor must be greater than 1",
             batchSize));
       }
       if (maxRetries < 0) {
         throw new IllegalArgumentException(
-            "Invalid number of maximum retries %d provided. It must be a non-negative integer value".formatted(
+            String.format("Invalid number of maximum retries %d provided. It must be a non-negative integer value",
             maxRetries));
       }
       //if maxRetries is 0 code retries until batch decays to zero
@@ -96,7 +96,7 @@ public class RetryUtilities {
         } finally {
           attempt++;
           if (attempt == maxRetries) {
-            throw new RetryException("Maximum number of retry attempts %d exhausted".formatted(maxRetries));
+            throw new RetryException(String.format("Maximum number of retry attempts %d exhausted", maxRetries));
           }
         }
       }

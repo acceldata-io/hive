@@ -83,7 +83,7 @@ import static java.time.temporal.ChronoField.YEAR;
  * @see java.time.temporal.ChronoField#YEAR_OF_ERA
  */
 public class Timestamp implements Comparable<Timestamp> {
-  
+
   private static final LocalDateTime EPOCH = LocalDateTime.of(1970, 1, 1, 0, 0, 0);
   private static final DateTimeFormatter PARSE_FORMATTER = new DateTimeFormatterBuilder()
       // Date
@@ -135,7 +135,8 @@ public class Timestamp implements Comparable<Timestamp> {
 
   @Override
   public boolean equals(Object other) {
-    if (other instanceof Timestamp timestamp) {
+    if (other instanceof Timestamp) {
+      Timestamp  timestamp = (Timestamp) other;
       return compareTo(timestamp) == 0;
     }
     return false;

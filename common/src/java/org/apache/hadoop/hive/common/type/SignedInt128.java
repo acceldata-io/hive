@@ -532,7 +532,8 @@ public final class SignedInt128 extends Number implements
 
   @Override
   public boolean equals(Object obj) {
-    if (obj instanceof SignedInt128 o) {
+    if (obj instanceof SignedInt128) {
+      SignedInt128 o = (SignedInt128) obj;
       return this.negative == o.negative && mag.equals(o.mag);
     } else {
       return false;

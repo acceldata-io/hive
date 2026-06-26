@@ -42,14 +42,12 @@ public class TestOp {
 
   @Test
   public void testInlineJoinOpJsonHandling() throws Exception {
-    String jsonString = """
-            {\
-            "input vertices:":{"a":"AVERTEX"},\
-            "condition map:": [\
-            {"c1": "{\\"type\\": \\"type\\", \\"left\\": \\"left\\", \
-            \\"right\\": \\"right\\"}"}],\
-            "keys:":{"left":"AKEY", "right":"BKEY"}}\
-            """;
+    String jsonString = "{\n"
+        + "\"input vertices:\":{\"a\":\"AVERTEX\"},\n"
+        + "\"condition map:\": [\n"
+        + "{\"c1\": \"{\\\"type\\\": \\\"type\\\", \\\"left\\\": \\\"left\\\", \n"
+        + "\\\"right\\\": \\\"right\\\"}\"}],\n"
+        + "\"keys:\":{\"left\":\"AKEY\", \"right\":\"BKEY\"}}";
     JSONObject mapJoin = new JSONObject(jsonString);
 
     Vertex vertexB = new Vertex("vertex-b", null, null, tezJsonParser);

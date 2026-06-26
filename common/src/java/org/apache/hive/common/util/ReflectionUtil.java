@@ -100,13 +100,14 @@ public class ReflectionUtil {
 
   /**
    * Check and set 'configuration' if necessary.
-   * 
+   *
    * @param theObject object for which to set configuration
    * @param conf Configuration
    */
   public static void setConf(Object theObject, Configuration conf) {
     if (conf != null) {
-      if (theObject instanceof Configurable configurable) {
+      if (theObject instanceof Configurable) {
+        Configurable configurable = (Configurable) theObject;
         configurable.setConf(conf);
       }
       setJobConf(theObject, conf);
@@ -138,7 +139,7 @@ public class ReflectionUtil {
       Field fieldToChange = object.getClass().getDeclaredField(field);
       setField(object, fieldToChange, value);
     } catch (NoSuchFieldException e) {
-      throw new RuntimeException("Cannot find field %s in object %s".formatted(field, object.getClass()));
+      throw new RuntimeException(String.format("Cannot find field %s in object %s", field, object.getClass()));
     }
   }
 
@@ -170,7 +171,7 @@ public class ReflectionUtil {
 
       fieldToChange.set(object, value);
     } catch (NoSuchFieldException | IllegalAccessException e) {
-      throw new RuntimeException("Cannot set field %s in object %s".formatted(field, object.getClass()));
+      throw new RuntimeException(String.format("Cannot set field %s in object %s", field, object.getClass()));
     }
   }
 
@@ -182,7 +183,7 @@ public class ReflectionUtil {
       int modifiers = field.getModifiers();
       modifiersHandle.set(field, modifiers & ~Modifier.FINAL);
     } catch (NoSuchFieldException | IllegalAccessException e) {
-      throw new RuntimeException("Cannot make static final field %s modifiable".formatted(field));
+      throw new RuntimeException(String.format("Cannot make static final field %s modifiable", field));
     }
   }
 

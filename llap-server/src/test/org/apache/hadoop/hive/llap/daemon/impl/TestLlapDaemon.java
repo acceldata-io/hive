@@ -180,7 +180,7 @@ public class TestLlapDaemon {
 
   static <T> void trySetMock(Object o, Class<T> clazz, T mock) {
     List<InstanceField> instanceFields = ReflectionUtil.allDeclaredFieldsOf(o).stream()
-        .filter(instanceField -> clazz.isAssignableFrom(instanceField.jdkField().getType())).toList();
+        .filter(instanceField -> clazz.isAssignableFrom(instanceField.jdkField().getType())).collect(Collectors.toList());
     if (instanceFields.size() != 1) {
       throw new RuntimeException("Mocking is only supported, if only one field is assignable from the given class.");
     }

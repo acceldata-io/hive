@@ -70,10 +70,13 @@ public final class JavaUtils {
       try {
         closeClassLoader(current);
       } catch (IOException e) {
-        String detailedMessage = (current instanceof URLClassLoader urlcl) ?
-            Arrays.toString(urlcl.getURLs()) :
-            "";
-        LOG.info("Failed to close class loader " + current + " " + detailedMessage, e);
+        if (current instanceof URLClassLoader) {
+          URLClassLoader urlcl = (URLClassLoader) current;
+          String detailedMessage = Arrays.toString(urlcl.getURLs());
+          LOG.info("Failed to close class loader " + current + " " + detailedMessage, e);
+        } else {
+          LOG.info("Failed to close class loader " + current, e);
+        }
       }
     }
     return true;
@@ -90,7 +93,8 @@ public final class JavaUtils {
   }
 
   public static void closeClassLoader(ClassLoader loader) throws IOException {
-    if (loader instanceof Closeable closeable) {
+    if (loader instanceof Closeable) {
+      Closeable closeable = ((Closeable) loader);
       closeable.close();
     } else {
       LOG.warn("Ignoring attempt to close class loader ({}) -- not instance of UDFClassLoader.",

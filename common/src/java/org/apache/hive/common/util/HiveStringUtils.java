@@ -216,7 +216,7 @@ public class HiveStringUtils {
     }
     StringBuilder s = new StringBuilder();
     for(int i = start; i < end; i++) {
-      s.append("%02x".formatted(bytes[i]));
+      s.append(String.format("%02x", bytes[i]));
     }
     return s.toString();
   }
@@ -787,7 +787,7 @@ public class HiveStringUtils {
     catch(UnknownHostException uhe) {return "" + uhe;}
   }
 
-  
+
   /**
    * The traditional binary prefixes, kilo, mega, ..., exa,
    * which can be represented by a 64-bit integer.
@@ -1085,13 +1085,13 @@ public class HiveStringUtils {
     if (partitionValidationPattern == null) {
       return null;
     }
-  
+
     for (String partVal : partVals) {
       if (!partitionValidationPattern.matcher(partVal).matches()) {
         return partVal;
       }
     }
-  
+
     return null;
   }
 

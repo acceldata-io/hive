@@ -171,14 +171,15 @@ public final class Vertex implements Comparable<Vertex>{
         for (String attrName : JSONObject.getNames(attrObj)) {
           if (attrName.equals("children")) {
             Object childrenObj = attrObj.get(attrName);
-            if (childrenObj instanceof JSONObject nObject) {
-              if (nObject.length() != 0) {
-                children.add(extractOp(nObject, op));
+            if (childrenObj instanceof JSONObject) {
+              if (((JSONObject) childrenObj).length() != 0) {
+                children.add(extractOp((JSONObject) childrenObj, op));
               }
-            } else if (childrenObj instanceof JSONArray nArray) {
-              if (nArray.length() != 0) {
-                for (int index = 0; index < nArray.length(); index++) {
-                  children.add(extractOp(nArray.getJSONObject(index), op));
+            } else if (childrenObj instanceof JSONArray) {
+              if (((JSONArray) childrenObj).length() != 0) {
+                JSONArray array = ((JSONArray) childrenObj);
+                for (int index = 0; index < array.length(); index++) {
+                  children.add(extractOp(array.getJSONObject(index), op));
                 }
               }
             } else {

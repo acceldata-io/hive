@@ -365,15 +365,15 @@ public interface Validator {
       if (value == null) return null;
       final Path path = FileSystems.getDefault().getPath(value);
       if (path == null) {
-        return "Path '%s' provided could not be located.".formatted(value);
+        return String.format("Path '%s' provided could not be located.", value);
       } else {
         final boolean isDir = Files.isDirectory(path);
         final boolean isWritable = Files.isWritable(path);
         if (!isDir) {
-          return "Path '%s' provided is not a directory.".formatted(value);
+          return String.format("Path '%s' provided is not a directory.", value);
         }
         if (!isWritable) {
-          return "Path '%s' provided is not writable.".formatted(value);
+          return String.format("Path '%s' provided is not writable.", value);
         }
         return null;
       }
