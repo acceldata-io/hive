@@ -1114,6 +1114,7 @@
                   <include>io.dropwizard.metrics:metrics-core</include>
                   <include>io.dropwizard.metrics:metrics-jvm</include>
                   <include>io.dropwizard.metrics:metrics-json</include>
+                  <include>com.github.joshelser:dropwizard-metrics-hadoop-metrics2-reporter</include>
                   <include>com.zaxxer:HikariCP</include>
                   <include>org.apache.datasketches:*</include>
                   <include>org.apache.calcite:*</include>
@@ -1155,6 +1156,20 @@
                 <relocation>
                   <pattern>com.fasterxml.jackson</pattern>
                   <shadedPattern>org.apache.hive.com.fasterxml.jackson</shadedPattern>
+                </relocation>
+                <!-- Dropwizard metrics must be relocated alongside jackson: the bundled
+                     com.codahale.metrics.json.MetricsModule extends the (relocated) jackson
+                     Module, so leaving it at its original coordinates poisons any JVM that
+                     also has a real metrics-json on the classpath (e.g. Spark) with
+                     java.lang.VerifyError (OCR-2525). The hadoop-metrics2 reporter bridge is
+                     pulled in and relocated with it to keep the HADOOP2 reporter linked. -->
+                <relocation>
+                  <pattern>com.codahale.metrics</pattern>
+                  <shadedPattern>org.apache.hive.com.codahale.metrics</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>com.github.joshelser.dropwizard.metrics</pattern>
+                  <shadedPattern>org.apache.hive.com.github.joshelser.dropwizard.metrics</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.zaxxer.hikari</pattern>
