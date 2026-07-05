@@ -264,6 +264,11 @@ public final class LlapDaemonProtocolProtos {
       return new UserPayloadProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_UserPayloadProto_descriptor;
@@ -279,7 +284,7 @@ public final class LlapDaemonProtocolProtos {
 
     private int bitField0_;
     public static final int USER_PAYLOAD_FIELD_NUMBER = 1;
-    private com.google.protobuf.ByteString userPayload_ = com.google.protobuf.ByteString.EMPTY;
+    private com.google.protobuf.ByteString userPayload_;
     /**
      * <code>optional bytes user_payload = 1;</code>
      * @return Whether the userPayload field is set.
@@ -298,7 +303,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int VERSION_FIELD_NUMBER = 2;
-    private int version_ = 0;
+    private int version_;
     /**
      * <code>optional int32 version = 2;</code>
      * @return Whether the version field is set.
@@ -446,13 +451,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.UserPayloadProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.UserPayloadProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -527,9 +530,10 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         userPayload_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000001);
         version_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -556,23 +560,19 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.UserPayloadProto buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.UserPayloadProto result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.UserPayloadProto(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.UserPayloadProto result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.userPayload_ = userPayload_;
           to_bitField0_ |= 0x00000001;
         }
+        result.userPayload_ = userPayload_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
           result.version_ = version_;
           to_bitField0_ |= 0x00000002;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -701,9 +701,11 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setUserPayload(com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         userPayload_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -741,9 +743,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setVersion(int value) {
-
-        version_ = value;
         bitField0_ |= 0x00000002;
+        version_ = value;
         onChanged();
         return this;
       }
@@ -892,6 +893,11 @@ public final class LlapDaemonProtocolProtos {
       return new EntityDescriptorProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_EntityDescriptorProto_descriptor;
@@ -907,8 +913,7 @@ public final class LlapDaemonProtocolProtos {
 
     private int bitField0_;
     public static final int CLASS_NAME_FIELD_NUMBER = 1;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object className_ = "";
+    private volatile java.lang.Object className_;
     /**
      * <code>optional string class_name = 1;</code>
      * @return Whether the className field is set.
@@ -982,7 +987,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int HISTORY_TEXT_FIELD_NUMBER = 3;
-    private com.google.protobuf.ByteString historyText_ = com.google.protobuf.ByteString.EMPTY;
+    private com.google.protobuf.ByteString historyText_;
     /**
      * <code>optional bytes history_text = 3;</code>
      * @return Whether the historyText field is set.
@@ -1145,13 +1150,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EntityDescriptorProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EntityDescriptorProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1232,14 +1235,16 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         className_ = "";
-        userPayload_ = null;
-        if (userPayloadBuilder_ != null) {
-          userPayloadBuilder_.dispose();
-          userPayloadBuilder_ = null;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        if (userPayloadBuilder_ == null) {
+          userPayload_ = null;
+        } else {
+          userPayloadBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000002);
         historyText_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -1266,29 +1271,27 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EntityDescriptorProto buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EntityDescriptorProto result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EntityDescriptorProto(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EntityDescriptorProto result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.className_ = className_;
           to_bitField0_ |= 0x00000001;
         }
+        result.className_ = className_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.userPayload_ = userPayloadBuilder_ == null
-              ? userPayload_
-              : userPayloadBuilder_.build();
+          if (userPayloadBuilder_ == null) {
+            result.userPayload_ = userPayload_;
+          } else {
+            result.userPayload_ = userPayloadBuilder_.build();
+          }
           to_bitField0_ |= 0x00000002;
         }
         if (((from_bitField0_ & 0x00000004) != 0)) {
-          result.historyText_ = historyText_;
           to_bitField0_ |= 0x00000004;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.historyText_ = historyText_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -1336,8 +1339,8 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeFrom(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EntityDescriptorProto other) {
         if (other == org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EntityDescriptorProto.getDefaultInstance()) return this;
         if (other.hasClassName()) {
-          className_ = other.className_;
           bitField0_ |= 0x00000001;
+          className_ = other.className_;
           onChanged();
         }
         if (other.hasUserPayload()) {
@@ -1456,9 +1459,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setClassName(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         className_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -1467,8 +1472,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearClassName() {
-        className_ = getDefaultInstance().getClassName();
         bitField0_ = (bitField0_ & ~0x00000001);
+        className_ = getDefaultInstance().getClassName();
         onChanged();
         return this;
       }
@@ -1479,9 +1484,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setClassNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         className_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -1516,11 +1523,11 @@ public final class LlapDaemonProtocolProtos {
             throw new NullPointerException();
           }
           userPayload_ = value;
+          onChanged();
         } else {
           userPayloadBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000002;
-        onChanged();
         return this;
       }
       /**
@@ -1530,11 +1537,11 @@ public final class LlapDaemonProtocolProtos {
           org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.UserPayloadProto.Builder builderForValue) {
         if (userPayloadBuilder_ == null) {
           userPayload_ = builderForValue.build();
+          onChanged();
         } else {
           userPayloadBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000002;
-        onChanged();
         return this;
       }
       /**
@@ -1543,32 +1550,31 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeUserPayload(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.UserPayloadProto value) {
         if (userPayloadBuilder_ == null) {
           if (((bitField0_ & 0x00000002) != 0) &&
-            userPayload_ != null &&
-            userPayload_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.UserPayloadProto.getDefaultInstance()) {
-            getUserPayloadBuilder().mergeFrom(value);
+              userPayload_ != null &&
+              userPayload_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.UserPayloadProto.getDefaultInstance()) {
+            userPayload_ =
+              org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.UserPayloadProto.newBuilder(userPayload_).mergeFrom(value).buildPartial();
           } else {
             userPayload_ = value;
           }
+          onChanged();
         } else {
           userPayloadBuilder_.mergeFrom(value);
         }
-        if (userPayload_ != null) {
-          bitField0_ |= 0x00000002;
-          onChanged();
-        }
+        bitField0_ |= 0x00000002;
         return this;
       }
       /**
        * <code>optional .UserPayloadProto user_payload = 2;</code>
        */
       public Builder clearUserPayload() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        userPayload_ = null;
-        if (userPayloadBuilder_ != null) {
-          userPayloadBuilder_.dispose();
-          userPayloadBuilder_ = null;
+        if (userPayloadBuilder_ == null) {
+          userPayload_ = null;
+          onChanged();
+        } else {
+          userPayloadBuilder_.clear();
         }
-        onChanged();
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
       /**
@@ -1630,9 +1636,11 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setHistoryText(com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
         historyText_ = value;
-        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -1780,6 +1788,11 @@ public final class LlapDaemonProtocolProtos {
       return new IOSpecProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_IOSpecProto_descriptor;
@@ -1795,8 +1808,7 @@ public final class LlapDaemonProtocolProtos {
 
     private int bitField0_;
     public static final int CONNECTED_VERTEX_NAME_FIELD_NUMBER = 1;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object connectedVertexName_ = "";
+    private volatile java.lang.Object connectedVertexName_;
     /**
      * <code>optional string connected_vertex_name = 1;</code>
      * @return Whether the connectedVertexName field is set.
@@ -1870,7 +1882,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int PHYSICAL_EDGE_COUNT_FIELD_NUMBER = 3;
-    private int physicalEdgeCount_ = 0;
+    private int physicalEdgeCount_;
     /**
      * <code>optional int32 physical_edge_count = 3;</code>
      * @return Whether the physicalEdgeCount field is set.
@@ -2033,13 +2045,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.IOSpecProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.IOSpecProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2120,14 +2130,16 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         connectedVertexName_ = "";
-        ioDescriptor_ = null;
-        if (ioDescriptorBuilder_ != null) {
-          ioDescriptorBuilder_.dispose();
-          ioDescriptorBuilder_ = null;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        if (ioDescriptorBuilder_ == null) {
+          ioDescriptor_ = null;
+        } else {
+          ioDescriptorBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000002);
         physicalEdgeCount_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -2154,29 +2166,27 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.IOSpecProto buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.IOSpecProto result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.IOSpecProto(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.IOSpecProto result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.connectedVertexName_ = connectedVertexName_;
           to_bitField0_ |= 0x00000001;
         }
+        result.connectedVertexName_ = connectedVertexName_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.ioDescriptor_ = ioDescriptorBuilder_ == null
-              ? ioDescriptor_
-              : ioDescriptorBuilder_.build();
+          if (ioDescriptorBuilder_ == null) {
+            result.ioDescriptor_ = ioDescriptor_;
+          } else {
+            result.ioDescriptor_ = ioDescriptorBuilder_.build();
+          }
           to_bitField0_ |= 0x00000002;
         }
         if (((from_bitField0_ & 0x00000004) != 0)) {
           result.physicalEdgeCount_ = physicalEdgeCount_;
           to_bitField0_ |= 0x00000004;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -2224,8 +2234,8 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeFrom(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.IOSpecProto other) {
         if (other == org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.IOSpecProto.getDefaultInstance()) return this;
         if (other.hasConnectedVertexName()) {
-          connectedVertexName_ = other.connectedVertexName_;
           bitField0_ |= 0x00000001;
+          connectedVertexName_ = other.connectedVertexName_;
           onChanged();
         }
         if (other.hasIoDescriptor()) {
@@ -2344,9 +2354,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setConnectedVertexName(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         connectedVertexName_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2355,8 +2367,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearConnectedVertexName() {
-        connectedVertexName_ = getDefaultInstance().getConnectedVertexName();
         bitField0_ = (bitField0_ & ~0x00000001);
+        connectedVertexName_ = getDefaultInstance().getConnectedVertexName();
         onChanged();
         return this;
       }
@@ -2367,9 +2379,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setConnectedVertexNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         connectedVertexName_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2404,11 +2418,11 @@ public final class LlapDaemonProtocolProtos {
             throw new NullPointerException();
           }
           ioDescriptor_ = value;
+          onChanged();
         } else {
           ioDescriptorBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000002;
-        onChanged();
         return this;
       }
       /**
@@ -2418,11 +2432,11 @@ public final class LlapDaemonProtocolProtos {
           org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EntityDescriptorProto.Builder builderForValue) {
         if (ioDescriptorBuilder_ == null) {
           ioDescriptor_ = builderForValue.build();
+          onChanged();
         } else {
           ioDescriptorBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000002;
-        onChanged();
         return this;
       }
       /**
@@ -2431,32 +2445,31 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeIoDescriptor(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EntityDescriptorProto value) {
         if (ioDescriptorBuilder_ == null) {
           if (((bitField0_ & 0x00000002) != 0) &&
-            ioDescriptor_ != null &&
-            ioDescriptor_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EntityDescriptorProto.getDefaultInstance()) {
-            getIoDescriptorBuilder().mergeFrom(value);
+              ioDescriptor_ != null &&
+              ioDescriptor_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EntityDescriptorProto.getDefaultInstance()) {
+            ioDescriptor_ =
+              org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EntityDescriptorProto.newBuilder(ioDescriptor_).mergeFrom(value).buildPartial();
           } else {
             ioDescriptor_ = value;
           }
+          onChanged();
         } else {
           ioDescriptorBuilder_.mergeFrom(value);
         }
-        if (ioDescriptor_ != null) {
-          bitField0_ |= 0x00000002;
-          onChanged();
-        }
+        bitField0_ |= 0x00000002;
         return this;
       }
       /**
        * <code>optional .EntityDescriptorProto io_descriptor = 2;</code>
        */
       public Builder clearIoDescriptor() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        ioDescriptor_ = null;
-        if (ioDescriptorBuilder_ != null) {
-          ioDescriptorBuilder_.dispose();
-          ioDescriptorBuilder_ = null;
+        if (ioDescriptorBuilder_ == null) {
+          ioDescriptor_ = null;
+          onChanged();
+        } else {
+          ioDescriptorBuilder_.clear();
         }
-        onChanged();
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
       /**
@@ -2518,9 +2531,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setPhysicalEdgeCount(int value) {
-
-        physicalEdgeCount_ = value;
         bitField0_ |= 0x00000004;
+        physicalEdgeCount_ = value;
         onChanged();
         return this;
       }
@@ -2673,8 +2685,7 @@ public final class LlapDaemonProtocolProtos {
     }
     private GroupInputSpecProto() {
       groupName_ = "";
-      groupVertices_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
+      groupVertices_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     }
 
     @java.lang.Override
@@ -2684,6 +2695,11 @@ public final class LlapDaemonProtocolProtos {
       return new GroupInputSpecProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_GroupInputSpecProto_descriptor;
@@ -2699,8 +2715,7 @@ public final class LlapDaemonProtocolProtos {
 
     private int bitField0_;
     public static final int GROUP_NAME_FIELD_NUMBER = 1;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object groupName_ = "";
+    private volatile java.lang.Object groupName_;
     /**
      * <code>optional string group_name = 1;</code>
      * @return Whether the groupName field is set.
@@ -2748,9 +2763,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int GROUP_VERTICES_FIELD_NUMBER = 2;
-    @SuppressWarnings("serial")
-    private com.google.protobuf.LazyStringArrayList groupVertices_ =
-        com.google.protobuf.LazyStringArrayList.emptyList();
+    private com.google.protobuf.LazyStringList groupVertices_;
     /**
      * <code>repeated string group_vertices = 2;</code>
      * @return A list containing the groupVertices.
@@ -2956,13 +2969,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GroupInputSpecProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GroupInputSpecProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3043,15 +3054,16 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         groupName_ = "";
-        groupVertices_ =
-            com.google.protobuf.LazyStringArrayList.emptyList();
-        mergedInputDescriptor_ = null;
-        if (mergedInputDescriptorBuilder_ != null) {
-          mergedInputDescriptorBuilder_.dispose();
-          mergedInputDescriptorBuilder_ = null;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        groupVertices_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        if (mergedInputDescriptorBuilder_ == null) {
+          mergedInputDescriptor_ = null;
+        } else {
+          mergedInputDescriptorBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -3078,29 +3090,28 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GroupInputSpecProto buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GroupInputSpecProto result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GroupInputSpecProto(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GroupInputSpecProto result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.groupName_ = groupName_;
           to_bitField0_ |= 0x00000001;
         }
-        if (((from_bitField0_ & 0x00000002) != 0)) {
-          groupVertices_.makeImmutable();
-          result.groupVertices_ = groupVertices_;
+        result.groupName_ = groupName_;
+        if (((bitField0_ & 0x00000002) != 0)) {
+          groupVertices_ = groupVertices_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000002);
         }
+        result.groupVertices_ = groupVertices_;
         if (((from_bitField0_ & 0x00000004) != 0)) {
-          result.mergedInputDescriptor_ = mergedInputDescriptorBuilder_ == null
-              ? mergedInputDescriptor_
-              : mergedInputDescriptorBuilder_.build();
+          if (mergedInputDescriptorBuilder_ == null) {
+            result.mergedInputDescriptor_ = mergedInputDescriptor_;
+          } else {
+            result.mergedInputDescriptor_ = mergedInputDescriptorBuilder_.build();
+          }
           to_bitField0_ |= 0x00000002;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -3148,14 +3159,14 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeFrom(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GroupInputSpecProto other) {
         if (other == org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GroupInputSpecProto.getDefaultInstance()) return this;
         if (other.hasGroupName()) {
-          groupName_ = other.groupName_;
           bitField0_ |= 0x00000001;
+          groupName_ = other.groupName_;
           onChanged();
         }
         if (!other.groupVertices_.isEmpty()) {
           if (groupVertices_.isEmpty()) {
             groupVertices_ = other.groupVertices_;
-            bitField0_ |= 0x00000002;
+            bitField0_ = (bitField0_ & ~0x00000002);
           } else {
             ensureGroupVerticesIsMutable();
             groupVertices_.addAll(other.groupVertices_);
@@ -3276,9 +3287,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setGroupName(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         groupName_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -3287,8 +3300,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearGroupName() {
-        groupName_ = getDefaultInstance().getGroupName();
         bitField0_ = (bitField0_ & ~0x00000001);
+        groupName_ = getDefaultInstance().getGroupName();
         onChanged();
         return this;
       }
@@ -3299,20 +3312,21 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setGroupNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         groupName_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.LazyStringArrayList groupVertices_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
+      private com.google.protobuf.LazyStringList groupVertices_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensureGroupVerticesIsMutable() {
-        if (!groupVertices_.isModifiable()) {
+        if (!((bitField0_ & 0x00000002) != 0)) {
           groupVertices_ = new com.google.protobuf.LazyStringArrayList(groupVertices_);
-        }
-        bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000002;
+         }
       }
       /**
        * <code>repeated string group_vertices = 2;</code>
@@ -3320,8 +3334,7 @@ public final class LlapDaemonProtocolProtos {
        */
       public com.google.protobuf.ProtocolStringList
           getGroupVerticesList() {
-        groupVertices_.makeImmutable();
-        return groupVertices_;
+        return groupVertices_.getUnmodifiableView();
       }
       /**
        * <code>repeated string group_vertices = 2;</code>
@@ -3355,10 +3368,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setGroupVertices(
           int index, java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
-        ensureGroupVerticesIsMutable();
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureGroupVerticesIsMutable();
         groupVertices_.set(index, value);
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -3369,10 +3383,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder addGroupVertices(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
-        ensureGroupVerticesIsMutable();
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureGroupVerticesIsMutable();
         groupVertices_.add(value);
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -3386,7 +3401,6 @@ public final class LlapDaemonProtocolProtos {
         ensureGroupVerticesIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, groupVertices_);
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -3395,9 +3409,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearGroupVertices() {
-        groupVertices_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000002);;
+        groupVertices_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -3408,10 +3421,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder addGroupVerticesBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
-        ensureGroupVerticesIsMutable();
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureGroupVerticesIsMutable();
         groupVertices_.add(value);
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -3446,11 +3460,11 @@ public final class LlapDaemonProtocolProtos {
             throw new NullPointerException();
           }
           mergedInputDescriptor_ = value;
+          onChanged();
         } else {
           mergedInputDescriptorBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000004;
-        onChanged();
         return this;
       }
       /**
@@ -3460,11 +3474,11 @@ public final class LlapDaemonProtocolProtos {
           org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EntityDescriptorProto.Builder builderForValue) {
         if (mergedInputDescriptorBuilder_ == null) {
           mergedInputDescriptor_ = builderForValue.build();
+          onChanged();
         } else {
           mergedInputDescriptorBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000004;
-        onChanged();
         return this;
       }
       /**
@@ -3473,32 +3487,31 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeMergedInputDescriptor(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EntityDescriptorProto value) {
         if (mergedInputDescriptorBuilder_ == null) {
           if (((bitField0_ & 0x00000004) != 0) &&
-            mergedInputDescriptor_ != null &&
-            mergedInputDescriptor_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EntityDescriptorProto.getDefaultInstance()) {
-            getMergedInputDescriptorBuilder().mergeFrom(value);
+              mergedInputDescriptor_ != null &&
+              mergedInputDescriptor_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EntityDescriptorProto.getDefaultInstance()) {
+            mergedInputDescriptor_ =
+              org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EntityDescriptorProto.newBuilder(mergedInputDescriptor_).mergeFrom(value).buildPartial();
           } else {
             mergedInputDescriptor_ = value;
           }
+          onChanged();
         } else {
           mergedInputDescriptorBuilder_.mergeFrom(value);
         }
-        if (mergedInputDescriptor_ != null) {
-          bitField0_ |= 0x00000004;
-          onChanged();
-        }
+        bitField0_ |= 0x00000004;
         return this;
       }
       /**
        * <code>optional .EntityDescriptorProto merged_input_descriptor = 3;</code>
        */
       public Builder clearMergedInputDescriptor() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        mergedInputDescriptor_ = null;
-        if (mergedInputDescriptorBuilder_ != null) {
-          mergedInputDescriptorBuilder_.dispose();
-          mergedInputDescriptorBuilder_ = null;
+        if (mergedInputDescriptorBuilder_ == null) {
+          mergedInputDescriptor_ = null;
+          onChanged();
+        } else {
+          mergedInputDescriptorBuilder_.clear();
         }
-        onChanged();
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       /**
@@ -3901,6 +3914,11 @@ public final class LlapDaemonProtocolProtos {
       return new SignableVertexSpec();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_SignableVertexSpec_descriptor;
@@ -3916,8 +3934,7 @@ public final class LlapDaemonProtocolProtos {
 
     private int bitField0_;
     public static final int USER_FIELD_NUMBER = 1;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object user_ = "";
+    private volatile java.lang.Object user_;
     /**
      * <code>optional string user = 1;</code>
      * @return Whether the user field is set.
@@ -3965,7 +3982,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int SIGNATUREKEYID_FIELD_NUMBER = 2;
-    private long signatureKeyId_ = 0L;
+    private long signatureKeyId_;
     /**
      * <code>optional int64 signatureKeyId = 2;</code>
      * @return Whether the signatureKeyId field is set.
@@ -4010,8 +4027,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int HIVE_QUERY_ID_FIELD_NUMBER = 4;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object hiveQueryId_ = "";
+    private volatile java.lang.Object hiveQueryId_;
     /**
      * <code>optional string hive_query_id = 4;</code>
      * @return Whether the hiveQueryId field is set.
@@ -4059,8 +4075,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int DAG_NAME_FIELD_NUMBER = 5;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object dagName_ = "";
+    private volatile java.lang.Object dagName_;
     /**
      * <pre>
      * Display names cannot be modified by the client for now. If needed, they should be sent to HS2 who will put them here.
@@ -4120,8 +4135,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int VERTEX_NAME_FIELD_NUMBER = 6;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object vertexName_ = "";
+    private volatile java.lang.Object vertexName_;
     /**
      * <code>optional string vertex_name = 6;</code>
      * @return Whether the vertexName field is set.
@@ -4169,7 +4183,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int VERTEX_INDEX_FIELD_NUMBER = 7;
-    private int vertexIndex_ = 0;
+    private int vertexIndex_;
     /**
      * <code>optional int32 vertex_index = 7;</code>
      * @return Whether the vertexIndex field is set.
@@ -4188,8 +4202,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int TOKEN_IDENTIFIER_FIELD_NUMBER = 8;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object tokenIdentifier_ = "";
+    private volatile java.lang.Object tokenIdentifier_;
     /**
      * <pre>
      * The core vertex stuff 
@@ -4275,7 +4288,6 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int INPUT_SPECS_FIELD_NUMBER = 10;
-    @SuppressWarnings("serial")
     private java.util.List<org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.IOSpecProto> inputSpecs_;
     /**
      * <code>repeated .IOSpecProto input_specs = 10;</code>
@@ -4316,7 +4328,6 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int OUTPUT_SPECS_FIELD_NUMBER = 11;
-    @SuppressWarnings("serial")
     private java.util.List<org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.IOSpecProto> outputSpecs_;
     /**
      * <code>repeated .IOSpecProto output_specs = 11;</code>
@@ -4357,7 +4368,6 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int GROUPED_INPUT_SPECS_FIELD_NUMBER = 12;
-    @SuppressWarnings("serial")
     private java.util.List<org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GroupInputSpecProto> groupedInputSpecs_;
     /**
      * <code>repeated .GroupInputSpecProto grouped_input_specs = 12;</code>
@@ -4398,7 +4408,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int VERTEX_PARALLELISM_FIELD_NUMBER = 13;
-    private int vertexParallelism_ = 0;
+    private int vertexParallelism_;
     /**
      * <pre>
      * An internal field required for Tez.
@@ -4425,7 +4435,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int IS_EXTERNAL_SUBMISSION_FIELD_NUMBER = 14;
-    private boolean isExternalSubmission_ = false;
+    private boolean isExternalSubmission_;
     /**
      * <code>optional bool is_external_submission = 14 [default = false];</code>
      * @return Whether the isExternalSubmission field is set.
@@ -4753,13 +4763,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SignableVertexSpec parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SignableVertexSpec parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4848,24 +4856,32 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         user_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
         signatureKeyId_ = 0L;
-        queryIdentifier_ = null;
-        if (queryIdentifierBuilder_ != null) {
-          queryIdentifierBuilder_.dispose();
-          queryIdentifierBuilder_ = null;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        if (queryIdentifierBuilder_ == null) {
+          queryIdentifier_ = null;
+        } else {
+          queryIdentifierBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000004);
         hiveQueryId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000008);
         dagName_ = "";
+        bitField0_ = (bitField0_ & ~0x00000010);
         vertexName_ = "";
+        bitField0_ = (bitField0_ & ~0x00000020);
         vertexIndex_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000040);
         tokenIdentifier_ = "";
-        processorDescriptor_ = null;
-        if (processorDescriptorBuilder_ != null) {
-          processorDescriptorBuilder_.dispose();
-          processorDescriptorBuilder_ = null;
+        bitField0_ = (bitField0_ & ~0x00000080);
+        if (processorDescriptorBuilder_ == null) {
+          processorDescriptor_ = null;
+        } else {
+          processorDescriptorBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000100);
         if (inputSpecsBuilder_ == null) {
           inputSpecs_ = java.util.Collections.emptyList();
         } else {
@@ -4888,7 +4904,9 @@ public final class LlapDaemonProtocolProtos {
         }
         bitField0_ = (bitField0_ & ~0x00000800);
         vertexParallelism_ = 0;
+        bitField0_ = (bitField0_ & ~0x00001000);
         isExternalSubmission_ = false;
+        bitField0_ = (bitField0_ & ~0x00002000);
         return this;
       }
 
@@ -4915,13 +4933,52 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SignableVertexSpec buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SignableVertexSpec result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SignableVertexSpec(this);
-        buildPartialRepeatedFields(result);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartialRepeatedFields(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SignableVertexSpec result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.user_ = user_;
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.signatureKeyId_ = signatureKeyId_;
+          to_bitField0_ |= 0x00000002;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          if (queryIdentifierBuilder_ == null) {
+            result.queryIdentifier_ = queryIdentifier_;
+          } else {
+            result.queryIdentifier_ = queryIdentifierBuilder_.build();
+          }
+          to_bitField0_ |= 0x00000004;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.hiveQueryId_ = hiveQueryId_;
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.dagName_ = dagName_;
+        if (((from_bitField0_ & 0x00000020) != 0)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.vertexName_ = vertexName_;
+        if (((from_bitField0_ & 0x00000040) != 0)) {
+          result.vertexIndex_ = vertexIndex_;
+          to_bitField0_ |= 0x00000040;
+        }
+        if (((from_bitField0_ & 0x00000080) != 0)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        result.tokenIdentifier_ = tokenIdentifier_;
+        if (((from_bitField0_ & 0x00000100) != 0)) {
+          if (processorDescriptorBuilder_ == null) {
+            result.processorDescriptor_ = processorDescriptor_;
+          } else {
+            result.processorDescriptor_ = processorDescriptorBuilder_.build();
+          }
+          to_bitField0_ |= 0x00000100;
+        }
         if (inputSpecsBuilder_ == null) {
           if (((bitField0_ & 0x00000200) != 0)) {
             inputSpecs_ = java.util.Collections.unmodifiableList(inputSpecs_);
@@ -4949,51 +5006,6 @@ public final class LlapDaemonProtocolProtos {
         } else {
           result.groupedInputSpecs_ = groupedInputSpecsBuilder_.build();
         }
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SignableVertexSpec result) {
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.user_ = user_;
-          to_bitField0_ |= 0x00000001;
-        }
-        if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.signatureKeyId_ = signatureKeyId_;
-          to_bitField0_ |= 0x00000002;
-        }
-        if (((from_bitField0_ & 0x00000004) != 0)) {
-          result.queryIdentifier_ = queryIdentifierBuilder_ == null
-              ? queryIdentifier_
-              : queryIdentifierBuilder_.build();
-          to_bitField0_ |= 0x00000004;
-        }
-        if (((from_bitField0_ & 0x00000008) != 0)) {
-          result.hiveQueryId_ = hiveQueryId_;
-          to_bitField0_ |= 0x00000008;
-        }
-        if (((from_bitField0_ & 0x00000010) != 0)) {
-          result.dagName_ = dagName_;
-          to_bitField0_ |= 0x00000010;
-        }
-        if (((from_bitField0_ & 0x00000020) != 0)) {
-          result.vertexName_ = vertexName_;
-          to_bitField0_ |= 0x00000020;
-        }
-        if (((from_bitField0_ & 0x00000040) != 0)) {
-          result.vertexIndex_ = vertexIndex_;
-          to_bitField0_ |= 0x00000040;
-        }
-        if (((from_bitField0_ & 0x00000080) != 0)) {
-          result.tokenIdentifier_ = tokenIdentifier_;
-          to_bitField0_ |= 0x00000080;
-        }
-        if (((from_bitField0_ & 0x00000100) != 0)) {
-          result.processorDescriptor_ = processorDescriptorBuilder_ == null
-              ? processorDescriptor_
-              : processorDescriptorBuilder_.build();
-          to_bitField0_ |= 0x00000100;
-        }
         if (((from_bitField0_ & 0x00001000) != 0)) {
           result.vertexParallelism_ = vertexParallelism_;
           to_bitField0_ |= 0x00000200;
@@ -5002,7 +5014,9 @@ public final class LlapDaemonProtocolProtos {
           result.isExternalSubmission_ = isExternalSubmission_;
           to_bitField0_ |= 0x00000400;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -5050,8 +5064,8 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeFrom(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SignableVertexSpec other) {
         if (other == org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SignableVertexSpec.getDefaultInstance()) return this;
         if (other.hasUser()) {
-          user_ = other.user_;
           bitField0_ |= 0x00000001;
+          user_ = other.user_;
           onChanged();
         }
         if (other.hasSignatureKeyId()) {
@@ -5061,26 +5075,26 @@ public final class LlapDaemonProtocolProtos {
           mergeQueryIdentifier(other.getQueryIdentifier());
         }
         if (other.hasHiveQueryId()) {
-          hiveQueryId_ = other.hiveQueryId_;
           bitField0_ |= 0x00000008;
+          hiveQueryId_ = other.hiveQueryId_;
           onChanged();
         }
         if (other.hasDagName()) {
-          dagName_ = other.dagName_;
           bitField0_ |= 0x00000010;
+          dagName_ = other.dagName_;
           onChanged();
         }
         if (other.hasVertexName()) {
-          vertexName_ = other.vertexName_;
           bitField0_ |= 0x00000020;
+          vertexName_ = other.vertexName_;
           onChanged();
         }
         if (other.hasVertexIndex()) {
           setVertexIndex(other.getVertexIndex());
         }
         if (other.hasTokenIdentifier()) {
-          tokenIdentifier_ = other.tokenIdentifier_;
           bitField0_ |= 0x00000080;
+          tokenIdentifier_ = other.tokenIdentifier_;
           onChanged();
         }
         if (other.hasProcessorDescriptor()) {
@@ -5361,9 +5375,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setUser(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         user_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -5372,8 +5388,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearUser() {
-        user_ = getDefaultInstance().getUser();
         bitField0_ = (bitField0_ & ~0x00000001);
+        user_ = getDefaultInstance().getUser();
         onChanged();
         return this;
       }
@@ -5384,9 +5400,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setUserBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         user_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -5414,9 +5432,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setSignatureKeyId(long value) {
-
-        signatureKeyId_ = value;
         bitField0_ |= 0x00000002;
+        signatureKeyId_ = value;
         onChanged();
         return this;
       }
@@ -5461,11 +5478,11 @@ public final class LlapDaemonProtocolProtos {
             throw new NullPointerException();
           }
           queryIdentifier_ = value;
+          onChanged();
         } else {
           queryIdentifierBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000004;
-        onChanged();
         return this;
       }
       /**
@@ -5475,11 +5492,11 @@ public final class LlapDaemonProtocolProtos {
           org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.Builder builderForValue) {
         if (queryIdentifierBuilder_ == null) {
           queryIdentifier_ = builderForValue.build();
+          onChanged();
         } else {
           queryIdentifierBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000004;
-        onChanged();
         return this;
       }
       /**
@@ -5488,32 +5505,31 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeQueryIdentifier(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto value) {
         if (queryIdentifierBuilder_ == null) {
           if (((bitField0_ & 0x00000004) != 0) &&
-            queryIdentifier_ != null &&
-            queryIdentifier_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.getDefaultInstance()) {
-            getQueryIdentifierBuilder().mergeFrom(value);
+              queryIdentifier_ != null &&
+              queryIdentifier_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.getDefaultInstance()) {
+            queryIdentifier_ =
+              org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.newBuilder(queryIdentifier_).mergeFrom(value).buildPartial();
           } else {
             queryIdentifier_ = value;
           }
+          onChanged();
         } else {
           queryIdentifierBuilder_.mergeFrom(value);
         }
-        if (queryIdentifier_ != null) {
-          bitField0_ |= 0x00000004;
-          onChanged();
-        }
+        bitField0_ |= 0x00000004;
         return this;
       }
       /**
        * <code>optional .QueryIdentifierProto query_identifier = 3;</code>
        */
       public Builder clearQueryIdentifier() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        queryIdentifier_ = null;
-        if (queryIdentifierBuilder_ != null) {
-          queryIdentifierBuilder_.dispose();
-          queryIdentifierBuilder_ = null;
+        if (queryIdentifierBuilder_ == null) {
+          queryIdentifier_ = null;
+          onChanged();
+        } else {
+          queryIdentifierBuilder_.clear();
         }
-        onChanged();
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       /**
@@ -5602,9 +5618,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setHiveQueryId(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
         hiveQueryId_ = value;
-        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -5613,8 +5631,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearHiveQueryId() {
-        hiveQueryId_ = getDefaultInstance().getHiveQueryId();
         bitField0_ = (bitField0_ & ~0x00000008);
+        hiveQueryId_ = getDefaultInstance().getHiveQueryId();
         onChanged();
         return this;
       }
@@ -5625,9 +5643,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setHiveQueryIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
         hiveQueryId_ = value;
-        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -5698,9 +5718,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setDagName(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
         dagName_ = value;
-        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -5713,8 +5735,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearDagName() {
-        dagName_ = getDefaultInstance().getDagName();
         bitField0_ = (bitField0_ & ~0x00000010);
+        dagName_ = getDefaultInstance().getDagName();
         onChanged();
         return this;
       }
@@ -5729,9 +5751,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setDagNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
         dagName_ = value;
-        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -5786,9 +5810,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setVertexName(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
         vertexName_ = value;
-        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
@@ -5797,8 +5823,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearVertexName() {
-        vertexName_ = getDefaultInstance().getVertexName();
         bitField0_ = (bitField0_ & ~0x00000020);
+        vertexName_ = getDefaultInstance().getVertexName();
         onChanged();
         return this;
       }
@@ -5809,9 +5835,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setVertexNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
         vertexName_ = value;
-        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
@@ -5839,9 +5867,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setVertexIndex(int value) {
-
-        vertexIndex_ = value;
         bitField0_ |= 0x00000040;
+        vertexIndex_ = value;
         onChanged();
         return this;
       }
@@ -5922,9 +5949,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setTokenIdentifier(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000080;
         tokenIdentifier_ = value;
-        bitField0_ |= 0x00000080;
         onChanged();
         return this;
       }
@@ -5937,8 +5966,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearTokenIdentifier() {
-        tokenIdentifier_ = getDefaultInstance().getTokenIdentifier();
         bitField0_ = (bitField0_ & ~0x00000080);
+        tokenIdentifier_ = getDefaultInstance().getTokenIdentifier();
         onChanged();
         return this;
       }
@@ -5953,9 +5982,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setTokenIdentifierBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000080;
         tokenIdentifier_ = value;
-        bitField0_ |= 0x00000080;
         onChanged();
         return this;
       }
@@ -5990,11 +6021,11 @@ public final class LlapDaemonProtocolProtos {
             throw new NullPointerException();
           }
           processorDescriptor_ = value;
+          onChanged();
         } else {
           processorDescriptorBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000100;
-        onChanged();
         return this;
       }
       /**
@@ -6004,11 +6035,11 @@ public final class LlapDaemonProtocolProtos {
           org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EntityDescriptorProto.Builder builderForValue) {
         if (processorDescriptorBuilder_ == null) {
           processorDescriptor_ = builderForValue.build();
+          onChanged();
         } else {
           processorDescriptorBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000100;
-        onChanged();
         return this;
       }
       /**
@@ -6017,32 +6048,31 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeProcessorDescriptor(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EntityDescriptorProto value) {
         if (processorDescriptorBuilder_ == null) {
           if (((bitField0_ & 0x00000100) != 0) &&
-            processorDescriptor_ != null &&
-            processorDescriptor_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EntityDescriptorProto.getDefaultInstance()) {
-            getProcessorDescriptorBuilder().mergeFrom(value);
+              processorDescriptor_ != null &&
+              processorDescriptor_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EntityDescriptorProto.getDefaultInstance()) {
+            processorDescriptor_ =
+              org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EntityDescriptorProto.newBuilder(processorDescriptor_).mergeFrom(value).buildPartial();
           } else {
             processorDescriptor_ = value;
           }
+          onChanged();
         } else {
           processorDescriptorBuilder_.mergeFrom(value);
         }
-        if (processorDescriptor_ != null) {
-          bitField0_ |= 0x00000100;
-          onChanged();
-        }
+        bitField0_ |= 0x00000100;
         return this;
       }
       /**
        * <code>optional .EntityDescriptorProto processor_descriptor = 9;</code>
        */
       public Builder clearProcessorDescriptor() {
-        bitField0_ = (bitField0_ & ~0x00000100);
-        processorDescriptor_ = null;
-        if (processorDescriptorBuilder_ != null) {
-          processorDescriptorBuilder_.dispose();
-          processorDescriptorBuilder_ = null;
+        if (processorDescriptorBuilder_ == null) {
+          processorDescriptor_ = null;
+          onChanged();
+        } else {
+          processorDescriptorBuilder_.clear();
         }
-        onChanged();
+        bitField0_ = (bitField0_ & ~0x00000100);
         return this;
       }
       /**
@@ -6836,9 +6866,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setVertexParallelism(int value) {
-
-        vertexParallelism_ = value;
         bitField0_ |= 0x00001000;
+        vertexParallelism_ = value;
         onChanged();
         return this;
       }
@@ -6880,9 +6909,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setIsExternalSubmission(boolean value) {
-
-        isExternalSubmission_ = value;
         bitField0_ |= 0x00002000;
+        isExternalSubmission_ = value;
         onChanged();
         return this;
       }
@@ -7025,6 +7053,11 @@ public final class LlapDaemonProtocolProtos {
       return new VertexOrBinary();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_VertexOrBinary_descriptor;
@@ -7066,7 +7099,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int VERTEXBINARY_FIELD_NUMBER = 2;
-    private com.google.protobuf.ByteString vertexBinary_ = com.google.protobuf.ByteString.EMPTY;
+    private com.google.protobuf.ByteString vertexBinary_;
     /**
      * <pre>
      * SignableVertexSpec
@@ -7222,13 +7255,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.VertexOrBinary parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.VertexOrBinary parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -7313,13 +7344,14 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
-        vertex_ = null;
-        if (vertexBuilder_ != null) {
-          vertexBuilder_.dispose();
-          vertexBuilder_ = null;
+        if (vertexBuilder_ == null) {
+          vertex_ = null;
+        } else {
+          vertexBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000001);
         vertexBinary_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -7346,25 +7378,23 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.VertexOrBinary buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.VertexOrBinary result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.VertexOrBinary(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.VertexOrBinary result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.vertex_ = vertexBuilder_ == null
-              ? vertex_
-              : vertexBuilder_.build();
+          if (vertexBuilder_ == null) {
+            result.vertex_ = vertex_;
+          } else {
+            result.vertex_ = vertexBuilder_.build();
+          }
           to_bitField0_ |= 0x00000001;
         }
         if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.vertexBinary_ = vertexBinary_;
           to_bitField0_ |= 0x00000002;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.vertexBinary_ = vertexBinary_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -7502,11 +7532,11 @@ public final class LlapDaemonProtocolProtos {
             throw new NullPointerException();
           }
           vertex_ = value;
+          onChanged();
         } else {
           vertexBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000001;
-        onChanged();
         return this;
       }
       /**
@@ -7516,11 +7546,11 @@ public final class LlapDaemonProtocolProtos {
           org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SignableVertexSpec.Builder builderForValue) {
         if (vertexBuilder_ == null) {
           vertex_ = builderForValue.build();
+          onChanged();
         } else {
           vertexBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000001;
-        onChanged();
         return this;
       }
       /**
@@ -7529,32 +7559,31 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeVertex(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SignableVertexSpec value) {
         if (vertexBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0) &&
-            vertex_ != null &&
-            vertex_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SignableVertexSpec.getDefaultInstance()) {
-            getVertexBuilder().mergeFrom(value);
+              vertex_ != null &&
+              vertex_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SignableVertexSpec.getDefaultInstance()) {
+            vertex_ =
+              org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SignableVertexSpec.newBuilder(vertex_).mergeFrom(value).buildPartial();
           } else {
             vertex_ = value;
           }
+          onChanged();
         } else {
           vertexBuilder_.mergeFrom(value);
         }
-        if (vertex_ != null) {
-          bitField0_ |= 0x00000001;
-          onChanged();
-        }
+        bitField0_ |= 0x00000001;
         return this;
       }
       /**
        * <code>optional .SignableVertexSpec vertex = 1;</code>
        */
       public Builder clearVertex() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        vertex_ = null;
-        if (vertexBuilder_ != null) {
-          vertexBuilder_.dispose();
-          vertexBuilder_ = null;
+        if (vertexBuilder_ == null) {
+          vertex_ = null;
+          onChanged();
+        } else {
+          vertexBuilder_.clear();
         }
-        onChanged();
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
       /**
@@ -7628,9 +7657,11 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setVertexBinary(com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         vertexBinary_ = value;
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -7804,6 +7835,11 @@ public final class LlapDaemonProtocolProtos {
       return new FragmentRuntimeInfo();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_FragmentRuntimeInfo_descriptor;
@@ -7819,7 +7855,7 @@ public final class LlapDaemonProtocolProtos {
 
     private int bitField0_;
     public static final int NUM_SELF_AND_UPSTREAM_TASKS_FIELD_NUMBER = 1;
-    private int numSelfAndUpstreamTasks_ = 0;
+    private int numSelfAndUpstreamTasks_;
     /**
      * <code>optional int32 num_self_and_upstream_tasks = 1;</code>
      * @return Whether the numSelfAndUpstreamTasks field is set.
@@ -7838,7 +7874,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int NUM_SELF_AND_UPSTREAM_COMPLETED_TASKS_FIELD_NUMBER = 2;
-    private int numSelfAndUpstreamCompletedTasks_ = 0;
+    private int numSelfAndUpstreamCompletedTasks_;
     /**
      * <code>optional int32 num_self_and_upstream_completed_tasks = 2;</code>
      * @return Whether the numSelfAndUpstreamCompletedTasks field is set.
@@ -7857,7 +7893,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int WITHIN_DAG_PRIORITY_FIELD_NUMBER = 3;
-    private int withinDagPriority_ = 0;
+    private int withinDagPriority_;
     /**
      * <code>optional int32 within_dag_priority = 3;</code>
      * @return Whether the withinDagPriority field is set.
@@ -7876,7 +7912,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int DAG_START_TIME_FIELD_NUMBER = 4;
-    private long dagStartTime_ = 0L;
+    private long dagStartTime_;
     /**
      * <code>optional int64 dag_start_time = 4;</code>
      * @return Whether the dagStartTime field is set.
@@ -7895,7 +7931,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int FIRST_ATTEMPT_START_TIME_FIELD_NUMBER = 5;
-    private long firstAttemptStartTime_ = 0L;
+    private long firstAttemptStartTime_;
     /**
      * <code>optional int64 first_attempt_start_time = 5;</code>
      * @return Whether the firstAttemptStartTime field is set.
@@ -7914,7 +7950,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int CURRENT_ATTEMPT_START_TIME_FIELD_NUMBER = 6;
-    private long currentAttemptStartTime_ = 0L;
+    private long currentAttemptStartTime_;
     /**
      * <code>optional int64 current_attempt_start_time = 6;</code>
      * @return Whether the currentAttemptStartTime field is set.
@@ -8129,13 +8165,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.FragmentRuntimeInfo parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.FragmentRuntimeInfo parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -8210,13 +8244,18 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         numSelfAndUpstreamTasks_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
         numSelfAndUpstreamCompletedTasks_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
         withinDagPriority_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
         dagStartTime_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000008);
         firstAttemptStartTime_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000010);
         currentAttemptStartTime_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
 
@@ -8243,12 +8282,6 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.FragmentRuntimeInfo buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.FragmentRuntimeInfo result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.FragmentRuntimeInfo(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.FragmentRuntimeInfo result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
@@ -8275,7 +8308,9 @@ public final class LlapDaemonProtocolProtos {
           result.currentAttemptStartTime_ = currentAttemptStartTime_;
           to_bitField0_ |= 0x00000020;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -8436,9 +8471,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setNumSelfAndUpstreamTasks(int value) {
-
-        numSelfAndUpstreamTasks_ = value;
         bitField0_ |= 0x00000001;
+        numSelfAndUpstreamTasks_ = value;
         onChanged();
         return this;
       }
@@ -8476,9 +8510,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setNumSelfAndUpstreamCompletedTasks(int value) {
-
-        numSelfAndUpstreamCompletedTasks_ = value;
         bitField0_ |= 0x00000002;
+        numSelfAndUpstreamCompletedTasks_ = value;
         onChanged();
         return this;
       }
@@ -8516,9 +8549,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setWithinDagPriority(int value) {
-
-        withinDagPriority_ = value;
         bitField0_ |= 0x00000004;
+        withinDagPriority_ = value;
         onChanged();
         return this;
       }
@@ -8556,9 +8588,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setDagStartTime(long value) {
-
-        dagStartTime_ = value;
         bitField0_ |= 0x00000008;
+        dagStartTime_ = value;
         onChanged();
         return this;
       }
@@ -8596,9 +8627,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setFirstAttemptStartTime(long value) {
-
-        firstAttemptStartTime_ = value;
         bitField0_ |= 0x00000010;
+        firstAttemptStartTime_ = value;
         onChanged();
         return this;
       }
@@ -8636,9 +8666,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setCurrentAttemptStartTime(long value) {
-
-        currentAttemptStartTime_ = value;
         bitField0_ |= 0x00000020;
+        currentAttemptStartTime_ = value;
         onChanged();
         return this;
       }
@@ -8782,6 +8811,11 @@ public final class LlapDaemonProtocolProtos {
       return new QueryIdentifierProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_QueryIdentifierProto_descriptor;
@@ -8797,8 +8831,7 @@ public final class LlapDaemonProtocolProtos {
 
     private int bitField0_;
     public static final int APPLICATION_ID_STRING_FIELD_NUMBER = 1;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object applicationIdString_ = "";
+    private volatile java.lang.Object applicationIdString_;
     /**
      * <code>optional string application_id_string = 1;</code>
      * @return Whether the applicationIdString field is set.
@@ -8846,7 +8879,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int DAG_INDEX_FIELD_NUMBER = 2;
-    private int dagIndex_ = 0;
+    private int dagIndex_;
     /**
      * <code>optional int32 dag_index = 2;</code>
      * @return Whether the dagIndex field is set.
@@ -8865,7 +8898,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int APP_ATTEMPT_NUMBER_FIELD_NUMBER = 3;
-    private int appAttemptNumber_ = 0;
+    private int appAttemptNumber_;
     /**
      * <code>optional int32 app_attempt_number = 3;</code>
      * @return Whether the appAttemptNumber field is set.
@@ -9028,13 +9061,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -9109,10 +9140,12 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         applicationIdString_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
         dagIndex_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
         appAttemptNumber_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -9139,18 +9172,12 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.applicationIdString_ = applicationIdString_;
           to_bitField0_ |= 0x00000001;
         }
+        result.applicationIdString_ = applicationIdString_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
           result.dagIndex_ = dagIndex_;
           to_bitField0_ |= 0x00000002;
@@ -9159,7 +9186,9 @@ public final class LlapDaemonProtocolProtos {
           result.appAttemptNumber_ = appAttemptNumber_;
           to_bitField0_ |= 0x00000004;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -9207,8 +9236,8 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeFrom(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto other) {
         if (other == org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.getDefaultInstance()) return this;
         if (other.hasApplicationIdString()) {
-          applicationIdString_ = other.applicationIdString_;
           bitField0_ |= 0x00000001;
+          applicationIdString_ = other.applicationIdString_;
           onChanged();
         }
         if (other.hasDagIndex()) {
@@ -9325,9 +9354,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setApplicationIdString(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         applicationIdString_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -9336,8 +9367,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearApplicationIdString() {
-        applicationIdString_ = getDefaultInstance().getApplicationIdString();
         bitField0_ = (bitField0_ & ~0x00000001);
+        applicationIdString_ = getDefaultInstance().getApplicationIdString();
         onChanged();
         return this;
       }
@@ -9348,9 +9379,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setApplicationIdStringBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         applicationIdString_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -9378,9 +9411,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setDagIndex(int value) {
-
-        dagIndex_ = value;
         bitField0_ |= 0x00000002;
+        dagIndex_ = value;
         onChanged();
         return this;
       }
@@ -9418,9 +9450,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setAppAttemptNumber(int value) {
-
-        appAttemptNumber_ = value;
         bitField0_ |= 0x00000004;
+        appAttemptNumber_ = value;
         onChanged();
         return this;
       }
@@ -9592,6 +9623,11 @@ public final class LlapDaemonProtocolProtos {
       return new NotTezEvent();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_NotTezEvent_descriptor;
@@ -9607,7 +9643,7 @@ public final class LlapDaemonProtocolProtos {
 
     private int bitField0_;
     public static final int INPUT_EVENT_PROTO_BYTES_FIELD_NUMBER = 1;
-    private com.google.protobuf.ByteString inputEventProtoBytes_ = com.google.protobuf.ByteString.EMPTY;
+    private com.google.protobuf.ByteString inputEventProtoBytes_;
     /**
      * <code>required bytes input_event_proto_bytes = 1;</code>
      * @return Whether the inputEventProtoBytes field is set.
@@ -9626,8 +9662,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int VERTEX_NAME_FIELD_NUMBER = 2;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object vertexName_ = "";
+    private volatile java.lang.Object vertexName_;
     /**
      * <code>required string vertex_name = 2;</code>
      * @return Whether the vertexName field is set.
@@ -9675,8 +9710,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int DEST_INPUT_NAME_FIELD_NUMBER = 3;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object destInputName_ = "";
+    private volatile java.lang.Object destInputName_;
     /**
      * <code>required string dest_input_name = 3;</code>
      * @return Whether the destInputName field is set.
@@ -9724,7 +9758,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int KEY_ID_FIELD_NUMBER = 4;
-    private int keyId_ = 0;
+    private int keyId_;
     /**
      * <code>optional int32 key_id = 4;</code>
      * @return Whether the keyId field is set.
@@ -9914,13 +9948,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.NotTezEvent parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.NotTezEvent parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -10004,11 +10036,14 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         inputEventProtoBytes_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000001);
         vertexName_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
         destInputName_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
         keyId_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -10035,31 +10070,27 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.NotTezEvent buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.NotTezEvent result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.NotTezEvent(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.NotTezEvent result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.inputEventProtoBytes_ = inputEventProtoBytes_;
           to_bitField0_ |= 0x00000001;
         }
+        result.inputEventProtoBytes_ = inputEventProtoBytes_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.vertexName_ = vertexName_;
           to_bitField0_ |= 0x00000002;
         }
+        result.vertexName_ = vertexName_;
         if (((from_bitField0_ & 0x00000004) != 0)) {
-          result.destInputName_ = destInputName_;
           to_bitField0_ |= 0x00000004;
         }
+        result.destInputName_ = destInputName_;
         if (((from_bitField0_ & 0x00000008) != 0)) {
           result.keyId_ = keyId_;
           to_bitField0_ |= 0x00000008;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -10110,13 +10141,13 @@ public final class LlapDaemonProtocolProtos {
           setInputEventProtoBytes(other.getInputEventProtoBytes());
         }
         if (other.hasVertexName()) {
-          vertexName_ = other.vertexName_;
           bitField0_ |= 0x00000002;
+          vertexName_ = other.vertexName_;
           onChanged();
         }
         if (other.hasDestInputName()) {
-          destInputName_ = other.destInputName_;
           bitField0_ |= 0x00000004;
+          destInputName_ = other.destInputName_;
           onChanged();
         }
         if (other.hasKeyId()) {
@@ -10217,9 +10248,11 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setInputEventProtoBytes(com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         inputEventProtoBytes_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -10284,9 +10317,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setVertexName(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         vertexName_ = value;
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -10295,8 +10330,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearVertexName() {
-        vertexName_ = getDefaultInstance().getVertexName();
         bitField0_ = (bitField0_ & ~0x00000002);
+        vertexName_ = getDefaultInstance().getVertexName();
         onChanged();
         return this;
       }
@@ -10307,9 +10342,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setVertexNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         vertexName_ = value;
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -10364,9 +10401,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setDestInputName(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
         destInputName_ = value;
-        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -10375,8 +10414,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearDestInputName() {
-        destInputName_ = getDefaultInstance().getDestInputName();
         bitField0_ = (bitField0_ & ~0x00000004);
+        destInputName_ = getDefaultInstance().getDestInputName();
         onChanged();
         return this;
       }
@@ -10387,9 +10426,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setDestInputNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
         destInputName_ = value;
-        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -10417,9 +10458,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setKeyId(int value) {
-
-        keyId_ = value;
         bitField0_ |= 0x00000008;
+        keyId_ = value;
         onChanged();
         return this;
       }
@@ -10738,6 +10778,11 @@ public final class LlapDaemonProtocolProtos {
       return new SubmitWorkRequestProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_SubmitWorkRequestProto_descriptor;
@@ -10779,7 +10824,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int WORK_SPEC_SIGNATURE_FIELD_NUMBER = 2;
-    private com.google.protobuf.ByteString workSpecSignature_ = com.google.protobuf.ByteString.EMPTY;
+    private com.google.protobuf.ByteString workSpecSignature_;
     /**
      * <code>optional bytes work_spec_signature = 2;</code>
      * @return Whether the workSpecSignature field is set.
@@ -10798,7 +10843,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int FRAGMENT_NUMBER_FIELD_NUMBER = 3;
-    private int fragmentNumber_ = 0;
+    private int fragmentNumber_;
     /**
      * <code>optional int32 fragment_number = 3;</code>
      * @return Whether the fragmentNumber field is set.
@@ -10817,7 +10862,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int ATTEMPT_NUMBER_FIELD_NUMBER = 4;
-    private int attemptNumber_ = 0;
+    private int attemptNumber_;
     /**
      * <code>optional int32 attempt_number = 4;</code>
      * @return Whether the attemptNumber field is set.
@@ -10836,8 +10881,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int CONTAINER_ID_STRING_FIELD_NUMBER = 5;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object containerIdString_ = "";
+    private volatile java.lang.Object containerIdString_;
     /**
      * <code>optional string container_id_string = 5;</code>
      * @return Whether the containerIdString field is set.
@@ -10885,8 +10929,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int AM_HOST_FIELD_NUMBER = 6;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object amHost_ = "";
+    private volatile java.lang.Object amHost_;
     /**
      * <code>optional string am_host = 6;</code>
      * @return Whether the amHost field is set.
@@ -10934,7 +10977,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int AM_PORT_FIELD_NUMBER = 7;
-    private int amPort_ = 0;
+    private int amPort_;
     /**
      * <code>optional int32 am_port = 7;</code>
      * @return Whether the amPort field is set.
@@ -10953,7 +10996,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int CREDENTIALS_BINARY_FIELD_NUMBER = 8;
-    private com.google.protobuf.ByteString credentialsBinary_ = com.google.protobuf.ByteString.EMPTY;
+    private com.google.protobuf.ByteString credentialsBinary_;
     /**
      * <pre>
      * Credentials are not signed - the client can add e.g. his own HDFS tokens.
@@ -11018,7 +11061,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int INITIAL_EVENT_BYTES_FIELD_NUMBER = 10;
-    private com.google.protobuf.ByteString initialEventBytes_ = com.google.protobuf.ByteString.EMPTY;
+    private com.google.protobuf.ByteString initialEventBytes_;
     /**
      * <pre>
      * Serialized (and signed) NotTezEvent; used only for external clients for now.
@@ -11045,7 +11088,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int INITIAL_EVENT_SIGNATURE_FIELD_NUMBER = 11;
-    private com.google.protobuf.ByteString initialEventSignature_ = com.google.protobuf.ByteString.EMPTY;
+    private com.google.protobuf.ByteString initialEventSignature_;
     /**
      * <code>optional bytes initial_event_signature = 11;</code>
      * @return Whether the initialEventSignature field is set.
@@ -11064,7 +11107,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int IS_GUARANTEED_FIELD_NUMBER = 12;
-    private boolean isGuaranteed_ = false;
+    private boolean isGuaranteed_;
     /**
      * <code>optional bool is_guaranteed = 12 [default = false];</code>
      * @return Whether the isGuaranteed field is set.
@@ -11083,8 +11126,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int JWT_FIELD_NUMBER = 13;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object jwt_ = "";
+    private volatile java.lang.Object jwt_;
     /**
      * <code>optional string jwt = 13;</code>
      * @return Whether the jwt field is set.
@@ -11132,7 +11174,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int IS_EXTERNAL_CLIENT_REQUEST_FIELD_NUMBER = 14;
-    private boolean isExternalClientRequest_ = false;
+    private boolean isExternalClientRequest_;
     /**
      * <code>optional bool is_external_client_request = 14 [default = false];</code>
      * @return Whether the isExternalClientRequest field is set.
@@ -11471,13 +11513,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmitWorkRequestProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmitWorkRequestProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -11559,29 +11599,42 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
-        workSpec_ = null;
-        if (workSpecBuilder_ != null) {
-          workSpecBuilder_.dispose();
-          workSpecBuilder_ = null;
+        if (workSpecBuilder_ == null) {
+          workSpec_ = null;
+        } else {
+          workSpecBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000001);
         workSpecSignature_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000002);
         fragmentNumber_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
         attemptNumber_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000008);
         containerIdString_ = "";
+        bitField0_ = (bitField0_ & ~0x00000010);
         amHost_ = "";
+        bitField0_ = (bitField0_ & ~0x00000020);
         amPort_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000040);
         credentialsBinary_ = com.google.protobuf.ByteString.EMPTY;
-        fragmentRuntimeInfo_ = null;
-        if (fragmentRuntimeInfoBuilder_ != null) {
-          fragmentRuntimeInfoBuilder_.dispose();
-          fragmentRuntimeInfoBuilder_ = null;
+        bitField0_ = (bitField0_ & ~0x00000080);
+        if (fragmentRuntimeInfoBuilder_ == null) {
+          fragmentRuntimeInfo_ = null;
+        } else {
+          fragmentRuntimeInfoBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000100);
         initialEventBytes_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000200);
         initialEventSignature_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000400);
         isGuaranteed_ = false;
+        bitField0_ = (bitField0_ & ~0x00000800);
         jwt_ = "";
+        bitField0_ = (bitField0_ & ~0x00001000);
         isExternalClientRequest_ = false;
+        bitField0_ = (bitField0_ & ~0x00002000);
         return this;
       }
 
@@ -11608,24 +11661,20 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmitWorkRequestProto buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmitWorkRequestProto result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmitWorkRequestProto(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmitWorkRequestProto result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.workSpec_ = workSpecBuilder_ == null
-              ? workSpec_
-              : workSpecBuilder_.build();
+          if (workSpecBuilder_ == null) {
+            result.workSpec_ = workSpec_;
+          } else {
+            result.workSpec_ = workSpecBuilder_.build();
+          }
           to_bitField0_ |= 0x00000001;
         }
         if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.workSpecSignature_ = workSpecSignature_;
           to_bitField0_ |= 0x00000002;
         }
+        result.workSpecSignature_ = workSpecSignature_;
         if (((from_bitField0_ & 0x00000004) != 0)) {
           result.fragmentNumber_ = fragmentNumber_;
           to_bitField0_ |= 0x00000004;
@@ -11635,48 +11684,52 @@ public final class LlapDaemonProtocolProtos {
           to_bitField0_ |= 0x00000008;
         }
         if (((from_bitField0_ & 0x00000010) != 0)) {
-          result.containerIdString_ = containerIdString_;
           to_bitField0_ |= 0x00000010;
         }
+        result.containerIdString_ = containerIdString_;
         if (((from_bitField0_ & 0x00000020) != 0)) {
-          result.amHost_ = amHost_;
           to_bitField0_ |= 0x00000020;
         }
+        result.amHost_ = amHost_;
         if (((from_bitField0_ & 0x00000040) != 0)) {
           result.amPort_ = amPort_;
           to_bitField0_ |= 0x00000040;
         }
         if (((from_bitField0_ & 0x00000080) != 0)) {
-          result.credentialsBinary_ = credentialsBinary_;
           to_bitField0_ |= 0x00000080;
         }
+        result.credentialsBinary_ = credentialsBinary_;
         if (((from_bitField0_ & 0x00000100) != 0)) {
-          result.fragmentRuntimeInfo_ = fragmentRuntimeInfoBuilder_ == null
-              ? fragmentRuntimeInfo_
-              : fragmentRuntimeInfoBuilder_.build();
+          if (fragmentRuntimeInfoBuilder_ == null) {
+            result.fragmentRuntimeInfo_ = fragmentRuntimeInfo_;
+          } else {
+            result.fragmentRuntimeInfo_ = fragmentRuntimeInfoBuilder_.build();
+          }
           to_bitField0_ |= 0x00000100;
         }
         if (((from_bitField0_ & 0x00000200) != 0)) {
-          result.initialEventBytes_ = initialEventBytes_;
           to_bitField0_ |= 0x00000200;
         }
+        result.initialEventBytes_ = initialEventBytes_;
         if (((from_bitField0_ & 0x00000400) != 0)) {
-          result.initialEventSignature_ = initialEventSignature_;
           to_bitField0_ |= 0x00000400;
         }
+        result.initialEventSignature_ = initialEventSignature_;
         if (((from_bitField0_ & 0x00000800) != 0)) {
           result.isGuaranteed_ = isGuaranteed_;
           to_bitField0_ |= 0x00000800;
         }
         if (((from_bitField0_ & 0x00001000) != 0)) {
-          result.jwt_ = jwt_;
           to_bitField0_ |= 0x00001000;
         }
+        result.jwt_ = jwt_;
         if (((from_bitField0_ & 0x00002000) != 0)) {
           result.isExternalClientRequest_ = isExternalClientRequest_;
           to_bitField0_ |= 0x00002000;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -11736,13 +11789,13 @@ public final class LlapDaemonProtocolProtos {
           setAttemptNumber(other.getAttemptNumber());
         }
         if (other.hasContainerIdString()) {
-          containerIdString_ = other.containerIdString_;
           bitField0_ |= 0x00000010;
+          containerIdString_ = other.containerIdString_;
           onChanged();
         }
         if (other.hasAmHost()) {
-          amHost_ = other.amHost_;
           bitField0_ |= 0x00000020;
+          amHost_ = other.amHost_;
           onChanged();
         }
         if (other.hasAmPort()) {
@@ -11764,8 +11817,8 @@ public final class LlapDaemonProtocolProtos {
           setIsGuaranteed(other.getIsGuaranteed());
         }
         if (other.hasJwt()) {
-          jwt_ = other.jwt_;
           bitField0_ |= 0x00001000;
+          jwt_ = other.jwt_;
           onChanged();
         }
         if (other.hasIsExternalClientRequest()) {
@@ -11918,11 +11971,11 @@ public final class LlapDaemonProtocolProtos {
             throw new NullPointerException();
           }
           workSpec_ = value;
+          onChanged();
         } else {
           workSpecBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000001;
-        onChanged();
         return this;
       }
       /**
@@ -11932,11 +11985,11 @@ public final class LlapDaemonProtocolProtos {
           org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.VertexOrBinary.Builder builderForValue) {
         if (workSpecBuilder_ == null) {
           workSpec_ = builderForValue.build();
+          onChanged();
         } else {
           workSpecBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000001;
-        onChanged();
         return this;
       }
       /**
@@ -11945,32 +11998,31 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeWorkSpec(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.VertexOrBinary value) {
         if (workSpecBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0) &&
-            workSpec_ != null &&
-            workSpec_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.VertexOrBinary.getDefaultInstance()) {
-            getWorkSpecBuilder().mergeFrom(value);
+              workSpec_ != null &&
+              workSpec_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.VertexOrBinary.getDefaultInstance()) {
+            workSpec_ =
+              org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.VertexOrBinary.newBuilder(workSpec_).mergeFrom(value).buildPartial();
           } else {
             workSpec_ = value;
           }
+          onChanged();
         } else {
           workSpecBuilder_.mergeFrom(value);
         }
-        if (workSpec_ != null) {
-          bitField0_ |= 0x00000001;
-          onChanged();
-        }
+        bitField0_ |= 0x00000001;
         return this;
       }
       /**
        * <code>optional .VertexOrBinary work_spec = 1;</code>
        */
       public Builder clearWorkSpec() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        workSpec_ = null;
-        if (workSpecBuilder_ != null) {
-          workSpecBuilder_.dispose();
-          workSpecBuilder_ = null;
+        if (workSpecBuilder_ == null) {
+          workSpec_ = null;
+          onChanged();
+        } else {
+          workSpecBuilder_.clear();
         }
-        onChanged();
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
       /**
@@ -12032,9 +12084,11 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setWorkSpecSignature(com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         workSpecSignature_ = value;
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -12072,9 +12126,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setFragmentNumber(int value) {
-
-        fragmentNumber_ = value;
         bitField0_ |= 0x00000004;
+        fragmentNumber_ = value;
         onChanged();
         return this;
       }
@@ -12112,9 +12165,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setAttemptNumber(int value) {
-
-        attemptNumber_ = value;
         bitField0_ |= 0x00000008;
+        attemptNumber_ = value;
         onChanged();
         return this;
       }
@@ -12179,9 +12231,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setContainerIdString(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
         containerIdString_ = value;
-        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -12190,8 +12244,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearContainerIdString() {
-        containerIdString_ = getDefaultInstance().getContainerIdString();
         bitField0_ = (bitField0_ & ~0x00000010);
+        containerIdString_ = getDefaultInstance().getContainerIdString();
         onChanged();
         return this;
       }
@@ -12202,9 +12256,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setContainerIdStringBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
         containerIdString_ = value;
-        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -12259,9 +12315,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setAmHost(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
         amHost_ = value;
-        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
@@ -12270,8 +12328,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearAmHost() {
-        amHost_ = getDefaultInstance().getAmHost();
         bitField0_ = (bitField0_ & ~0x00000020);
+        amHost_ = getDefaultInstance().getAmHost();
         onChanged();
         return this;
       }
@@ -12282,9 +12340,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setAmHostBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
         amHost_ = value;
-        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
@@ -12312,9 +12372,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setAmPort(int value) {
-
-        amPort_ = value;
         bitField0_ |= 0x00000040;
+        amPort_ = value;
         onChanged();
         return this;
       }
@@ -12364,9 +12423,11 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setCredentialsBinary(com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000080;
         credentialsBinary_ = value;
-        bitField0_ |= 0x00000080;
         onChanged();
         return this;
       }
@@ -12427,11 +12488,11 @@ public final class LlapDaemonProtocolProtos {
             throw new NullPointerException();
           }
           fragmentRuntimeInfo_ = value;
+          onChanged();
         } else {
           fragmentRuntimeInfoBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000100;
-        onChanged();
         return this;
       }
       /**
@@ -12445,11 +12506,11 @@ public final class LlapDaemonProtocolProtos {
           org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.FragmentRuntimeInfo.Builder builderForValue) {
         if (fragmentRuntimeInfoBuilder_ == null) {
           fragmentRuntimeInfo_ = builderForValue.build();
+          onChanged();
         } else {
           fragmentRuntimeInfoBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000100;
-        onChanged();
         return this;
       }
       /**
@@ -12462,19 +12523,18 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeFragmentRuntimeInfo(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.FragmentRuntimeInfo value) {
         if (fragmentRuntimeInfoBuilder_ == null) {
           if (((bitField0_ & 0x00000100) != 0) &&
-            fragmentRuntimeInfo_ != null &&
-            fragmentRuntimeInfo_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.FragmentRuntimeInfo.getDefaultInstance()) {
-            getFragmentRuntimeInfoBuilder().mergeFrom(value);
+              fragmentRuntimeInfo_ != null &&
+              fragmentRuntimeInfo_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.FragmentRuntimeInfo.getDefaultInstance()) {
+            fragmentRuntimeInfo_ =
+              org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.FragmentRuntimeInfo.newBuilder(fragmentRuntimeInfo_).mergeFrom(value).buildPartial();
           } else {
             fragmentRuntimeInfo_ = value;
           }
+          onChanged();
         } else {
           fragmentRuntimeInfoBuilder_.mergeFrom(value);
         }
-        if (fragmentRuntimeInfo_ != null) {
-          bitField0_ |= 0x00000100;
-          onChanged();
-        }
+        bitField0_ |= 0x00000100;
         return this;
       }
       /**
@@ -12485,13 +12545,13 @@ public final class LlapDaemonProtocolProtos {
        * <code>optional .FragmentRuntimeInfo fragment_runtime_info = 9;</code>
        */
       public Builder clearFragmentRuntimeInfo() {
-        bitField0_ = (bitField0_ & ~0x00000100);
-        fragmentRuntimeInfo_ = null;
-        if (fragmentRuntimeInfoBuilder_ != null) {
-          fragmentRuntimeInfoBuilder_.dispose();
-          fragmentRuntimeInfoBuilder_ = null;
+        if (fragmentRuntimeInfoBuilder_ == null) {
+          fragmentRuntimeInfo_ = null;
+          onChanged();
+        } else {
+          fragmentRuntimeInfoBuilder_.clear();
         }
-        onChanged();
+        bitField0_ = (bitField0_ & ~0x00000100);
         return this;
       }
       /**
@@ -12577,9 +12637,11 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setInitialEventBytes(com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000200;
         initialEventBytes_ = value;
-        bitField0_ |= 0x00000200;
         onChanged();
         return this;
       }
@@ -12621,9 +12683,11 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setInitialEventSignature(com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000400;
         initialEventSignature_ = value;
-        bitField0_ |= 0x00000400;
         onChanged();
         return this;
       }
@@ -12661,9 +12725,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setIsGuaranteed(boolean value) {
-
-        isGuaranteed_ = value;
         bitField0_ |= 0x00000800;
+        isGuaranteed_ = value;
         onChanged();
         return this;
       }
@@ -12728,9 +12791,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setJwt(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00001000;
         jwt_ = value;
-        bitField0_ |= 0x00001000;
         onChanged();
         return this;
       }
@@ -12739,8 +12804,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearJwt() {
-        jwt_ = getDefaultInstance().getJwt();
         bitField0_ = (bitField0_ & ~0x00001000);
+        jwt_ = getDefaultInstance().getJwt();
         onChanged();
         return this;
       }
@@ -12751,9 +12816,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setJwtBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00001000;
         jwt_ = value;
-        bitField0_ |= 0x00001000;
         onChanged();
         return this;
       }
@@ -12781,9 +12848,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setIsExternalClientRequest(boolean value) {
-
-        isExternalClientRequest_ = value;
         bitField0_ |= 0x00002000;
+        isExternalClientRequest_ = value;
         onChanged();
         return this;
       }
@@ -12932,6 +12998,11 @@ public final class LlapDaemonProtocolProtos {
       return new RegisterDagRequestProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_RegisterDagRequestProto_descriptor;
@@ -12947,8 +13018,7 @@ public final class LlapDaemonProtocolProtos {
 
     private int bitField0_;
     public static final int USER_FIELD_NUMBER = 1;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object user_ = "";
+    private volatile java.lang.Object user_;
     /**
      * <code>optional string user = 1;</code>
      * @return Whether the user field is set.
@@ -13022,7 +13092,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int CREDENTIALS_BINARY_FIELD_NUMBER = 3;
-    private com.google.protobuf.ByteString credentialsBinary_ = com.google.protobuf.ByteString.EMPTY;
+    private com.google.protobuf.ByteString credentialsBinary_;
     /**
      * <code>optional bytes credentials_binary = 3;</code>
      * @return Whether the credentialsBinary field is set.
@@ -13189,13 +13259,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.RegisterDagRequestProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.RegisterDagRequestProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -13276,14 +13344,16 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         user_ = "";
-        queryIdentifier_ = null;
-        if (queryIdentifierBuilder_ != null) {
-          queryIdentifierBuilder_.dispose();
-          queryIdentifierBuilder_ = null;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        if (queryIdentifierBuilder_ == null) {
+          queryIdentifier_ = null;
+        } else {
+          queryIdentifierBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000002);
         credentialsBinary_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -13310,29 +13380,27 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.RegisterDagRequestProto buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.RegisterDagRequestProto result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.RegisterDagRequestProto(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.RegisterDagRequestProto result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.user_ = user_;
           to_bitField0_ |= 0x00000001;
         }
+        result.user_ = user_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.queryIdentifier_ = queryIdentifierBuilder_ == null
-              ? queryIdentifier_
-              : queryIdentifierBuilder_.build();
+          if (queryIdentifierBuilder_ == null) {
+            result.queryIdentifier_ = queryIdentifier_;
+          } else {
+            result.queryIdentifier_ = queryIdentifierBuilder_.build();
+          }
           to_bitField0_ |= 0x00000002;
         }
         if (((from_bitField0_ & 0x00000004) != 0)) {
-          result.credentialsBinary_ = credentialsBinary_;
           to_bitField0_ |= 0x00000004;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.credentialsBinary_ = credentialsBinary_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -13380,8 +13448,8 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeFrom(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.RegisterDagRequestProto other) {
         if (other == org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.RegisterDagRequestProto.getDefaultInstance()) return this;
         if (other.hasUser()) {
-          user_ = other.user_;
           bitField0_ |= 0x00000001;
+          user_ = other.user_;
           onChanged();
         }
         if (other.hasQueryIdentifier()) {
@@ -13503,9 +13571,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setUser(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         user_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -13514,8 +13584,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearUser() {
-        user_ = getDefaultInstance().getUser();
         bitField0_ = (bitField0_ & ~0x00000001);
+        user_ = getDefaultInstance().getUser();
         onChanged();
         return this;
       }
@@ -13526,9 +13596,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setUserBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         user_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -13563,11 +13635,11 @@ public final class LlapDaemonProtocolProtos {
             throw new NullPointerException();
           }
           queryIdentifier_ = value;
+          onChanged();
         } else {
           queryIdentifierBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000002;
-        onChanged();
         return this;
       }
       /**
@@ -13577,11 +13649,11 @@ public final class LlapDaemonProtocolProtos {
           org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.Builder builderForValue) {
         if (queryIdentifierBuilder_ == null) {
           queryIdentifier_ = builderForValue.build();
+          onChanged();
         } else {
           queryIdentifierBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000002;
-        onChanged();
         return this;
       }
       /**
@@ -13590,32 +13662,31 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeQueryIdentifier(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto value) {
         if (queryIdentifierBuilder_ == null) {
           if (((bitField0_ & 0x00000002) != 0) &&
-            queryIdentifier_ != null &&
-            queryIdentifier_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.getDefaultInstance()) {
-            getQueryIdentifierBuilder().mergeFrom(value);
+              queryIdentifier_ != null &&
+              queryIdentifier_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.getDefaultInstance()) {
+            queryIdentifier_ =
+              org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.newBuilder(queryIdentifier_).mergeFrom(value).buildPartial();
           } else {
             queryIdentifier_ = value;
           }
+          onChanged();
         } else {
           queryIdentifierBuilder_.mergeFrom(value);
         }
-        if (queryIdentifier_ != null) {
-          bitField0_ |= 0x00000002;
-          onChanged();
-        }
+        bitField0_ |= 0x00000002;
         return this;
       }
       /**
        * <code>required .QueryIdentifierProto query_identifier = 2;</code>
        */
       public Builder clearQueryIdentifier() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        queryIdentifier_ = null;
-        if (queryIdentifierBuilder_ != null) {
-          queryIdentifierBuilder_.dispose();
-          queryIdentifierBuilder_ = null;
+        if (queryIdentifierBuilder_ == null) {
+          queryIdentifier_ = null;
+          onChanged();
+        } else {
+          queryIdentifierBuilder_.clear();
         }
-        onChanged();
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
       /**
@@ -13677,9 +13748,11 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setCredentialsBinary(com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
         credentialsBinary_ = value;
-        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -13783,6 +13856,11 @@ public final class LlapDaemonProtocolProtos {
       return new RegisterDagResponseProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_RegisterDagResponseProto_descriptor;
@@ -13894,13 +13972,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.RegisterDagResponseProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.RegisterDagResponseProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -14210,6 +14286,11 @@ public final class LlapDaemonProtocolProtos {
       return new SubmitWorkResponseProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_SubmitWorkResponseProto_descriptor;
@@ -14225,7 +14306,7 @@ public final class LlapDaemonProtocolProtos {
 
     private int bitField0_;
     public static final int SUBMISSION_STATE_FIELD_NUMBER = 1;
-    private int submissionState_ = 1;
+    private int submissionState_;
     /**
      * <code>optional .SubmissionStateProto submission_state = 1;</code>
      * @return Whether the submissionState field is set.
@@ -14238,13 +14319,13 @@ public final class LlapDaemonProtocolProtos {
      * @return The submissionState.
      */
     @java.lang.Override public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmissionStateProto getSubmissionState() {
-      org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmissionStateProto result = org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmissionStateProto.forNumber(submissionState_);
+      @SuppressWarnings("deprecation")
+      org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmissionStateProto result = org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmissionStateProto.valueOf(submissionState_);
       return result == null ? org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmissionStateProto.ACCEPTED : result;
     }
 
     public static final int UNIQUE_NODE_ID_FIELD_NUMBER = 2;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object uniqueNodeId_ = "";
+    private volatile java.lang.Object uniqueNodeId_;
     /**
      * <code>optional string unique_node_id = 2;</code>
      * @return Whether the uniqueNodeId field is set.
@@ -14419,13 +14500,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmitWorkResponseProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmitWorkResponseProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -14500,9 +14579,10 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         submissionState_ = 1;
+        bitField0_ = (bitField0_ & ~0x00000001);
         uniqueNodeId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -14529,23 +14609,19 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmitWorkResponseProto buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmitWorkResponseProto result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmitWorkResponseProto(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmitWorkResponseProto result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.submissionState_ = submissionState_;
           to_bitField0_ |= 0x00000001;
         }
+        result.submissionState_ = submissionState_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.uniqueNodeId_ = uniqueNodeId_;
           to_bitField0_ |= 0x00000002;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.uniqueNodeId_ = uniqueNodeId_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -14596,8 +14672,8 @@ public final class LlapDaemonProtocolProtos {
           setSubmissionState(other.getSubmissionState());
         }
         if (other.hasUniqueNodeId()) {
-          uniqueNodeId_ = other.uniqueNodeId_;
           bitField0_ |= 0x00000002;
+          uniqueNodeId_ = other.uniqueNodeId_;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -14674,7 +14750,8 @@ public final class LlapDaemonProtocolProtos {
        */
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmissionStateProto getSubmissionState() {
-        org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmissionStateProto result = org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmissionStateProto.forNumber(submissionState_);
+        @SuppressWarnings("deprecation")
+        org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmissionStateProto result = org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmissionStateProto.valueOf(submissionState_);
         return result == null ? org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SubmissionStateProto.ACCEPTED : result;
       }
       /**
@@ -14752,9 +14829,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setUniqueNodeId(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         uniqueNodeId_ = value;
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -14763,8 +14842,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearUniqueNodeId() {
-        uniqueNodeId_ = getDefaultInstance().getUniqueNodeId();
         bitField0_ = (bitField0_ & ~0x00000002);
+        uniqueNodeId_ = getDefaultInstance().getUniqueNodeId();
         onChanged();
         return this;
       }
@@ -14775,9 +14854,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setUniqueNodeIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         uniqueNodeId_ = value;
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -14916,6 +14997,11 @@ public final class LlapDaemonProtocolProtos {
       return new SourceStateUpdatedRequestProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_SourceStateUpdatedRequestProto_descriptor;
@@ -14957,8 +15043,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int SRC_NAME_FIELD_NUMBER = 2;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object srcName_ = "";
+    private volatile java.lang.Object srcName_;
     /**
      * <code>optional string src_name = 2;</code>
      * @return Whether the srcName field is set.
@@ -15006,7 +15091,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int STATE_FIELD_NUMBER = 3;
-    private int state_ = 1;
+    private int state_;
     /**
      * <code>optional .SourceStateProto state = 3;</code>
      * @return Whether the state field is set.
@@ -15019,7 +15104,8 @@ public final class LlapDaemonProtocolProtos {
      * @return The state.
      */
     @java.lang.Override public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SourceStateProto getState() {
-      org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SourceStateProto result = org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SourceStateProto.forNumber(state_);
+      @SuppressWarnings("deprecation")
+      org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SourceStateProto result = org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SourceStateProto.valueOf(state_);
       return result == null ? org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SourceStateProto.S_SUCCEEDED : result;
     }
 
@@ -15167,13 +15253,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SourceStateUpdatedRequestProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SourceStateUpdatedRequestProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -15254,14 +15338,16 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
-        queryIdentifier_ = null;
-        if (queryIdentifierBuilder_ != null) {
-          queryIdentifierBuilder_.dispose();
-          queryIdentifierBuilder_ = null;
+        if (queryIdentifierBuilder_ == null) {
+          queryIdentifier_ = null;
+        } else {
+          queryIdentifierBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000001);
         srcName_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
         state_ = 1;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -15288,29 +15374,27 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SourceStateUpdatedRequestProto buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SourceStateUpdatedRequestProto result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SourceStateUpdatedRequestProto(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SourceStateUpdatedRequestProto result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.queryIdentifier_ = queryIdentifierBuilder_ == null
-              ? queryIdentifier_
-              : queryIdentifierBuilder_.build();
+          if (queryIdentifierBuilder_ == null) {
+            result.queryIdentifier_ = queryIdentifier_;
+          } else {
+            result.queryIdentifier_ = queryIdentifierBuilder_.build();
+          }
           to_bitField0_ |= 0x00000001;
         }
         if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.srcName_ = srcName_;
           to_bitField0_ |= 0x00000002;
         }
+        result.srcName_ = srcName_;
         if (((from_bitField0_ & 0x00000004) != 0)) {
-          result.state_ = state_;
           to_bitField0_ |= 0x00000004;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.state_ = state_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -15361,8 +15445,8 @@ public final class LlapDaemonProtocolProtos {
           mergeQueryIdentifier(other.getQueryIdentifier());
         }
         if (other.hasSrcName()) {
-          srcName_ = other.srcName_;
           bitField0_ |= 0x00000002;
+          srcName_ = other.srcName_;
           onChanged();
         }
         if (other.hasState()) {
@@ -15465,11 +15549,11 @@ public final class LlapDaemonProtocolProtos {
             throw new NullPointerException();
           }
           queryIdentifier_ = value;
+          onChanged();
         } else {
           queryIdentifierBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000001;
-        onChanged();
         return this;
       }
       /**
@@ -15479,11 +15563,11 @@ public final class LlapDaemonProtocolProtos {
           org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.Builder builderForValue) {
         if (queryIdentifierBuilder_ == null) {
           queryIdentifier_ = builderForValue.build();
+          onChanged();
         } else {
           queryIdentifierBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000001;
-        onChanged();
         return this;
       }
       /**
@@ -15492,32 +15576,31 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeQueryIdentifier(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto value) {
         if (queryIdentifierBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0) &&
-            queryIdentifier_ != null &&
-            queryIdentifier_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.getDefaultInstance()) {
-            getQueryIdentifierBuilder().mergeFrom(value);
+              queryIdentifier_ != null &&
+              queryIdentifier_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.getDefaultInstance()) {
+            queryIdentifier_ =
+              org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.newBuilder(queryIdentifier_).mergeFrom(value).buildPartial();
           } else {
             queryIdentifier_ = value;
           }
+          onChanged();
         } else {
           queryIdentifierBuilder_.mergeFrom(value);
         }
-        if (queryIdentifier_ != null) {
-          bitField0_ |= 0x00000001;
-          onChanged();
-        }
+        bitField0_ |= 0x00000001;
         return this;
       }
       /**
        * <code>optional .QueryIdentifierProto query_identifier = 1;</code>
        */
       public Builder clearQueryIdentifier() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        queryIdentifier_ = null;
-        if (queryIdentifierBuilder_ != null) {
-          queryIdentifierBuilder_.dispose();
-          queryIdentifierBuilder_ = null;
+        if (queryIdentifierBuilder_ == null) {
+          queryIdentifier_ = null;
+          onChanged();
+        } else {
+          queryIdentifierBuilder_.clear();
         }
-        onChanged();
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
       /**
@@ -15606,9 +15689,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setSrcName(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         srcName_ = value;
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -15617,8 +15702,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearSrcName() {
-        srcName_ = getDefaultInstance().getSrcName();
         bitField0_ = (bitField0_ & ~0x00000002);
+        srcName_ = getDefaultInstance().getSrcName();
         onChanged();
         return this;
       }
@@ -15629,9 +15714,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setSrcNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         srcName_ = value;
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -15650,7 +15737,8 @@ public final class LlapDaemonProtocolProtos {
        */
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SourceStateProto getState() {
-        org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SourceStateProto result = org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SourceStateProto.forNumber(state_);
+        @SuppressWarnings("deprecation")
+        org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SourceStateProto result = org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SourceStateProto.valueOf(state_);
         return result == null ? org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SourceStateProto.S_SUCCEEDED : result;
       }
       /**
@@ -15767,6 +15855,11 @@ public final class LlapDaemonProtocolProtos {
       return new SourceStateUpdatedResponseProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_SourceStateUpdatedResponseProto_descriptor;
@@ -15878,13 +15971,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SourceStateUpdatedResponseProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SourceStateUpdatedResponseProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -16190,6 +16281,11 @@ public final class LlapDaemonProtocolProtos {
       return new QueryCompleteRequestProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_QueryCompleteRequestProto_descriptor;
@@ -16231,7 +16327,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int DELETE_DELAY_FIELD_NUMBER = 2;
-    private long deleteDelay_ = 0L;
+    private long deleteDelay_;
     /**
      * <code>optional int64 delete_delay = 2 [default = 0];</code>
      * @return Whether the deleteDelay field is set.
@@ -16380,13 +16476,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryCompleteRequestProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryCompleteRequestProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -16467,13 +16561,14 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
-        queryIdentifier_ = null;
-        if (queryIdentifierBuilder_ != null) {
-          queryIdentifierBuilder_.dispose();
-          queryIdentifierBuilder_ = null;
+        if (queryIdentifierBuilder_ == null) {
+          queryIdentifier_ = null;
+        } else {
+          queryIdentifierBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000001);
         deleteDelay_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -16500,25 +16595,23 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryCompleteRequestProto buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryCompleteRequestProto result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryCompleteRequestProto(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryCompleteRequestProto result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.queryIdentifier_ = queryIdentifierBuilder_ == null
-              ? queryIdentifier_
-              : queryIdentifierBuilder_.build();
+          if (queryIdentifierBuilder_ == null) {
+            result.queryIdentifier_ = queryIdentifier_;
+          } else {
+            result.queryIdentifier_ = queryIdentifierBuilder_.build();
+          }
           to_bitField0_ |= 0x00000001;
         }
         if (((from_bitField0_ & 0x00000002) != 0)) {
           result.deleteDelay_ = deleteDelay_;
           to_bitField0_ |= 0x00000002;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -16656,11 +16749,11 @@ public final class LlapDaemonProtocolProtos {
             throw new NullPointerException();
           }
           queryIdentifier_ = value;
+          onChanged();
         } else {
           queryIdentifierBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000001;
-        onChanged();
         return this;
       }
       /**
@@ -16670,11 +16763,11 @@ public final class LlapDaemonProtocolProtos {
           org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.Builder builderForValue) {
         if (queryIdentifierBuilder_ == null) {
           queryIdentifier_ = builderForValue.build();
+          onChanged();
         } else {
           queryIdentifierBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000001;
-        onChanged();
         return this;
       }
       /**
@@ -16683,32 +16776,31 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeQueryIdentifier(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto value) {
         if (queryIdentifierBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0) &&
-            queryIdentifier_ != null &&
-            queryIdentifier_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.getDefaultInstance()) {
-            getQueryIdentifierBuilder().mergeFrom(value);
+              queryIdentifier_ != null &&
+              queryIdentifier_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.getDefaultInstance()) {
+            queryIdentifier_ =
+              org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.newBuilder(queryIdentifier_).mergeFrom(value).buildPartial();
           } else {
             queryIdentifier_ = value;
           }
+          onChanged();
         } else {
           queryIdentifierBuilder_.mergeFrom(value);
         }
-        if (queryIdentifier_ != null) {
-          bitField0_ |= 0x00000001;
-          onChanged();
-        }
+        bitField0_ |= 0x00000001;
         return this;
       }
       /**
        * <code>optional .QueryIdentifierProto query_identifier = 1;</code>
        */
       public Builder clearQueryIdentifier() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        queryIdentifier_ = null;
-        if (queryIdentifierBuilder_ != null) {
-          queryIdentifierBuilder_.dispose();
-          queryIdentifierBuilder_ = null;
+        if (queryIdentifierBuilder_ == null) {
+          queryIdentifier_ = null;
+          onChanged();
+        } else {
+          queryIdentifierBuilder_.clear();
         }
-        onChanged();
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
       /**
@@ -16770,9 +16862,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setDeleteDelay(long value) {
-
-        deleteDelay_ = value;
         bitField0_ |= 0x00000002;
+        deleteDelay_ = value;
         onChanged();
         return this;
       }
@@ -16876,6 +16967,11 @@ public final class LlapDaemonProtocolProtos {
       return new QueryCompleteResponseProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_QueryCompleteResponseProto_descriptor;
@@ -16987,13 +17083,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryCompleteResponseProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryCompleteResponseProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -17306,6 +17400,11 @@ public final class LlapDaemonProtocolProtos {
       return new TerminateFragmentRequestProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_TerminateFragmentRequestProto_descriptor;
@@ -17347,8 +17446,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int FRAGMENT_IDENTIFIER_STRING_FIELD_NUMBER = 2;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object fragmentIdentifierString_ = "";
+    private volatile java.lang.Object fragmentIdentifierString_;
     /**
      * <code>optional string fragment_identifier_string = 2;</code>
      * @return Whether the fragmentIdentifierString field is set.
@@ -17524,13 +17622,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.TerminateFragmentRequestProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.TerminateFragmentRequestProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -17611,13 +17707,14 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
-        queryIdentifier_ = null;
-        if (queryIdentifierBuilder_ != null) {
-          queryIdentifierBuilder_.dispose();
-          queryIdentifierBuilder_ = null;
+        if (queryIdentifierBuilder_ == null) {
+          queryIdentifier_ = null;
+        } else {
+          queryIdentifierBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000001);
         fragmentIdentifierString_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -17644,25 +17741,23 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.TerminateFragmentRequestProto buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.TerminateFragmentRequestProto result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.TerminateFragmentRequestProto(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.TerminateFragmentRequestProto result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.queryIdentifier_ = queryIdentifierBuilder_ == null
-              ? queryIdentifier_
-              : queryIdentifierBuilder_.build();
+          if (queryIdentifierBuilder_ == null) {
+            result.queryIdentifier_ = queryIdentifier_;
+          } else {
+            result.queryIdentifier_ = queryIdentifierBuilder_.build();
+          }
           to_bitField0_ |= 0x00000001;
         }
         if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.fragmentIdentifierString_ = fragmentIdentifierString_;
           to_bitField0_ |= 0x00000002;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.fragmentIdentifierString_ = fragmentIdentifierString_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -17713,8 +17808,8 @@ public final class LlapDaemonProtocolProtos {
           mergeQueryIdentifier(other.getQueryIdentifier());
         }
         if (other.hasFragmentIdentifierString()) {
-          fragmentIdentifierString_ = other.fragmentIdentifierString_;
           bitField0_ |= 0x00000002;
+          fragmentIdentifierString_ = other.fragmentIdentifierString_;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -17802,11 +17897,11 @@ public final class LlapDaemonProtocolProtos {
             throw new NullPointerException();
           }
           queryIdentifier_ = value;
+          onChanged();
         } else {
           queryIdentifierBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000001;
-        onChanged();
         return this;
       }
       /**
@@ -17816,11 +17911,11 @@ public final class LlapDaemonProtocolProtos {
           org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.Builder builderForValue) {
         if (queryIdentifierBuilder_ == null) {
           queryIdentifier_ = builderForValue.build();
+          onChanged();
         } else {
           queryIdentifierBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000001;
-        onChanged();
         return this;
       }
       /**
@@ -17829,32 +17924,31 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeQueryIdentifier(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto value) {
         if (queryIdentifierBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0) &&
-            queryIdentifier_ != null &&
-            queryIdentifier_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.getDefaultInstance()) {
-            getQueryIdentifierBuilder().mergeFrom(value);
+              queryIdentifier_ != null &&
+              queryIdentifier_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.getDefaultInstance()) {
+            queryIdentifier_ =
+              org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.newBuilder(queryIdentifier_).mergeFrom(value).buildPartial();
           } else {
             queryIdentifier_ = value;
           }
+          onChanged();
         } else {
           queryIdentifierBuilder_.mergeFrom(value);
         }
-        if (queryIdentifier_ != null) {
-          bitField0_ |= 0x00000001;
-          onChanged();
-        }
+        bitField0_ |= 0x00000001;
         return this;
       }
       /**
        * <code>optional .QueryIdentifierProto query_identifier = 1;</code>
        */
       public Builder clearQueryIdentifier() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        queryIdentifier_ = null;
-        if (queryIdentifierBuilder_ != null) {
-          queryIdentifierBuilder_.dispose();
-          queryIdentifierBuilder_ = null;
+        if (queryIdentifierBuilder_ == null) {
+          queryIdentifier_ = null;
+          onChanged();
+        } else {
+          queryIdentifierBuilder_.clear();
         }
-        onChanged();
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
       /**
@@ -17943,9 +18037,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setFragmentIdentifierString(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         fragmentIdentifierString_ = value;
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -17954,8 +18050,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearFragmentIdentifierString() {
-        fragmentIdentifierString_ = getDefaultInstance().getFragmentIdentifierString();
         bitField0_ = (bitField0_ & ~0x00000002);
+        fragmentIdentifierString_ = getDefaultInstance().getFragmentIdentifierString();
         onChanged();
         return this;
       }
@@ -17966,9 +18062,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setFragmentIdentifierStringBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         fragmentIdentifierString_ = value;
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -18062,6 +18160,11 @@ public final class LlapDaemonProtocolProtos {
       return new TerminateFragmentResponseProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_TerminateFragmentResponseProto_descriptor;
@@ -18173,13 +18276,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.TerminateFragmentResponseProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.TerminateFragmentResponseProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -18503,6 +18604,11 @@ public final class LlapDaemonProtocolProtos {
       return new UpdateFragmentRequestProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_UpdateFragmentRequestProto_descriptor;
@@ -18544,8 +18650,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int FRAGMENT_IDENTIFIER_STRING_FIELD_NUMBER = 2;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object fragmentIdentifierString_ = "";
+    private volatile java.lang.Object fragmentIdentifierString_;
     /**
      * <code>optional string fragment_identifier_string = 2;</code>
      * @return Whether the fragmentIdentifierString field is set.
@@ -18593,7 +18698,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int IS_GUARANTEED_FIELD_NUMBER = 3;
-    private boolean isGuaranteed_ = false;
+    private boolean isGuaranteed_;
     /**
      * <code>optional bool is_guaranteed = 3;</code>
      * @return Whether the isGuaranteed field is set.
@@ -18757,13 +18862,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.UpdateFragmentRequestProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.UpdateFragmentRequestProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -18844,14 +18947,16 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
-        queryIdentifier_ = null;
-        if (queryIdentifierBuilder_ != null) {
-          queryIdentifierBuilder_.dispose();
-          queryIdentifierBuilder_ = null;
+        if (queryIdentifierBuilder_ == null) {
+          queryIdentifier_ = null;
+        } else {
+          queryIdentifierBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000001);
         fragmentIdentifierString_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
         isGuaranteed_ = false;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -18878,29 +18983,27 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.UpdateFragmentRequestProto buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.UpdateFragmentRequestProto result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.UpdateFragmentRequestProto(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.UpdateFragmentRequestProto result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.queryIdentifier_ = queryIdentifierBuilder_ == null
-              ? queryIdentifier_
-              : queryIdentifierBuilder_.build();
+          if (queryIdentifierBuilder_ == null) {
+            result.queryIdentifier_ = queryIdentifier_;
+          } else {
+            result.queryIdentifier_ = queryIdentifierBuilder_.build();
+          }
           to_bitField0_ |= 0x00000001;
         }
         if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.fragmentIdentifierString_ = fragmentIdentifierString_;
           to_bitField0_ |= 0x00000002;
         }
+        result.fragmentIdentifierString_ = fragmentIdentifierString_;
         if (((from_bitField0_ & 0x00000004) != 0)) {
           result.isGuaranteed_ = isGuaranteed_;
           to_bitField0_ |= 0x00000004;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -18951,8 +19054,8 @@ public final class LlapDaemonProtocolProtos {
           mergeQueryIdentifier(other.getQueryIdentifier());
         }
         if (other.hasFragmentIdentifierString()) {
-          fragmentIdentifierString_ = other.fragmentIdentifierString_;
           bitField0_ |= 0x00000002;
+          fragmentIdentifierString_ = other.fragmentIdentifierString_;
           onChanged();
         }
         if (other.hasIsGuaranteed()) {
@@ -19048,11 +19151,11 @@ public final class LlapDaemonProtocolProtos {
             throw new NullPointerException();
           }
           queryIdentifier_ = value;
+          onChanged();
         } else {
           queryIdentifierBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000001;
-        onChanged();
         return this;
       }
       /**
@@ -19062,11 +19165,11 @@ public final class LlapDaemonProtocolProtos {
           org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.Builder builderForValue) {
         if (queryIdentifierBuilder_ == null) {
           queryIdentifier_ = builderForValue.build();
+          onChanged();
         } else {
           queryIdentifierBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000001;
-        onChanged();
         return this;
       }
       /**
@@ -19075,32 +19178,31 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeQueryIdentifier(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto value) {
         if (queryIdentifierBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0) &&
-            queryIdentifier_ != null &&
-            queryIdentifier_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.getDefaultInstance()) {
-            getQueryIdentifierBuilder().mergeFrom(value);
+              queryIdentifier_ != null &&
+              queryIdentifier_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.getDefaultInstance()) {
+            queryIdentifier_ =
+              org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.QueryIdentifierProto.newBuilder(queryIdentifier_).mergeFrom(value).buildPartial();
           } else {
             queryIdentifier_ = value;
           }
+          onChanged();
         } else {
           queryIdentifierBuilder_.mergeFrom(value);
         }
-        if (queryIdentifier_ != null) {
-          bitField0_ |= 0x00000001;
-          onChanged();
-        }
+        bitField0_ |= 0x00000001;
         return this;
       }
       /**
        * <code>optional .QueryIdentifierProto query_identifier = 1;</code>
        */
       public Builder clearQueryIdentifier() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        queryIdentifier_ = null;
-        if (queryIdentifierBuilder_ != null) {
-          queryIdentifierBuilder_.dispose();
-          queryIdentifierBuilder_ = null;
+        if (queryIdentifierBuilder_ == null) {
+          queryIdentifier_ = null;
+          onChanged();
+        } else {
+          queryIdentifierBuilder_.clear();
         }
-        onChanged();
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
       /**
@@ -19189,9 +19291,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setFragmentIdentifierString(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         fragmentIdentifierString_ = value;
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -19200,8 +19304,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearFragmentIdentifierString() {
-        fragmentIdentifierString_ = getDefaultInstance().getFragmentIdentifierString();
         bitField0_ = (bitField0_ & ~0x00000002);
+        fragmentIdentifierString_ = getDefaultInstance().getFragmentIdentifierString();
         onChanged();
         return this;
       }
@@ -19212,9 +19316,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setFragmentIdentifierStringBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         fragmentIdentifierString_ = value;
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -19242,9 +19348,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setIsGuaranteed(boolean value) {
-
-        isGuaranteed_ = value;
         bitField0_ |= 0x00000004;
+        isGuaranteed_ = value;
         onChanged();
         return this;
       }
@@ -19370,6 +19475,11 @@ public final class LlapDaemonProtocolProtos {
       return new UpdateFragmentResponseProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_UpdateFragmentResponseProto_descriptor;
@@ -19385,7 +19495,7 @@ public final class LlapDaemonProtocolProtos {
 
     private int bitField0_;
     public static final int RESULT_FIELD_NUMBER = 1;
-    private boolean result_ = false;
+    private boolean result_;
     /**
      * <code>optional bool result = 1;</code>
      * @return Whether the result field is set.
@@ -19404,7 +19514,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int IS_GUARANTEED_FIELD_NUMBER = 2;
-    private boolean isGuaranteed_ = false;
+    private boolean isGuaranteed_;
     /**
      * <code>optional bool is_guaranteed = 2;</code>
      * @return Whether the isGuaranteed field is set.
@@ -19554,13 +19664,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.UpdateFragmentResponseProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.UpdateFragmentResponseProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -19635,9 +19743,10 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         result_ = false;
+        bitField0_ = (bitField0_ & ~0x00000001);
         isGuaranteed_ = false;
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -19664,12 +19773,6 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.UpdateFragmentResponseProto buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.UpdateFragmentResponseProto result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.UpdateFragmentResponseProto(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.UpdateFragmentResponseProto result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
@@ -19680,7 +19783,9 @@ public final class LlapDaemonProtocolProtos {
           result.isGuaranteed_ = isGuaranteed_;
           to_bitField0_ |= 0x00000002;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -19809,9 +19914,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setResult(boolean value) {
-
-        result_ = value;
         bitField0_ |= 0x00000001;
+        result_ = value;
         onChanged();
         return this;
       }
@@ -19849,9 +19953,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setIsGuaranteed(boolean value) {
-
-        isGuaranteed_ = value;
         bitField0_ |= 0x00000002;
+        isGuaranteed_ = value;
         onChanged();
         return this;
       }
@@ -19973,6 +20076,11 @@ public final class LlapDaemonProtocolProtos {
       return new GetTokenRequestProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_GetTokenRequestProto_descriptor;
@@ -19988,8 +20096,7 @@ public final class LlapDaemonProtocolProtos {
 
     private int bitField0_;
     public static final int APP_ID_FIELD_NUMBER = 1;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object appId_ = "";
+    private volatile java.lang.Object appId_;
     /**
      * <code>optional string app_id = 1;</code>
      * @return Whether the appId field is set.
@@ -20149,13 +20256,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetTokenRequestProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetTokenRequestProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -20230,8 +20335,8 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         appId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
 
@@ -20258,19 +20363,15 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetTokenRequestProto buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetTokenRequestProto result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetTokenRequestProto(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetTokenRequestProto result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.appId_ = appId_;
           to_bitField0_ |= 0x00000001;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.appId_ = appId_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -20318,8 +20419,8 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeFrom(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetTokenRequestProto other) {
         if (other == org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetTokenRequestProto.getDefaultInstance()) return this;
         if (other.hasAppId()) {
-          appId_ = other.appId_;
           bitField0_ |= 0x00000001;
+          appId_ = other.appId_;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -20420,9 +20521,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setAppId(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         appId_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -20431,8 +20534,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearAppId() {
-        appId_ = getDefaultInstance().getAppId();
         bitField0_ = (bitField0_ & ~0x00000001);
+        appId_ = getDefaultInstance().getAppId();
         onChanged();
         return this;
       }
@@ -20443,9 +20546,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setAppIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         appId_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -20551,6 +20656,11 @@ public final class LlapDaemonProtocolProtos {
       return new GetTokenResponseProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_GetTokenResponseProto_descriptor;
@@ -20566,7 +20676,7 @@ public final class LlapDaemonProtocolProtos {
 
     private int bitField0_;
     public static final int TOKEN_FIELD_NUMBER = 1;
-    private com.google.protobuf.ByteString token_ = com.google.protobuf.ByteString.EMPTY;
+    private com.google.protobuf.ByteString token_;
     /**
      * <code>optional bytes token = 1;</code>
      * @return Whether the token field is set.
@@ -20698,13 +20808,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetTokenResponseProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetTokenResponseProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -20779,8 +20887,8 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         token_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
 
@@ -20807,19 +20915,15 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetTokenResponseProto buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetTokenResponseProto result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetTokenResponseProto(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetTokenResponseProto result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.token_ = token_;
           to_bitField0_ |= 0x00000001;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.token_ = token_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -20940,9 +21044,11 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setToken(com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         token_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -21080,6 +21186,11 @@ public final class LlapDaemonProtocolProtos {
       return new LlapOutputSocketInitMessage();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_LlapOutputSocketInitMessage_descriptor;
@@ -21095,8 +21206,7 @@ public final class LlapDaemonProtocolProtos {
 
     private int bitField0_;
     public static final int FRAGMENT_ID_FIELD_NUMBER = 1;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object fragmentId_ = "";
+    private volatile java.lang.Object fragmentId_;
     /**
      * <code>required string fragment_id = 1;</code>
      * @return Whether the fragmentId field is set.
@@ -21144,7 +21254,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int TOKEN_FIELD_NUMBER = 2;
-    private com.google.protobuf.ByteString token_ = com.google.protobuf.ByteString.EMPTY;
+    private com.google.protobuf.ByteString token_;
     /**
      * <code>optional bytes token = 2;</code>
      * @return Whether the token field is set.
@@ -21295,13 +21405,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.LlapOutputSocketInitMessage parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.LlapOutputSocketInitMessage parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -21380,9 +21488,10 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         fragmentId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
         token_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -21409,23 +21518,19 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.LlapOutputSocketInitMessage buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.LlapOutputSocketInitMessage result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.LlapOutputSocketInitMessage(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.LlapOutputSocketInitMessage result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.fragmentId_ = fragmentId_;
           to_bitField0_ |= 0x00000001;
         }
+        result.fragmentId_ = fragmentId_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.token_ = token_;
           to_bitField0_ |= 0x00000002;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.token_ = token_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -21473,8 +21578,8 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeFrom(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.LlapOutputSocketInitMessage other) {
         if (other == org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.LlapOutputSocketInitMessage.getDefaultInstance()) return this;
         if (other.hasFragmentId()) {
-          fragmentId_ = other.fragmentId_;
           bitField0_ |= 0x00000001;
+          fragmentId_ = other.fragmentId_;
           onChanged();
         }
         if (other.hasToken()) {
@@ -21586,9 +21691,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setFragmentId(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         fragmentId_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -21597,8 +21704,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearFragmentId() {
-        fragmentId_ = getDefaultInstance().getFragmentId();
         bitField0_ = (bitField0_ & ~0x00000001);
+        fragmentId_ = getDefaultInstance().getFragmentId();
         onChanged();
         return this;
       }
@@ -21609,9 +21716,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setFragmentIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         fragmentId_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -21639,9 +21748,11 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setToken(com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         token_ = value;
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -21745,6 +21856,11 @@ public final class LlapDaemonProtocolProtos {
       return new PurgeCacheRequestProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_PurgeCacheRequestProto_descriptor;
@@ -21856,13 +21972,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.PurgeCacheRequestProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.PurgeCacheRequestProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -22153,6 +22267,11 @@ public final class LlapDaemonProtocolProtos {
       return new PurgeCacheResponseProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_PurgeCacheResponseProto_descriptor;
@@ -22168,7 +22287,7 @@ public final class LlapDaemonProtocolProtos {
 
     private int bitField0_;
     public static final int PURGED_MEMORY_BYTES_FIELD_NUMBER = 1;
-    private long purgedMemoryBytes_ = 0L;
+    private long purgedMemoryBytes_;
     /**
      * <code>optional int64 purged_memory_bytes = 1;</code>
      * @return Whether the purgedMemoryBytes field is set.
@@ -22301,13 +22420,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.PurgeCacheResponseProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.PurgeCacheResponseProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -22382,8 +22499,8 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         purgedMemoryBytes_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
 
@@ -22410,19 +22527,15 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.PurgeCacheResponseProto buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.PurgeCacheResponseProto result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.PurgeCacheResponseProto(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.PurgeCacheResponseProto result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
           result.purgedMemoryBytes_ = purgedMemoryBytes_;
           to_bitField0_ |= 0x00000001;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -22543,9 +22656,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setPurgedMemoryBytes(long value) {
-
-        purgedMemoryBytes_ = value;
         bitField0_ |= 0x00000001;
+        purgedMemoryBytes_ = value;
         onChanged();
         return this;
       }
@@ -22678,6 +22790,11 @@ public final class LlapDaemonProtocolProtos {
       return new MapEntry();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_MapEntry_descriptor;
@@ -22693,8 +22810,7 @@ public final class LlapDaemonProtocolProtos {
 
     private int bitField0_;
     public static final int KEY_FIELD_NUMBER = 1;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object key_ = "";
+    private volatile java.lang.Object key_;
     /**
      * <code>optional string key = 1;</code>
      * @return Whether the key field is set.
@@ -22742,7 +22858,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int VALUE_FIELD_NUMBER = 2;
-    private long value_ = 0L;
+    private long value_;
     /**
      * <code>optional int64 value = 2;</code>
      * @return Whether the value field is set.
@@ -22890,13 +23006,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.MapEntry parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.MapEntry parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -22971,9 +23085,10 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         key_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
         value_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -23000,23 +23115,19 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.MapEntry buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.MapEntry result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.MapEntry(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.MapEntry result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.key_ = key_;
           to_bitField0_ |= 0x00000001;
         }
+        result.key_ = key_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
           result.value_ = value_;
           to_bitField0_ |= 0x00000002;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -23064,8 +23175,8 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeFrom(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.MapEntry other) {
         if (other == org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.MapEntry.getDefaultInstance()) return this;
         if (other.hasKey()) {
-          key_ = other.key_;
           bitField0_ |= 0x00000001;
+          key_ = other.key_;
           onChanged();
         }
         if (other.hasValue()) {
@@ -23174,9 +23285,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setKey(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         key_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -23185,8 +23298,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearKey() {
-        key_ = getDefaultInstance().getKey();
         bitField0_ = (bitField0_ & ~0x00000001);
+        key_ = getDefaultInstance().getKey();
         onChanged();
         return this;
       }
@@ -23197,9 +23310,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setKeyBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         key_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -23227,9 +23342,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setValue(long value) {
-
-        value_ = value;
         bitField0_ |= 0x00000002;
+        value_ = value;
         onChanged();
         return this;
       }
@@ -23333,6 +23447,11 @@ public final class LlapDaemonProtocolProtos {
       return new GetDaemonMetricsRequestProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_GetDaemonMetricsRequestProto_descriptor;
@@ -23444,13 +23563,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetDaemonMetricsRequestProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetDaemonMetricsRequestProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -23755,6 +23872,11 @@ public final class LlapDaemonProtocolProtos {
       return new GetDaemonMetricsResponseProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_GetDaemonMetricsResponseProto_descriptor;
@@ -23769,7 +23891,6 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int METRICS_FIELD_NUMBER = 1;
-    @SuppressWarnings("serial")
     private java.util.List<org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.MapEntry> metrics_;
     /**
      * <code>repeated .MapEntry metrics = 1;</code>
@@ -23920,13 +24041,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetDaemonMetricsResponseProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetDaemonMetricsResponseProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -24001,7 +24120,6 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         if (metricsBuilder_ == null) {
           metrics_ = java.util.Collections.emptyList();
         } else {
@@ -24035,13 +24153,7 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetDaemonMetricsResponseProto buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetDaemonMetricsResponseProto result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetDaemonMetricsResponseProto(this);
-        buildPartialRepeatedFields(result);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartialRepeatedFields(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetDaemonMetricsResponseProto result) {
+        int from_bitField0_ = bitField0_;
         if (metricsBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             metrics_ = java.util.Collections.unmodifiableList(metrics_);
@@ -24051,10 +24163,8 @@ public final class LlapDaemonProtocolProtos {
         } else {
           result.metrics_ = metricsBuilder_.build();
         }
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetDaemonMetricsResponseProto result) {
-        int from_bitField0_ = bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -24534,6 +24644,11 @@ public final class LlapDaemonProtocolProtos {
       return new SetCapacityRequestProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_SetCapacityRequestProto_descriptor;
@@ -24549,7 +24664,7 @@ public final class LlapDaemonProtocolProtos {
 
     private int bitField0_;
     public static final int EXECUTORNUM_FIELD_NUMBER = 1;
-    private int executorNum_ = 0;
+    private int executorNum_;
     /**
      * <code>optional int32 executorNum = 1;</code>
      * @return Whether the executorNum field is set.
@@ -24568,7 +24683,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int QUEUESIZE_FIELD_NUMBER = 2;
-    private int queueSize_ = 0;
+    private int queueSize_;
     /**
      * <code>optional int32 queueSize = 2;</code>
      * @return Whether the queueSize field is set.
@@ -24716,13 +24831,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SetCapacityRequestProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SetCapacityRequestProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -24797,9 +24910,10 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         executorNum_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
         queueSize_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -24826,12 +24940,6 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SetCapacityRequestProto buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SetCapacityRequestProto result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SetCapacityRequestProto(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SetCapacityRequestProto result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
@@ -24842,7 +24950,9 @@ public final class LlapDaemonProtocolProtos {
           result.queueSize_ = queueSize_;
           to_bitField0_ |= 0x00000002;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -24971,9 +25081,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setExecutorNum(int value) {
-
-        executorNum_ = value;
         bitField0_ |= 0x00000001;
+        executorNum_ = value;
         onChanged();
         return this;
       }
@@ -25011,9 +25120,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setQueueSize(int value) {
-
-        queueSize_ = value;
         bitField0_ |= 0x00000002;
+        queueSize_ = value;
         onChanged();
         return this;
       }
@@ -25117,6 +25225,11 @@ public final class LlapDaemonProtocolProtos {
       return new SetCapacityResponseProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_SetCapacityResponseProto_descriptor;
@@ -25228,13 +25341,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SetCapacityResponseProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.SetCapacityResponseProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -25561,6 +25672,11 @@ public final class LlapDaemonProtocolProtos {
       return new EvictEntityRequestProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_EvictEntityRequestProto_descriptor;
@@ -25576,8 +25692,7 @@ public final class LlapDaemonProtocolProtos {
 
     private int bitField0_;
     public static final int DB_NAME_FIELD_NUMBER = 1;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object dbName_ = "";
+    private volatile java.lang.Object dbName_;
     /**
      * <code>required string db_name = 1;</code>
      * @return Whether the dbName field is set.
@@ -25625,7 +25740,6 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int TABLE_FIELD_NUMBER = 2;
-    @SuppressWarnings("serial")
     private java.util.List<org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.TableProto> table_;
     /**
      * <code>repeated .TableProto table = 2;</code>
@@ -25801,13 +25915,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EvictEntityRequestProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EvictEntityRequestProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -25886,8 +25998,8 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         dbName_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
         if (tableBuilder_ == null) {
           table_ = java.util.Collections.emptyList();
         } else {
@@ -25921,13 +26033,12 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EvictEntityRequestProto buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EvictEntityRequestProto result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EvictEntityRequestProto(this);
-        buildPartialRepeatedFields(result);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartialRepeatedFields(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EvictEntityRequestProto result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.dbName_ = dbName_;
         if (tableBuilder_ == null) {
           if (((bitField0_ & 0x00000002) != 0)) {
             table_ = java.util.Collections.unmodifiableList(table_);
@@ -25937,16 +26048,9 @@ public final class LlapDaemonProtocolProtos {
         } else {
           result.table_ = tableBuilder_.build();
         }
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EvictEntityRequestProto result) {
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.dbName_ = dbName_;
-          to_bitField0_ |= 0x00000001;
-        }
-        result.bitField0_ |= to_bitField0_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -25994,8 +26098,8 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeFrom(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EvictEntityRequestProto other) {
         if (other == org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EvictEntityRequestProto.getDefaultInstance()) return this;
         if (other.hasDbName()) {
-          dbName_ = other.dbName_;
           bitField0_ |= 0x00000001;
+          dbName_ = other.dbName_;
           onChanged();
         }
         if (tableBuilder_ == null) {
@@ -26143,9 +26247,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setDbName(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         dbName_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -26154,8 +26260,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearDbName() {
-        dbName_ = getDefaultInstance().getDbName();
         bitField0_ = (bitField0_ & ~0x00000001);
+        dbName_ = getDefaultInstance().getDbName();
         onChanged();
         return this;
       }
@@ -26166,9 +26272,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setDbNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         dbName_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -26568,10 +26676,8 @@ public final class LlapDaemonProtocolProtos {
     }
     private TableProto() {
       tableName_ = "";
-      partKey_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
-      partVal_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
+      partKey_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      partVal_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     }
 
     @java.lang.Override
@@ -26581,6 +26687,11 @@ public final class LlapDaemonProtocolProtos {
       return new TableProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_TableProto_descriptor;
@@ -26596,8 +26707,7 @@ public final class LlapDaemonProtocolProtos {
 
     private int bitField0_;
     public static final int TABLE_NAME_FIELD_NUMBER = 1;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object tableName_ = "";
+    private volatile java.lang.Object tableName_;
     /**
      * <code>required string table_name = 1;</code>
      * @return Whether the tableName field is set.
@@ -26645,9 +26755,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int PART_KEY_FIELD_NUMBER = 2;
-    @SuppressWarnings("serial")
-    private com.google.protobuf.LazyStringArrayList partKey_ =
-        com.google.protobuf.LazyStringArrayList.emptyList();
+    private com.google.protobuf.LazyStringList partKey_;
     /**
      * <code>repeated string part_key = 2;</code>
      * @return A list containing the partKey.
@@ -26682,9 +26790,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int PART_VAL_FIELD_NUMBER = 3;
-    @SuppressWarnings("serial")
-    private com.google.protobuf.LazyStringArrayList partVal_ =
-        com.google.protobuf.LazyStringArrayList.emptyList();
+    private com.google.protobuf.LazyStringList partVal_;
     /**
      * <code>repeated string part_val = 3;</code>
      * @return A list containing the partVal.
@@ -26869,13 +26975,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.TableProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.TableProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -26957,12 +27061,12 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         tableName_ = "";
-        partKey_ =
-            com.google.protobuf.LazyStringArrayList.emptyList();
-        partVal_ =
-            com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        partKey_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        partVal_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -26989,27 +27093,25 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.TableProto buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.TableProto result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.TableProto(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.TableProto result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.tableName_ = tableName_;
           to_bitField0_ |= 0x00000001;
         }
-        if (((from_bitField0_ & 0x00000002) != 0)) {
-          partKey_.makeImmutable();
-          result.partKey_ = partKey_;
+        result.tableName_ = tableName_;
+        if (((bitField0_ & 0x00000002) != 0)) {
+          partKey_ = partKey_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000002);
         }
-        if (((from_bitField0_ & 0x00000004) != 0)) {
-          partVal_.makeImmutable();
-          result.partVal_ = partVal_;
+        result.partKey_ = partKey_;
+        if (((bitField0_ & 0x00000004) != 0)) {
+          partVal_ = partVal_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000004);
         }
-        result.bitField0_ |= to_bitField0_;
+        result.partVal_ = partVal_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -27057,14 +27159,14 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeFrom(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.TableProto other) {
         if (other == org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.TableProto.getDefaultInstance()) return this;
         if (other.hasTableName()) {
-          tableName_ = other.tableName_;
           bitField0_ |= 0x00000001;
+          tableName_ = other.tableName_;
           onChanged();
         }
         if (!other.partKey_.isEmpty()) {
           if (partKey_.isEmpty()) {
             partKey_ = other.partKey_;
-            bitField0_ |= 0x00000002;
+            bitField0_ = (bitField0_ & ~0x00000002);
           } else {
             ensurePartKeyIsMutable();
             partKey_.addAll(other.partKey_);
@@ -27074,7 +27176,7 @@ public final class LlapDaemonProtocolProtos {
         if (!other.partVal_.isEmpty()) {
           if (partVal_.isEmpty()) {
             partVal_ = other.partVal_;
-            bitField0_ |= 0x00000004;
+            bitField0_ = (bitField0_ & ~0x00000004);
           } else {
             ensurePartValIsMutable();
             partVal_.addAll(other.partVal_);
@@ -27194,9 +27296,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setTableName(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         tableName_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -27205,8 +27309,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearTableName() {
-        tableName_ = getDefaultInstance().getTableName();
         bitField0_ = (bitField0_ & ~0x00000001);
+        tableName_ = getDefaultInstance().getTableName();
         onChanged();
         return this;
       }
@@ -27217,20 +27321,21 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setTableNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         tableName_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.LazyStringArrayList partKey_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
+      private com.google.protobuf.LazyStringList partKey_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensurePartKeyIsMutable() {
-        if (!partKey_.isModifiable()) {
+        if (!((bitField0_ & 0x00000002) != 0)) {
           partKey_ = new com.google.protobuf.LazyStringArrayList(partKey_);
-        }
-        bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000002;
+         }
       }
       /**
        * <code>repeated string part_key = 2;</code>
@@ -27238,8 +27343,7 @@ public final class LlapDaemonProtocolProtos {
        */
       public com.google.protobuf.ProtocolStringList
           getPartKeyList() {
-        partKey_.makeImmutable();
-        return partKey_;
+        return partKey_.getUnmodifiableView();
       }
       /**
        * <code>repeated string part_key = 2;</code>
@@ -27273,10 +27377,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setPartKey(
           int index, java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
-        ensurePartKeyIsMutable();
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensurePartKeyIsMutable();
         partKey_.set(index, value);
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -27287,10 +27392,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder addPartKey(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
-        ensurePartKeyIsMutable();
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensurePartKeyIsMutable();
         partKey_.add(value);
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -27304,7 +27410,6 @@ public final class LlapDaemonProtocolProtos {
         ensurePartKeyIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, partKey_);
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -27313,9 +27418,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearPartKey() {
-        partKey_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000002);;
+        partKey_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -27326,21 +27430,21 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder addPartKeyBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
-        ensurePartKeyIsMutable();
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensurePartKeyIsMutable();
         partKey_.add(value);
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.LazyStringArrayList partVal_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
+      private com.google.protobuf.LazyStringList partVal_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensurePartValIsMutable() {
-        if (!partVal_.isModifiable()) {
+        if (!((bitField0_ & 0x00000004) != 0)) {
           partVal_ = new com.google.protobuf.LazyStringArrayList(partVal_);
-        }
-        bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000004;
+         }
       }
       /**
        * <code>repeated string part_val = 3;</code>
@@ -27348,8 +27452,7 @@ public final class LlapDaemonProtocolProtos {
        */
       public com.google.protobuf.ProtocolStringList
           getPartValList() {
-        partVal_.makeImmutable();
-        return partVal_;
+        return partVal_.getUnmodifiableView();
       }
       /**
        * <code>repeated string part_val = 3;</code>
@@ -27383,10 +27486,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setPartVal(
           int index, java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
-        ensurePartValIsMutable();
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensurePartValIsMutable();
         partVal_.set(index, value);
-        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -27397,10 +27501,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder addPartVal(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
-        ensurePartValIsMutable();
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensurePartValIsMutable();
         partVal_.add(value);
-        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -27414,7 +27519,6 @@ public final class LlapDaemonProtocolProtos {
         ensurePartValIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, partVal_);
-        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -27423,9 +27527,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearPartVal() {
-        partVal_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000004);;
+        partVal_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
@@ -27436,10 +27539,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder addPartValBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
-        ensurePartValIsMutable();
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensurePartValIsMutable();
         partVal_.add(value);
-        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -27544,6 +27648,11 @@ public final class LlapDaemonProtocolProtos {
       return new EvictEntityResponseProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_EvictEntityResponseProto_descriptor;
@@ -27559,7 +27668,7 @@ public final class LlapDaemonProtocolProtos {
 
     private int bitField0_;
     public static final int EVICTED_BYTES_FIELD_NUMBER = 1;
-    private long evictedBytes_ = 0L;
+    private long evictedBytes_;
     /**
      * <code>required int64 evicted_bytes = 1;</code>
      * @return Whether the evictedBytes field is set.
@@ -27696,13 +27805,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EvictEntityResponseProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EvictEntityResponseProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -27777,8 +27884,8 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         evictedBytes_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
 
@@ -27805,19 +27912,15 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EvictEntityResponseProto buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EvictEntityResponseProto result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EvictEntityResponseProto(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.EvictEntityResponseProto result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
           result.evictedBytes_ = evictedBytes_;
           to_bitField0_ |= 0x00000001;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -27941,9 +28044,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setEvictedBytes(long value) {
-
-        evictedBytes_ = value;
         bitField0_ |= 0x00000001;
+        evictedBytes_ = value;
         onChanged();
         return this;
       }
@@ -28047,6 +28149,11 @@ public final class LlapDaemonProtocolProtos {
       return new GetCacheContentRequestProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_GetCacheContentRequestProto_descriptor;
@@ -28158,13 +28265,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetCacheContentRequestProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetCacheContentRequestProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -28459,6 +28564,11 @@ public final class LlapDaemonProtocolProtos {
       return new GetCacheContentResponseProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_GetCacheContentResponseProto_descriptor;
@@ -28613,13 +28723,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetCacheContentResponseProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetCacheContentResponseProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -28700,12 +28808,12 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
-        result_ = null;
-        if (resultBuilder_ != null) {
-          resultBuilder_.dispose();
-          resultBuilder_ = null;
+        if (resultBuilder_ == null) {
+          result_ = null;
+        } else {
+          resultBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
 
@@ -28732,21 +28840,19 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetCacheContentResponseProto buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetCacheContentResponseProto result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetCacheContentResponseProto(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.GetCacheContentResponseProto result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.result_ = resultBuilder_ == null
-              ? result_
-              : resultBuilder_.build();
+          if (resultBuilder_ == null) {
+            result.result_ = result_;
+          } else {
+            result.result_ = resultBuilder_.build();
+          }
           to_bitField0_ |= 0x00000001;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -28876,11 +28982,11 @@ public final class LlapDaemonProtocolProtos {
             throw new NullPointerException();
           }
           result_ = value;
+          onChanged();
         } else {
           resultBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000001;
-        onChanged();
         return this;
       }
       /**
@@ -28890,11 +28996,11 @@ public final class LlapDaemonProtocolProtos {
           org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntryList.Builder builderForValue) {
         if (resultBuilder_ == null) {
           result_ = builderForValue.build();
+          onChanged();
         } else {
           resultBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000001;
-        onChanged();
         return this;
       }
       /**
@@ -28903,32 +29009,31 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeResult(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntryList value) {
         if (resultBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0) &&
-            result_ != null &&
-            result_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntryList.getDefaultInstance()) {
-            getResultBuilder().mergeFrom(value);
+              result_ != null &&
+              result_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntryList.getDefaultInstance()) {
+            result_ =
+              org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntryList.newBuilder(result_).mergeFrom(value).buildPartial();
           } else {
             result_ = value;
           }
+          onChanged();
         } else {
           resultBuilder_.mergeFrom(value);
         }
-        if (result_ != null) {
-          bitField0_ |= 0x00000001;
-          onChanged();
-        }
+        bitField0_ |= 0x00000001;
         return this;
       }
       /**
        * <code>optional .CacheEntryList result = 1;</code>
        */
       public Builder clearResult() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        result_ = null;
-        if (resultBuilder_ != null) {
-          resultBuilder_.dispose();
-          resultBuilder_ = null;
+        if (resultBuilder_ == null) {
+          result_ = null;
+          onChanged();
+        } else {
+          resultBuilder_.clear();
         }
-        onChanged();
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
       /**
@@ -29081,6 +29186,11 @@ public final class LlapDaemonProtocolProtos {
       return new CacheEntryList();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_CacheEntryList_descriptor;
@@ -29095,7 +29205,6 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int ENTRIES_FIELD_NUMBER = 1;
-    @SuppressWarnings("serial")
     private java.util.List<org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntry> entries_;
     /**
      * <code>repeated .CacheEntry entries = 1;</code>
@@ -29246,13 +29355,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntryList parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntryList parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -29327,7 +29434,6 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         if (entriesBuilder_ == null) {
           entries_ = java.util.Collections.emptyList();
         } else {
@@ -29361,13 +29467,7 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntryList buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntryList result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntryList(this);
-        buildPartialRepeatedFields(result);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartialRepeatedFields(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntryList result) {
+        int from_bitField0_ = bitField0_;
         if (entriesBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             entries_ = java.util.Collections.unmodifiableList(entries_);
@@ -29377,10 +29477,8 @@ public final class LlapDaemonProtocolProtos {
         } else {
           result.entries_ = entriesBuilder_.build();
         }
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntryList result) {
-        int from_bitField0_ = bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -29908,6 +30006,11 @@ public final class LlapDaemonProtocolProtos {
       return new CacheEntry();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_CacheEntry_descriptor;
@@ -29923,7 +30026,7 @@ public final class LlapDaemonProtocolProtos {
 
     private int bitField0_;
     public static final int FILE_KEY_FIELD_NUMBER = 1;
-    private com.google.protobuf.ByteString fileKey_ = com.google.protobuf.ByteString.EMPTY;
+    private com.google.protobuf.ByteString fileKey_;
     /**
      * <code>optional bytes file_key = 1;</code>
      * @return Whether the fileKey field is set.
@@ -29942,8 +30045,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int FILE_PATH_FIELD_NUMBER = 2;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object filePath_ = "";
+    private volatile java.lang.Object filePath_;
     /**
      * <code>optional string file_path = 2;</code>
      * @return Whether the filePath field is set.
@@ -30017,7 +30119,6 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int RANGES_FIELD_NUMBER = 4;
-    @SuppressWarnings("serial")
     private java.util.List<org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntryRange> ranges_;
     /**
      * <code>repeated .CacheEntryRange ranges = 4;</code>
@@ -30215,13 +30316,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntry parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntry parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -30303,14 +30402,16 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         fileKey_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000001);
         filePath_ = "";
-        cacheTag_ = null;
-        if (cacheTagBuilder_ != null) {
-          cacheTagBuilder_.dispose();
-          cacheTagBuilder_ = null;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        if (cacheTagBuilder_ == null) {
+          cacheTag_ = null;
+        } else {
+          cacheTagBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000004);
         if (rangesBuilder_ == null) {
           ranges_ = java.util.Collections.emptyList();
         } else {
@@ -30344,13 +30445,24 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntry buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntry result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntry(this);
-        buildPartialRepeatedFields(result);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartialRepeatedFields(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntry result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.fileKey_ = fileKey_;
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.filePath_ = filePath_;
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          if (cacheTagBuilder_ == null) {
+            result.cacheTag_ = cacheTag_;
+          } else {
+            result.cacheTag_ = cacheTagBuilder_.build();
+          }
+          to_bitField0_ |= 0x00000004;
+        }
         if (rangesBuilder_ == null) {
           if (((bitField0_ & 0x00000008) != 0)) {
             ranges_ = java.util.Collections.unmodifiableList(ranges_);
@@ -30360,26 +30472,9 @@ public final class LlapDaemonProtocolProtos {
         } else {
           result.ranges_ = rangesBuilder_.build();
         }
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntry result) {
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.fileKey_ = fileKey_;
-          to_bitField0_ |= 0x00000001;
-        }
-        if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.filePath_ = filePath_;
-          to_bitField0_ |= 0x00000002;
-        }
-        if (((from_bitField0_ & 0x00000004) != 0)) {
-          result.cacheTag_ = cacheTagBuilder_ == null
-              ? cacheTag_
-              : cacheTagBuilder_.build();
-          to_bitField0_ |= 0x00000004;
-        }
-        result.bitField0_ |= to_bitField0_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -30430,8 +30525,8 @@ public final class LlapDaemonProtocolProtos {
           setFileKey(other.getFileKey());
         }
         if (other.hasFilePath()) {
-          filePath_ = other.filePath_;
           bitField0_ |= 0x00000002;
+          filePath_ = other.filePath_;
           onChanged();
         }
         if (other.hasCacheTag()) {
@@ -30559,9 +30654,11 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setFileKey(com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         fileKey_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -30626,9 +30723,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setFilePath(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         filePath_ = value;
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -30637,8 +30736,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearFilePath() {
-        filePath_ = getDefaultInstance().getFilePath();
         bitField0_ = (bitField0_ & ~0x00000002);
+        filePath_ = getDefaultInstance().getFilePath();
         onChanged();
         return this;
       }
@@ -30649,9 +30748,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setFilePathBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         filePath_ = value;
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -30686,11 +30787,11 @@ public final class LlapDaemonProtocolProtos {
             throw new NullPointerException();
           }
           cacheTag_ = value;
+          onChanged();
         } else {
           cacheTagBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000004;
-        onChanged();
         return this;
       }
       /**
@@ -30700,11 +30801,11 @@ public final class LlapDaemonProtocolProtos {
           org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheTag.Builder builderForValue) {
         if (cacheTagBuilder_ == null) {
           cacheTag_ = builderForValue.build();
+          onChanged();
         } else {
           cacheTagBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000004;
-        onChanged();
         return this;
       }
       /**
@@ -30713,32 +30814,31 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeCacheTag(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheTag value) {
         if (cacheTagBuilder_ == null) {
           if (((bitField0_ & 0x00000004) != 0) &&
-            cacheTag_ != null &&
-            cacheTag_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheTag.getDefaultInstance()) {
-            getCacheTagBuilder().mergeFrom(value);
+              cacheTag_ != null &&
+              cacheTag_ != org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheTag.getDefaultInstance()) {
+            cacheTag_ =
+              org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheTag.newBuilder(cacheTag_).mergeFrom(value).buildPartial();
           } else {
             cacheTag_ = value;
           }
+          onChanged();
         } else {
           cacheTagBuilder_.mergeFrom(value);
         }
-        if (cacheTag_ != null) {
-          bitField0_ |= 0x00000004;
-          onChanged();
-        }
+        bitField0_ |= 0x00000004;
         return this;
       }
       /**
        * <code>optional .CacheTag cache_tag = 3;</code>
        */
       public Builder clearCacheTag() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        cacheTag_ = null;
-        if (cacheTagBuilder_ != null) {
-          cacheTagBuilder_.dispose();
-          cacheTagBuilder_ = null;
+        if (cacheTagBuilder_ == null) {
+          cacheTag_ = null;
+          onChanged();
+        } else {
+          cacheTagBuilder_.clear();
         }
-        onChanged();
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       /**
@@ -31140,8 +31240,7 @@ public final class LlapDaemonProtocolProtos {
     }
     private CacheTag() {
       tableName_ = "";
-      partitionDesc_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
+      partitionDesc_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     }
 
     @java.lang.Override
@@ -31151,6 +31250,11 @@ public final class LlapDaemonProtocolProtos {
       return new CacheTag();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_CacheTag_descriptor;
@@ -31166,8 +31270,7 @@ public final class LlapDaemonProtocolProtos {
 
     private int bitField0_;
     public static final int TABLE_NAME_FIELD_NUMBER = 1;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object tableName_ = "";
+    private volatile java.lang.Object tableName_;
     /**
      * <code>optional string table_name = 1;</code>
      * @return Whether the tableName field is set.
@@ -31215,9 +31318,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int PARTITION_DESC_FIELD_NUMBER = 2;
-    @SuppressWarnings("serial")
-    private com.google.protobuf.LazyStringArrayList partitionDesc_ =
-        com.google.protobuf.LazyStringArrayList.emptyList();
+    private com.google.protobuf.LazyStringList partitionDesc_;
     /**
      * <code>repeated string partition_desc = 2;</code>
      * @return A list containing the partitionDesc.
@@ -31381,13 +31482,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheTag parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheTag parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -31462,10 +31561,10 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         tableName_ = "";
-        partitionDesc_ =
-            com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        partitionDesc_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -31492,23 +31591,20 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheTag buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheTag result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheTag(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheTag result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.tableName_ = tableName_;
           to_bitField0_ |= 0x00000001;
         }
-        if (((from_bitField0_ & 0x00000002) != 0)) {
-          partitionDesc_.makeImmutable();
-          result.partitionDesc_ = partitionDesc_;
+        result.tableName_ = tableName_;
+        if (((bitField0_ & 0x00000002) != 0)) {
+          partitionDesc_ = partitionDesc_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000002);
         }
-        result.bitField0_ |= to_bitField0_;
+        result.partitionDesc_ = partitionDesc_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -31556,14 +31652,14 @@ public final class LlapDaemonProtocolProtos {
       public Builder mergeFrom(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheTag other) {
         if (other == org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheTag.getDefaultInstance()) return this;
         if (other.hasTableName()) {
-          tableName_ = other.tableName_;
           bitField0_ |= 0x00000001;
+          tableName_ = other.tableName_;
           onChanged();
         }
         if (!other.partitionDesc_.isEmpty()) {
           if (partitionDesc_.isEmpty()) {
             partitionDesc_ = other.partitionDesc_;
-            bitField0_ |= 0x00000002;
+            bitField0_ = (bitField0_ & ~0x00000002);
           } else {
             ensurePartitionDescIsMutable();
             partitionDesc_.addAll(other.partitionDesc_);
@@ -31674,9 +31770,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setTableName(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         tableName_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -31685,8 +31783,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearTableName() {
-        tableName_ = getDefaultInstance().getTableName();
         bitField0_ = (bitField0_ & ~0x00000001);
+        tableName_ = getDefaultInstance().getTableName();
         onChanged();
         return this;
       }
@@ -31697,20 +31795,21 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setTableNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         tableName_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.LazyStringArrayList partitionDesc_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
+      private com.google.protobuf.LazyStringList partitionDesc_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensurePartitionDescIsMutable() {
-        if (!partitionDesc_.isModifiable()) {
+        if (!((bitField0_ & 0x00000002) != 0)) {
           partitionDesc_ = new com.google.protobuf.LazyStringArrayList(partitionDesc_);
-        }
-        bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000002;
+         }
       }
       /**
        * <code>repeated string partition_desc = 2;</code>
@@ -31718,8 +31817,7 @@ public final class LlapDaemonProtocolProtos {
        */
       public com.google.protobuf.ProtocolStringList
           getPartitionDescList() {
-        partitionDesc_.makeImmutable();
-        return partitionDesc_;
+        return partitionDesc_.getUnmodifiableView();
       }
       /**
        * <code>repeated string partition_desc = 2;</code>
@@ -31753,10 +31851,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder setPartitionDesc(
           int index, java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
-        ensurePartitionDescIsMutable();
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensurePartitionDescIsMutable();
         partitionDesc_.set(index, value);
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -31767,10 +31866,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder addPartitionDesc(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
-        ensurePartitionDescIsMutable();
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensurePartitionDescIsMutable();
         partitionDesc_.add(value);
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -31784,7 +31884,6 @@ public final class LlapDaemonProtocolProtos {
         ensurePartitionDescIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, partitionDesc_);
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -31793,9 +31892,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder clearPartitionDesc() {
-        partitionDesc_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000002);;
+        partitionDesc_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -31806,10 +31904,11 @@ public final class LlapDaemonProtocolProtos {
        */
       public Builder addPartitionDescBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
-        ensurePartitionDescIsMutable();
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensurePartitionDescIsMutable();
         partitionDesc_.add(value);
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -31925,6 +32024,11 @@ public final class LlapDaemonProtocolProtos {
       return new CacheEntryRange();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.internal_static_CacheEntryRange_descriptor;
@@ -31940,7 +32044,7 @@ public final class LlapDaemonProtocolProtos {
 
     private int bitField0_;
     public static final int START_FIELD_NUMBER = 1;
-    private long start_ = 0L;
+    private long start_;
     /**
      * <code>optional int64 start = 1;</code>
      * @return Whether the start field is set.
@@ -31959,7 +32063,7 @@ public final class LlapDaemonProtocolProtos {
     }
 
     public static final int END_FIELD_NUMBER = 2;
-    private long end_ = 0L;
+    private long end_;
     /**
      * <code>optional int64 end = 2;</code>
      * @return Whether the end field is set.
@@ -32109,13 +32213,11 @@ public final class LlapDaemonProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntryRange parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntryRange parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -32190,9 +32292,10 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         start_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000001);
         end_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -32219,12 +32322,6 @@ public final class LlapDaemonProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntryRange buildPartial() {
         org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntryRange result = new org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntryRange(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos.CacheEntryRange result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
@@ -32235,7 +32332,9 @@ public final class LlapDaemonProtocolProtos {
           result.end_ = end_;
           to_bitField0_ |= 0x00000002;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -32364,9 +32463,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setStart(long value) {
-
-        start_ = value;
         bitField0_ |= 0x00000001;
+        start_ = value;
         onChanged();
         return this;
       }
@@ -32404,9 +32502,8 @@ public final class LlapDaemonProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setEnd(long value) {
-
-        end_ = value;
         bitField0_ |= 0x00000002;
+        end_ = value;
         onChanged();
         return this;
       }

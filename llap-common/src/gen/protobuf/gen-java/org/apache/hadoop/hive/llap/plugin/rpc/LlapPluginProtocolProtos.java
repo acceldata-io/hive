@@ -51,6 +51,11 @@ public final class LlapPluginProtocolProtos {
       return new UpdateQueryRequestProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.plugin.rpc.LlapPluginProtocolProtos.internal_static_UpdateQueryRequestProto_descriptor;
@@ -66,7 +71,7 @@ public final class LlapPluginProtocolProtos {
 
     private int bitField0_;
     public static final int GUARANTEED_TASK_COUNT_FIELD_NUMBER = 1;
-    private int guaranteedTaskCount_ = 0;
+    private int guaranteedTaskCount_;
     /**
      * <code>optional int32 guaranteed_task_count = 1;</code>
      * @return Whether the guaranteedTaskCount field is set.
@@ -198,13 +203,11 @@ public final class LlapPluginProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.plugin.rpc.LlapPluginProtocolProtos.UpdateQueryRequestProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.plugin.rpc.LlapPluginProtocolProtos.UpdateQueryRequestProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -279,8 +282,8 @@ public final class LlapPluginProtocolProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         guaranteedTaskCount_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
 
@@ -307,19 +310,15 @@ public final class LlapPluginProtocolProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.llap.plugin.rpc.LlapPluginProtocolProtos.UpdateQueryRequestProto buildPartial() {
         org.apache.hadoop.hive.llap.plugin.rpc.LlapPluginProtocolProtos.UpdateQueryRequestProto result = new org.apache.hadoop.hive.llap.plugin.rpc.LlapPluginProtocolProtos.UpdateQueryRequestProto(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.llap.plugin.rpc.LlapPluginProtocolProtos.UpdateQueryRequestProto result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
           result.guaranteedTaskCount_ = guaranteedTaskCount_;
           to_bitField0_ |= 0x00000001;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -440,9 +439,8 @@ public final class LlapPluginProtocolProtos {
        * @return This builder for chaining.
        */
       public Builder setGuaranteedTaskCount(int value) {
-
-        guaranteedTaskCount_ = value;
         bitField0_ |= 0x00000001;
+        guaranteedTaskCount_ = value;
         onChanged();
         return this;
       }
@@ -546,6 +544,11 @@ public final class LlapPluginProtocolProtos {
       return new UpdateQueryResponseProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.llap.plugin.rpc.LlapPluginProtocolProtos.internal_static_UpdateQueryResponseProto_descriptor;
@@ -657,13 +660,11 @@ public final class LlapPluginProtocolProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.llap.plugin.rpc.LlapPluginProtocolProtos.UpdateQueryResponseProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.llap.plugin.rpc.LlapPluginProtocolProtos.UpdateQueryResponseProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
