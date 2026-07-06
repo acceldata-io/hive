@@ -76,6 +76,11 @@ public final class HiveHookEvents {
       return new MapFieldEntry();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.ql.hooks.proto.HiveHookEvents.internal_static_MapFieldEntry_descriptor;
@@ -91,8 +96,7 @@ public final class HiveHookEvents {
 
     private int bitField0_;
     public static final int KEY_FIELD_NUMBER = 1;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object key_ = "";
+    private volatile java.lang.Object key_;
     /**
      * <code>optional string key = 1;</code>
      * @return Whether the key field is set.
@@ -140,8 +144,7 @@ public final class HiveHookEvents {
     }
 
     public static final int VALUE_FIELD_NUMBER = 2;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object value_ = "";
+    private volatile java.lang.Object value_;
     /**
      * <code>optional string value = 2;</code>
      * @return Whether the value field is set.
@@ -316,13 +319,11 @@ public final class HiveHookEvents {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.ql.hooks.proto.HiveHookEvents.MapFieldEntry parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.ql.hooks.proto.HiveHookEvents.MapFieldEntry parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -397,9 +398,10 @@ public final class HiveHookEvents {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         key_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
         value_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -426,23 +428,19 @@ public final class HiveHookEvents {
       @java.lang.Override
       public org.apache.hadoop.hive.ql.hooks.proto.HiveHookEvents.MapFieldEntry buildPartial() {
         org.apache.hadoop.hive.ql.hooks.proto.HiveHookEvents.MapFieldEntry result = new org.apache.hadoop.hive.ql.hooks.proto.HiveHookEvents.MapFieldEntry(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.ql.hooks.proto.HiveHookEvents.MapFieldEntry result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.key_ = key_;
           to_bitField0_ |= 0x00000001;
         }
+        result.key_ = key_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.value_ = value_;
           to_bitField0_ |= 0x00000002;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.value_ = value_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -490,13 +488,13 @@ public final class HiveHookEvents {
       public Builder mergeFrom(org.apache.hadoop.hive.ql.hooks.proto.HiveHookEvents.MapFieldEntry other) {
         if (other == org.apache.hadoop.hive.ql.hooks.proto.HiveHookEvents.MapFieldEntry.getDefaultInstance()) return this;
         if (other.hasKey()) {
-          key_ = other.key_;
           bitField0_ |= 0x00000001;
+          key_ = other.key_;
           onChanged();
         }
         if (other.hasValue()) {
-          value_ = other.value_;
           bitField0_ |= 0x00000002;
+          value_ = other.value_;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -602,9 +600,11 @@ public final class HiveHookEvents {
        */
       public Builder setKey(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         key_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -613,8 +613,8 @@ public final class HiveHookEvents {
        * @return This builder for chaining.
        */
       public Builder clearKey() {
-        key_ = getDefaultInstance().getKey();
         bitField0_ = (bitField0_ & ~0x00000001);
+        key_ = getDefaultInstance().getKey();
         onChanged();
         return this;
       }
@@ -625,9 +625,11 @@ public final class HiveHookEvents {
        */
       public Builder setKeyBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         key_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -682,9 +684,11 @@ public final class HiveHookEvents {
        */
       public Builder setValue(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         value_ = value;
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -693,8 +697,8 @@ public final class HiveHookEvents {
        * @return This builder for chaining.
        */
       public Builder clearValue() {
-        value_ = getDefaultInstance().getValue();
         bitField0_ = (bitField0_ & ~0x00000002);
+        value_ = getDefaultInstance().getValue();
         onChanged();
         return this;
       }
@@ -705,9 +709,11 @@ public final class HiveHookEvents {
        */
       public Builder setValueBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         value_ = value;
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -1003,10 +1009,8 @@ public final class HiveHookEvents {
       queue_ = "";
       user_ = "";
       operationId_ = "";
-      tablesWritten_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
-      tablesRead_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
+      tablesWritten_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      tablesRead_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       otherInfo_ = java.util.Collections.emptyList();
     }
 
@@ -1017,6 +1021,11 @@ public final class HiveHookEvents {
       return new HiveHookEventProto();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.ql.hooks.proto.HiveHookEvents.internal_static_HiveHookEventProto_descriptor;
@@ -1032,8 +1041,7 @@ public final class HiveHookEvents {
 
     private int bitField0_;
     public static final int EVENTTYPE_FIELD_NUMBER = 1;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object eventType_ = "";
+    private volatile java.lang.Object eventType_;
     /**
      * <code>optional string eventType = 1;</code>
      * @return Whether the eventType field is set.
@@ -1081,8 +1089,7 @@ public final class HiveHookEvents {
     }
 
     public static final int HIVEQUERYID_FIELD_NUMBER = 2;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object hiveQueryId_ = "";
+    private volatile java.lang.Object hiveQueryId_;
     /**
      * <code>optional string hiveQueryId = 2;</code>
      * @return Whether the hiveQueryId field is set.
@@ -1130,7 +1137,7 @@ public final class HiveHookEvents {
     }
 
     public static final int TIMESTAMP_FIELD_NUMBER = 3;
-    private long timestamp_ = 0L;
+    private long timestamp_;
     /**
      * <code>optional int64 timestamp = 3;</code>
      * @return Whether the timestamp field is set.
@@ -1149,8 +1156,7 @@ public final class HiveHookEvents {
     }
 
     public static final int EXECUTIONMODE_FIELD_NUMBER = 4;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object executionMode_ = "";
+    private volatile java.lang.Object executionMode_;
     /**
      * <code>optional string executionMode = 4;</code>
      * @return Whether the executionMode field is set.
@@ -1198,8 +1204,7 @@ public final class HiveHookEvents {
     }
 
     public static final int REQUESTUSER_FIELD_NUMBER = 5;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object requestUser_ = "";
+    private volatile java.lang.Object requestUser_;
     /**
      * <code>optional string requestUser = 5;</code>
      * @return Whether the requestUser field is set.
@@ -1247,8 +1252,7 @@ public final class HiveHookEvents {
     }
 
     public static final int QUEUE_FIELD_NUMBER = 6;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object queue_ = "";
+    private volatile java.lang.Object queue_;
     /**
      * <code>optional string queue = 6;</code>
      * @return Whether the queue field is set.
@@ -1296,8 +1300,7 @@ public final class HiveHookEvents {
     }
 
     public static final int USER_FIELD_NUMBER = 7;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object user_ = "";
+    private volatile java.lang.Object user_;
     /**
      * <code>optional string user = 7;</code>
      * @return Whether the user field is set.
@@ -1345,8 +1348,7 @@ public final class HiveHookEvents {
     }
 
     public static final int OPERATIONID_FIELD_NUMBER = 8;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object operationId_ = "";
+    private volatile java.lang.Object operationId_;
     /**
      * <code>optional string operationId = 8;</code>
      * @return Whether the operationId field is set.
@@ -1394,9 +1396,7 @@ public final class HiveHookEvents {
     }
 
     public static final int TABLESWRITTEN_FIELD_NUMBER = 9;
-    @SuppressWarnings("serial")
-    private com.google.protobuf.LazyStringArrayList tablesWritten_ =
-        com.google.protobuf.LazyStringArrayList.emptyList();
+    private com.google.protobuf.LazyStringList tablesWritten_;
     /**
      * <code>repeated string tablesWritten = 9;</code>
      * @return A list containing the tablesWritten.
@@ -1431,9 +1431,7 @@ public final class HiveHookEvents {
     }
 
     public static final int TABLESREAD_FIELD_NUMBER = 10;
-    @SuppressWarnings("serial")
-    private com.google.protobuf.LazyStringArrayList tablesRead_ =
-        com.google.protobuf.LazyStringArrayList.emptyList();
+    private com.google.protobuf.LazyStringList tablesRead_;
     /**
      * <code>repeated string tablesRead = 10;</code>
      * @return A list containing the tablesRead.
@@ -1468,7 +1466,6 @@ public final class HiveHookEvents {
     }
 
     public static final int OTHERINFO_FIELD_NUMBER = 50;
-    @SuppressWarnings("serial")
     private java.util.List<org.apache.hadoop.hive.ql.hooks.proto.HiveHookEvents.MapFieldEntry> otherInfo_;
     /**
      * <code>repeated .MapFieldEntry otherInfo = 50;</code>
@@ -1775,13 +1772,11 @@ public final class HiveHookEvents {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.ql.hooks.proto.HiveHookEvents.HiveHookEventProto parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.ql.hooks.proto.HiveHookEvents.HiveHookEventProto parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1856,19 +1851,26 @@ public final class HiveHookEvents {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         eventType_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
         hiveQueryId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
         timestamp_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000004);
         executionMode_ = "";
+        bitField0_ = (bitField0_ & ~0x00000008);
         requestUser_ = "";
+        bitField0_ = (bitField0_ & ~0x00000010);
         queue_ = "";
+        bitField0_ = (bitField0_ & ~0x00000020);
         user_ = "";
+        bitField0_ = (bitField0_ & ~0x00000040);
         operationId_ = "";
-        tablesWritten_ =
-            com.google.protobuf.LazyStringArrayList.emptyList();
-        tablesRead_ =
-            com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000080);
+        tablesWritten_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000100);
+        tablesRead_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000200);
         if (otherInfoBuilder_ == null) {
           otherInfo_ = java.util.Collections.emptyList();
         } else {
@@ -1902,13 +1904,50 @@ public final class HiveHookEvents {
       @java.lang.Override
       public org.apache.hadoop.hive.ql.hooks.proto.HiveHookEvents.HiveHookEventProto buildPartial() {
         org.apache.hadoop.hive.ql.hooks.proto.HiveHookEvents.HiveHookEventProto result = new org.apache.hadoop.hive.ql.hooks.proto.HiveHookEvents.HiveHookEventProto(this);
-        buildPartialRepeatedFields(result);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartialRepeatedFields(org.apache.hadoop.hive.ql.hooks.proto.HiveHookEvents.HiveHookEventProto result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.eventType_ = eventType_;
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.hiveQueryId_ = hiveQueryId_;
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.timestamp_ = timestamp_;
+          to_bitField0_ |= 0x00000004;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.executionMode_ = executionMode_;
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.requestUser_ = requestUser_;
+        if (((from_bitField0_ & 0x00000020) != 0)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.queue_ = queue_;
+        if (((from_bitField0_ & 0x00000040) != 0)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        result.user_ = user_;
+        if (((from_bitField0_ & 0x00000080) != 0)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        result.operationId_ = operationId_;
+        if (((bitField0_ & 0x00000100) != 0)) {
+          tablesWritten_ = tablesWritten_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000100);
+        }
+        result.tablesWritten_ = tablesWritten_;
+        if (((bitField0_ & 0x00000200) != 0)) {
+          tablesRead_ = tablesRead_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000200);
+        }
+        result.tablesRead_ = tablesRead_;
         if (otherInfoBuilder_ == null) {
           if (((bitField0_ & 0x00000400) != 0)) {
             otherInfo_ = java.util.Collections.unmodifiableList(otherInfo_);
@@ -1918,52 +1957,9 @@ public final class HiveHookEvents {
         } else {
           result.otherInfo_ = otherInfoBuilder_.build();
         }
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.ql.hooks.proto.HiveHookEvents.HiveHookEventProto result) {
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.eventType_ = eventType_;
-          to_bitField0_ |= 0x00000001;
-        }
-        if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.hiveQueryId_ = hiveQueryId_;
-          to_bitField0_ |= 0x00000002;
-        }
-        if (((from_bitField0_ & 0x00000004) != 0)) {
-          result.timestamp_ = timestamp_;
-          to_bitField0_ |= 0x00000004;
-        }
-        if (((from_bitField0_ & 0x00000008) != 0)) {
-          result.executionMode_ = executionMode_;
-          to_bitField0_ |= 0x00000008;
-        }
-        if (((from_bitField0_ & 0x00000010) != 0)) {
-          result.requestUser_ = requestUser_;
-          to_bitField0_ |= 0x00000010;
-        }
-        if (((from_bitField0_ & 0x00000020) != 0)) {
-          result.queue_ = queue_;
-          to_bitField0_ |= 0x00000020;
-        }
-        if (((from_bitField0_ & 0x00000040) != 0)) {
-          result.user_ = user_;
-          to_bitField0_ |= 0x00000040;
-        }
-        if (((from_bitField0_ & 0x00000080) != 0)) {
-          result.operationId_ = operationId_;
-          to_bitField0_ |= 0x00000080;
-        }
-        if (((from_bitField0_ & 0x00000100) != 0)) {
-          tablesWritten_.makeImmutable();
-          result.tablesWritten_ = tablesWritten_;
-        }
-        if (((from_bitField0_ & 0x00000200) != 0)) {
-          tablesRead_.makeImmutable();
-          result.tablesRead_ = tablesRead_;
-        }
-        result.bitField0_ |= to_bitField0_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -2011,47 +2007,47 @@ public final class HiveHookEvents {
       public Builder mergeFrom(org.apache.hadoop.hive.ql.hooks.proto.HiveHookEvents.HiveHookEventProto other) {
         if (other == org.apache.hadoop.hive.ql.hooks.proto.HiveHookEvents.HiveHookEventProto.getDefaultInstance()) return this;
         if (other.hasEventType()) {
-          eventType_ = other.eventType_;
           bitField0_ |= 0x00000001;
+          eventType_ = other.eventType_;
           onChanged();
         }
         if (other.hasHiveQueryId()) {
-          hiveQueryId_ = other.hiveQueryId_;
           bitField0_ |= 0x00000002;
+          hiveQueryId_ = other.hiveQueryId_;
           onChanged();
         }
         if (other.hasTimestamp()) {
           setTimestamp(other.getTimestamp());
         }
         if (other.hasExecutionMode()) {
-          executionMode_ = other.executionMode_;
           bitField0_ |= 0x00000008;
+          executionMode_ = other.executionMode_;
           onChanged();
         }
         if (other.hasRequestUser()) {
-          requestUser_ = other.requestUser_;
           bitField0_ |= 0x00000010;
+          requestUser_ = other.requestUser_;
           onChanged();
         }
         if (other.hasQueue()) {
-          queue_ = other.queue_;
           bitField0_ |= 0x00000020;
+          queue_ = other.queue_;
           onChanged();
         }
         if (other.hasUser()) {
-          user_ = other.user_;
           bitField0_ |= 0x00000040;
+          user_ = other.user_;
           onChanged();
         }
         if (other.hasOperationId()) {
-          operationId_ = other.operationId_;
           bitField0_ |= 0x00000080;
+          operationId_ = other.operationId_;
           onChanged();
         }
         if (!other.tablesWritten_.isEmpty()) {
           if (tablesWritten_.isEmpty()) {
             tablesWritten_ = other.tablesWritten_;
-            bitField0_ |= 0x00000100;
+            bitField0_ = (bitField0_ & ~0x00000100);
           } else {
             ensureTablesWrittenIsMutable();
             tablesWritten_.addAll(other.tablesWritten_);
@@ -2061,7 +2057,7 @@ public final class HiveHookEvents {
         if (!other.tablesRead_.isEmpty()) {
           if (tablesRead_.isEmpty()) {
             tablesRead_ = other.tablesRead_;
-            bitField0_ |= 0x00000200;
+            bitField0_ = (bitField0_ & ~0x00000200);
           } else {
             ensureTablesReadIsMutable();
             tablesRead_.addAll(other.tablesRead_);
@@ -2252,9 +2248,11 @@ public final class HiveHookEvents {
        */
       public Builder setEventType(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         eventType_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2263,8 +2261,8 @@ public final class HiveHookEvents {
        * @return This builder for chaining.
        */
       public Builder clearEventType() {
-        eventType_ = getDefaultInstance().getEventType();
         bitField0_ = (bitField0_ & ~0x00000001);
+        eventType_ = getDefaultInstance().getEventType();
         onChanged();
         return this;
       }
@@ -2275,9 +2273,11 @@ public final class HiveHookEvents {
        */
       public Builder setEventTypeBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         eventType_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2332,9 +2332,11 @@ public final class HiveHookEvents {
        */
       public Builder setHiveQueryId(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         hiveQueryId_ = value;
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -2343,8 +2345,8 @@ public final class HiveHookEvents {
        * @return This builder for chaining.
        */
       public Builder clearHiveQueryId() {
-        hiveQueryId_ = getDefaultInstance().getHiveQueryId();
         bitField0_ = (bitField0_ & ~0x00000002);
+        hiveQueryId_ = getDefaultInstance().getHiveQueryId();
         onChanged();
         return this;
       }
@@ -2355,9 +2357,11 @@ public final class HiveHookEvents {
        */
       public Builder setHiveQueryIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         hiveQueryId_ = value;
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -2385,9 +2389,8 @@ public final class HiveHookEvents {
        * @return This builder for chaining.
        */
       public Builder setTimestamp(long value) {
-
-        timestamp_ = value;
         bitField0_ |= 0x00000004;
+        timestamp_ = value;
         onChanged();
         return this;
       }
@@ -2452,9 +2455,11 @@ public final class HiveHookEvents {
        */
       public Builder setExecutionMode(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
         executionMode_ = value;
-        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -2463,8 +2468,8 @@ public final class HiveHookEvents {
        * @return This builder for chaining.
        */
       public Builder clearExecutionMode() {
-        executionMode_ = getDefaultInstance().getExecutionMode();
         bitField0_ = (bitField0_ & ~0x00000008);
+        executionMode_ = getDefaultInstance().getExecutionMode();
         onChanged();
         return this;
       }
@@ -2475,9 +2480,11 @@ public final class HiveHookEvents {
        */
       public Builder setExecutionModeBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
         executionMode_ = value;
-        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -2532,9 +2539,11 @@ public final class HiveHookEvents {
        */
       public Builder setRequestUser(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
         requestUser_ = value;
-        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -2543,8 +2552,8 @@ public final class HiveHookEvents {
        * @return This builder for chaining.
        */
       public Builder clearRequestUser() {
-        requestUser_ = getDefaultInstance().getRequestUser();
         bitField0_ = (bitField0_ & ~0x00000010);
+        requestUser_ = getDefaultInstance().getRequestUser();
         onChanged();
         return this;
       }
@@ -2555,9 +2564,11 @@ public final class HiveHookEvents {
        */
       public Builder setRequestUserBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
         requestUser_ = value;
-        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -2612,9 +2623,11 @@ public final class HiveHookEvents {
        */
       public Builder setQueue(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
         queue_ = value;
-        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
@@ -2623,8 +2636,8 @@ public final class HiveHookEvents {
        * @return This builder for chaining.
        */
       public Builder clearQueue() {
-        queue_ = getDefaultInstance().getQueue();
         bitField0_ = (bitField0_ & ~0x00000020);
+        queue_ = getDefaultInstance().getQueue();
         onChanged();
         return this;
       }
@@ -2635,9 +2648,11 @@ public final class HiveHookEvents {
        */
       public Builder setQueueBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
         queue_ = value;
-        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
@@ -2692,9 +2707,11 @@ public final class HiveHookEvents {
        */
       public Builder setUser(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000040;
         user_ = value;
-        bitField0_ |= 0x00000040;
         onChanged();
         return this;
       }
@@ -2703,8 +2720,8 @@ public final class HiveHookEvents {
        * @return This builder for chaining.
        */
       public Builder clearUser() {
-        user_ = getDefaultInstance().getUser();
         bitField0_ = (bitField0_ & ~0x00000040);
+        user_ = getDefaultInstance().getUser();
         onChanged();
         return this;
       }
@@ -2715,9 +2732,11 @@ public final class HiveHookEvents {
        */
       public Builder setUserBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000040;
         user_ = value;
-        bitField0_ |= 0x00000040;
         onChanged();
         return this;
       }
@@ -2772,9 +2791,11 @@ public final class HiveHookEvents {
        */
       public Builder setOperationId(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000080;
         operationId_ = value;
-        bitField0_ |= 0x00000080;
         onChanged();
         return this;
       }
@@ -2783,8 +2804,8 @@ public final class HiveHookEvents {
        * @return This builder for chaining.
        */
       public Builder clearOperationId() {
-        operationId_ = getDefaultInstance().getOperationId();
         bitField0_ = (bitField0_ & ~0x00000080);
+        operationId_ = getDefaultInstance().getOperationId();
         onChanged();
         return this;
       }
@@ -2795,20 +2816,21 @@ public final class HiveHookEvents {
        */
       public Builder setOperationIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000080;
         operationId_ = value;
-        bitField0_ |= 0x00000080;
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.LazyStringArrayList tablesWritten_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
+      private com.google.protobuf.LazyStringList tablesWritten_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensureTablesWrittenIsMutable() {
-        if (!tablesWritten_.isModifiable()) {
+        if (!((bitField0_ & 0x00000100) != 0)) {
           tablesWritten_ = new com.google.protobuf.LazyStringArrayList(tablesWritten_);
-        }
-        bitField0_ |= 0x00000100;
+          bitField0_ |= 0x00000100;
+         }
       }
       /**
        * <code>repeated string tablesWritten = 9;</code>
@@ -2816,8 +2838,7 @@ public final class HiveHookEvents {
        */
       public com.google.protobuf.ProtocolStringList
           getTablesWrittenList() {
-        tablesWritten_.makeImmutable();
-        return tablesWritten_;
+        return tablesWritten_.getUnmodifiableView();
       }
       /**
        * <code>repeated string tablesWritten = 9;</code>
@@ -2851,10 +2872,11 @@ public final class HiveHookEvents {
        */
       public Builder setTablesWritten(
           int index, java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
-        ensureTablesWrittenIsMutable();
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureTablesWrittenIsMutable();
         tablesWritten_.set(index, value);
-        bitField0_ |= 0x00000100;
         onChanged();
         return this;
       }
@@ -2865,10 +2887,11 @@ public final class HiveHookEvents {
        */
       public Builder addTablesWritten(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
-        ensureTablesWrittenIsMutable();
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureTablesWrittenIsMutable();
         tablesWritten_.add(value);
-        bitField0_ |= 0x00000100;
         onChanged();
         return this;
       }
@@ -2882,7 +2905,6 @@ public final class HiveHookEvents {
         ensureTablesWrittenIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, tablesWritten_);
-        bitField0_ |= 0x00000100;
         onChanged();
         return this;
       }
@@ -2891,9 +2913,8 @@ public final class HiveHookEvents {
        * @return This builder for chaining.
        */
       public Builder clearTablesWritten() {
-        tablesWritten_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000100);;
+        tablesWritten_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000100);
         onChanged();
         return this;
       }
@@ -2904,21 +2925,21 @@ public final class HiveHookEvents {
        */
       public Builder addTablesWrittenBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
-        ensureTablesWrittenIsMutable();
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureTablesWrittenIsMutable();
         tablesWritten_.add(value);
-        bitField0_ |= 0x00000100;
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.LazyStringArrayList tablesRead_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
+      private com.google.protobuf.LazyStringList tablesRead_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensureTablesReadIsMutable() {
-        if (!tablesRead_.isModifiable()) {
+        if (!((bitField0_ & 0x00000200) != 0)) {
           tablesRead_ = new com.google.protobuf.LazyStringArrayList(tablesRead_);
-        }
-        bitField0_ |= 0x00000200;
+          bitField0_ |= 0x00000200;
+         }
       }
       /**
        * <code>repeated string tablesRead = 10;</code>
@@ -2926,8 +2947,7 @@ public final class HiveHookEvents {
        */
       public com.google.protobuf.ProtocolStringList
           getTablesReadList() {
-        tablesRead_.makeImmutable();
-        return tablesRead_;
+        return tablesRead_.getUnmodifiableView();
       }
       /**
        * <code>repeated string tablesRead = 10;</code>
@@ -2961,10 +2981,11 @@ public final class HiveHookEvents {
        */
       public Builder setTablesRead(
           int index, java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
-        ensureTablesReadIsMutable();
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureTablesReadIsMutable();
         tablesRead_.set(index, value);
-        bitField0_ |= 0x00000200;
         onChanged();
         return this;
       }
@@ -2975,10 +2996,11 @@ public final class HiveHookEvents {
        */
       public Builder addTablesRead(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
-        ensureTablesReadIsMutable();
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureTablesReadIsMutable();
         tablesRead_.add(value);
-        bitField0_ |= 0x00000200;
         onChanged();
         return this;
       }
@@ -2992,7 +3014,6 @@ public final class HiveHookEvents {
         ensureTablesReadIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, tablesRead_);
-        bitField0_ |= 0x00000200;
         onChanged();
         return this;
       }
@@ -3001,9 +3022,8 @@ public final class HiveHookEvents {
        * @return This builder for chaining.
        */
       public Builder clearTablesRead() {
-        tablesRead_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000200);;
+        tablesRead_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000200);
         onChanged();
         return this;
       }
@@ -3014,10 +3034,11 @@ public final class HiveHookEvents {
        */
       public Builder addTablesReadBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
-        ensureTablesReadIsMutable();
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureTablesReadIsMutable();
         tablesRead_.add(value);
-        bitField0_ |= 0x00000200;
         onChanged();
         return this;
       }

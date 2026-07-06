@@ -76,6 +76,11 @@ public final class SampleProtos {
       return new MapFieldEntry();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.internal_static_MapFieldEntry_descriptor;
@@ -91,8 +96,7 @@ public final class SampleProtos {
 
     private int bitField0_;
     public static final int KEY_FIELD_NUMBER = 1;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object key_ = "";
+    private volatile java.lang.Object key_;
     /**
      * <code>optional string key = 1;</code>
      * @return Whether the key field is set.
@@ -140,8 +144,7 @@ public final class SampleProtos {
     }
 
     public static final int VALUE_FIELD_NUMBER = 2;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object value_ = "";
+    private volatile java.lang.Object value_;
     /**
      * <code>optional string value = 2;</code>
      * @return Whether the value field is set.
@@ -316,13 +319,11 @@ public final class SampleProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.MapFieldEntry parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.MapFieldEntry parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -397,9 +398,10 @@ public final class SampleProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         key_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
         value_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -426,23 +428,19 @@ public final class SampleProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.MapFieldEntry buildPartial() {
         org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.MapFieldEntry result = new org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.MapFieldEntry(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.MapFieldEntry result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.key_ = key_;
           to_bitField0_ |= 0x00000001;
         }
+        result.key_ = key_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.value_ = value_;
           to_bitField0_ |= 0x00000002;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.value_ = value_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -490,13 +488,13 @@ public final class SampleProtos {
       public Builder mergeFrom(org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.MapFieldEntry other) {
         if (other == org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.MapFieldEntry.getDefaultInstance()) return this;
         if (other.hasKey()) {
-          key_ = other.key_;
           bitField0_ |= 0x00000001;
+          key_ = other.key_;
           onChanged();
         }
         if (other.hasValue()) {
-          value_ = other.value_;
           bitField0_ |= 0x00000002;
+          value_ = other.value_;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -602,9 +600,11 @@ public final class SampleProtos {
        */
       public Builder setKey(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         key_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -613,8 +613,8 @@ public final class SampleProtos {
        * @return This builder for chaining.
        */
       public Builder clearKey() {
-        key_ = getDefaultInstance().getKey();
         bitField0_ = (bitField0_ & ~0x00000001);
+        key_ = getDefaultInstance().getKey();
         onChanged();
         return this;
       }
@@ -625,9 +625,11 @@ public final class SampleProtos {
        */
       public Builder setKeyBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
         key_ = value;
-        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -682,9 +684,11 @@ public final class SampleProtos {
        */
       public Builder setValue(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         value_ = value;
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -693,8 +697,8 @@ public final class SampleProtos {
        * @return This builder for chaining.
        */
       public Builder clearValue() {
-        value_ = getDefaultInstance().getValue();
         bitField0_ = (bitField0_ & ~0x00000002);
+        value_ = getDefaultInstance().getValue();
         onChanged();
         return this;
       }
@@ -705,9 +709,11 @@ public final class SampleProtos {
        */
       public Builder setValueBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
         value_ = value;
-        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -859,6 +865,11 @@ public final class SampleProtos {
       return new Mesg1();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.internal_static_Mesg1_descriptor;
@@ -874,7 +885,6 @@ public final class SampleProtos {
 
     private int bitField0_;
     public static final int ANOTHERMAP_FIELD_NUMBER = 1;
-    @SuppressWarnings("serial")
     private java.util.List<org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.MapFieldEntry> anotherMap_;
     /**
      * <code>repeated .MapFieldEntry anotherMap = 1;</code>
@@ -941,9 +951,7 @@ public final class SampleProtos {
     }
 
     public static final int INTLIST_FIELD_NUMBER = 3;
-    @SuppressWarnings("serial")
-    private com.google.protobuf.Internal.IntList intList_ =
-        emptyIntList();
+    private com.google.protobuf.Internal.IntList intList_;
     /**
      * <code>repeated int32 intList = 3;</code>
      * @return A list containing the intList.
@@ -1114,13 +1122,11 @@ public final class SampleProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.Mesg1 parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.Mesg1 parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1202,7 +1208,6 @@ public final class SampleProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         if (anotherMapBuilder_ == null) {
           anotherMap_ = java.util.Collections.emptyList();
         } else {
@@ -1210,12 +1215,14 @@ public final class SampleProtos {
           anotherMapBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000001);
-        noMap_ = null;
-        if (noMapBuilder_ != null) {
-          noMapBuilder_.dispose();
-          noMapBuilder_ = null;
+        if (noMapBuilder_ == null) {
+          noMap_ = null;
+        } else {
+          noMapBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000002);
         intList_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -1242,13 +1249,8 @@ public final class SampleProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.Mesg1 buildPartial() {
         org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.Mesg1 result = new org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.Mesg1(this);
-        buildPartialRepeatedFields(result);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartialRepeatedFields(org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.Mesg1 result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
         if (anotherMapBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             anotherMap_ = java.util.Collections.unmodifiableList(anotherMap_);
@@ -1258,22 +1260,22 @@ public final class SampleProtos {
         } else {
           result.anotherMap_ = anotherMapBuilder_.build();
         }
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.Mesg1 result) {
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.noMap_ = noMapBuilder_ == null
-              ? noMap_
-              : noMapBuilder_.build();
+          if (noMapBuilder_ == null) {
+            result.noMap_ = noMap_;
+          } else {
+            result.noMap_ = noMapBuilder_.build();
+          }
           to_bitField0_ |= 0x00000001;
         }
-        if (((from_bitField0_ & 0x00000004) != 0)) {
+        if (((bitField0_ & 0x00000004) != 0)) {
           intList_.makeImmutable();
-          result.intList_ = intList_;
+          bitField0_ = (bitField0_ & ~0x00000004);
         }
-        result.bitField0_ |= to_bitField0_;
+        result.intList_ = intList_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -1352,8 +1354,7 @@ public final class SampleProtos {
         if (!other.intList_.isEmpty()) {
           if (intList_.isEmpty()) {
             intList_ = other.intList_;
-            intList_.makeImmutable();
-            bitField0_ |= 0x00000004;
+            bitField0_ = (bitField0_ & ~0x00000004);
           } else {
             ensureIntListIsMutable();
             intList_.addAll(other.intList_);
@@ -1709,11 +1710,11 @@ public final class SampleProtos {
             throw new NullPointerException();
           }
           noMap_ = value;
+          onChanged();
         } else {
           noMapBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000002;
-        onChanged();
         return this;
       }
       /**
@@ -1723,11 +1724,11 @@ public final class SampleProtos {
           org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.MapFieldEntry.Builder builderForValue) {
         if (noMapBuilder_ == null) {
           noMap_ = builderForValue.build();
+          onChanged();
         } else {
           noMapBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000002;
-        onChanged();
         return this;
       }
       /**
@@ -1736,32 +1737,31 @@ public final class SampleProtos {
       public Builder mergeNoMap(org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.MapFieldEntry value) {
         if (noMapBuilder_ == null) {
           if (((bitField0_ & 0x00000002) != 0) &&
-            noMap_ != null &&
-            noMap_ != org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.MapFieldEntry.getDefaultInstance()) {
-            getNoMapBuilder().mergeFrom(value);
+              noMap_ != null &&
+              noMap_ != org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.MapFieldEntry.getDefaultInstance()) {
+            noMap_ =
+              org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.MapFieldEntry.newBuilder(noMap_).mergeFrom(value).buildPartial();
           } else {
             noMap_ = value;
           }
+          onChanged();
         } else {
           noMapBuilder_.mergeFrom(value);
         }
-        if (noMap_ != null) {
-          bitField0_ |= 0x00000002;
-          onChanged();
-        }
+        bitField0_ |= 0x00000002;
         return this;
       }
       /**
        * <code>optional .MapFieldEntry noMap = 2;</code>
        */
       public Builder clearNoMap() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        noMap_ = null;
-        if (noMapBuilder_ != null) {
-          noMapBuilder_.dispose();
-          noMapBuilder_ = null;
+        if (noMapBuilder_ == null) {
+          noMap_ = null;
+          onChanged();
+        } else {
+          noMapBuilder_.clear();
         }
-        onChanged();
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
       /**
@@ -1802,10 +1802,10 @@ public final class SampleProtos {
 
       private com.google.protobuf.Internal.IntList intList_ = emptyIntList();
       private void ensureIntListIsMutable() {
-        if (!intList_.isModifiable()) {
-          intList_ = makeMutableCopy(intList_);
-        }
-        bitField0_ |= 0x00000004;
+        if (!((bitField0_ & 0x00000004) != 0)) {
+          intList_ = mutableCopy(intList_);
+          bitField0_ |= 0x00000004;
+         }
       }
       /**
        * <code>repeated int32 intList = 3;</code>
@@ -1813,8 +1813,8 @@ public final class SampleProtos {
        */
       public java.util.List<java.lang.Integer>
           getIntListList() {
-        intList_.makeImmutable();
-        return intList_;
+        return ((bitField0_ & 0x00000004) != 0) ?
+                 java.util.Collections.unmodifiableList(intList_) : intList_;
       }
       /**
        * <code>repeated int32 intList = 3;</code>
@@ -1839,10 +1839,8 @@ public final class SampleProtos {
        */
       public Builder setIntList(
           int index, int value) {
-
         ensureIntListIsMutable();
         intList_.setInt(index, value);
-        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -1852,10 +1850,8 @@ public final class SampleProtos {
        * @return This builder for chaining.
        */
       public Builder addIntList(int value) {
-
         ensureIntListIsMutable();
         intList_.addInt(value);
-        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -1869,7 +1865,6 @@ public final class SampleProtos {
         ensureIntListIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, intList_);
-        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -2237,8 +2232,7 @@ public final class SampleProtos {
       stringType_ = "";
       bytesType_ = com.google.protobuf.ByteString.EMPTY;
       mapType_ = java.util.Collections.emptyList();
-      stringListType_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
+      stringListType_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       messageListType_ = java.util.Collections.emptyList();
       enumType_ = 1;
     }
@@ -2250,6 +2244,11 @@ public final class SampleProtos {
       return new AllTypes();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.internal_static_AllTypes_descriptor;
@@ -2361,7 +2360,7 @@ public final class SampleProtos {
 
     private int bitField0_;
     public static final int DOUBLETYPE_FIELD_NUMBER = 1;
-    private double doubleType_ = 0D;
+    private double doubleType_;
     /**
      * <code>optional double doubleType = 1;</code>
      * @return Whether the doubleType field is set.
@@ -2380,7 +2379,7 @@ public final class SampleProtos {
     }
 
     public static final int FLOATTYPE_FIELD_NUMBER = 2;
-    private float floatType_ = 0F;
+    private float floatType_;
     /**
      * <code>optional float floatType = 2;</code>
      * @return Whether the floatType field is set.
@@ -2399,7 +2398,7 @@ public final class SampleProtos {
     }
 
     public static final int INT32TYPE_FIELD_NUMBER = 3;
-    private int int32Type_ = 0;
+    private int int32Type_;
     /**
      * <code>optional int32 int32Type = 3;</code>
      * @return Whether the int32Type field is set.
@@ -2418,7 +2417,7 @@ public final class SampleProtos {
     }
 
     public static final int INT64TYPE_FIELD_NUMBER = 4;
-    private long int64Type_ = 0L;
+    private long int64Type_;
     /**
      * <code>optional int64 int64Type = 4;</code>
      * @return Whether the int64Type field is set.
@@ -2437,7 +2436,7 @@ public final class SampleProtos {
     }
 
     public static final int UINT32TYPE_FIELD_NUMBER = 5;
-    private int uint32Type_ = 0;
+    private int uint32Type_;
     /**
      * <code>optional uint32 uint32Type = 5;</code>
      * @return Whether the uint32Type field is set.
@@ -2456,7 +2455,7 @@ public final class SampleProtos {
     }
 
     public static final int UINT64TYPE_FIELD_NUMBER = 6;
-    private long uint64Type_ = 0L;
+    private long uint64Type_;
     /**
      * <code>optional uint64 uint64Type = 6;</code>
      * @return Whether the uint64Type field is set.
@@ -2475,7 +2474,7 @@ public final class SampleProtos {
     }
 
     public static final int SINT32TYPE_FIELD_NUMBER = 7;
-    private int sint32Type_ = 0;
+    private int sint32Type_;
     /**
      * <code>optional sint32 sint32Type = 7;</code>
      * @return Whether the sint32Type field is set.
@@ -2494,7 +2493,7 @@ public final class SampleProtos {
     }
 
     public static final int SINT64TYPE_FIELD_NUMBER = 8;
-    private long sint64Type_ = 0L;
+    private long sint64Type_;
     /**
      * <code>optional sint64 sint64Type = 8;</code>
      * @return Whether the sint64Type field is set.
@@ -2513,7 +2512,7 @@ public final class SampleProtos {
     }
 
     public static final int FIXED32TYPE_FIELD_NUMBER = 9;
-    private int fixed32Type_ = 0;
+    private int fixed32Type_;
     /**
      * <code>optional fixed32 fixed32Type = 9;</code>
      * @return Whether the fixed32Type field is set.
@@ -2532,7 +2531,7 @@ public final class SampleProtos {
     }
 
     public static final int FIXED64TYPE_FIELD_NUMBER = 10;
-    private long fixed64Type_ = 0L;
+    private long fixed64Type_;
     /**
      * <code>optional fixed64 fixed64Type = 10;</code>
      * @return Whether the fixed64Type field is set.
@@ -2551,7 +2550,7 @@ public final class SampleProtos {
     }
 
     public static final int SFIXED32TYPE_FIELD_NUMBER = 11;
-    private int sfixed32Type_ = 0;
+    private int sfixed32Type_;
     /**
      * <code>optional sfixed32 sfixed32Type = 11;</code>
      * @return Whether the sfixed32Type field is set.
@@ -2570,7 +2569,7 @@ public final class SampleProtos {
     }
 
     public static final int SFIXED64TYPE_FIELD_NUMBER = 12;
-    private long sfixed64Type_ = 0L;
+    private long sfixed64Type_;
     /**
      * <code>optional sfixed64 sfixed64Type = 12;</code>
      * @return Whether the sfixed64Type field is set.
@@ -2589,7 +2588,7 @@ public final class SampleProtos {
     }
 
     public static final int BOOLTYPE_FIELD_NUMBER = 13;
-    private boolean boolType_ = false;
+    private boolean boolType_;
     /**
      * <code>optional bool boolType = 13;</code>
      * @return Whether the boolType field is set.
@@ -2608,8 +2607,7 @@ public final class SampleProtos {
     }
 
     public static final int STRINGTYPE_FIELD_NUMBER = 14;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object stringType_ = "";
+    private volatile java.lang.Object stringType_;
     /**
      * <code>optional string stringType = 14;</code>
      * @return Whether the stringType field is set.
@@ -2657,7 +2655,7 @@ public final class SampleProtos {
     }
 
     public static final int BYTESTYPE_FIELD_NUMBER = 15;
-    private com.google.protobuf.ByteString bytesType_ = com.google.protobuf.ByteString.EMPTY;
+    private com.google.protobuf.ByteString bytesType_;
     /**
      * <code>optional bytes bytesType = 15;</code>
      * @return Whether the bytesType field is set.
@@ -2676,7 +2674,6 @@ public final class SampleProtos {
     }
 
     public static final int MAPTYPE_FIELD_NUMBER = 16;
-    @SuppressWarnings("serial")
     private java.util.List<org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.MapFieldEntry> mapType_;
     /**
      * <code>repeated .MapFieldEntry mapType = 16;</code>
@@ -2717,9 +2714,7 @@ public final class SampleProtos {
     }
 
     public static final int STRINGLISTTYPE_FIELD_NUMBER = 17;
-    @SuppressWarnings("serial")
-    private com.google.protobuf.LazyStringArrayList stringListType_ =
-        com.google.protobuf.LazyStringArrayList.emptyList();
+    private com.google.protobuf.LazyStringList stringListType_;
     /**
      * <code>repeated string stringListType = 17;</code>
      * @return A list containing the stringListType.
@@ -2780,7 +2775,6 @@ public final class SampleProtos {
     }
 
     public static final int MESSAGELISTTYPE_FIELD_NUMBER = 19;
-    @SuppressWarnings("serial")
     private java.util.List<org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.Mesg1> messageListType_;
     /**
      * <code>repeated .Mesg1 messageListType = 19;</code>
@@ -2821,7 +2815,7 @@ public final class SampleProtos {
     }
 
     public static final int ENUMTYPE_FIELD_NUMBER = 20;
-    private int enumType_ = 1;
+    private int enumType_;
     /**
      * <code>optional .AllTypes.Enum1 enumType = 20;</code>
      * @return Whether the enumType field is set.
@@ -2834,7 +2828,8 @@ public final class SampleProtos {
      * @return The enumType.
      */
     @java.lang.Override public org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.AllTypes.Enum1 getEnumType() {
-      org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.AllTypes.Enum1 result = org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.AllTypes.Enum1.forNumber(enumType_);
+      @SuppressWarnings("deprecation")
+      org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.AllTypes.Enum1 result = org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.AllTypes.Enum1.valueOf(enumType_);
       return result == null ? org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.AllTypes.Enum1.VAL1 : result;
     }
 
@@ -3259,13 +3254,11 @@ public final class SampleProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.AllTypes parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.AllTypes parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3348,22 +3341,36 @@ public final class SampleProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
         doubleType_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000001);
         floatType_ = 0F;
+        bitField0_ = (bitField0_ & ~0x00000002);
         int32Type_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
         int64Type_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000008);
         uint32Type_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000010);
         uint64Type_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000020);
         sint32Type_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000040);
         sint64Type_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000080);
         fixed32Type_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000100);
         fixed64Type_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000200);
         sfixed32Type_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000400);
         sfixed64Type_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000800);
         boolType_ = false;
+        bitField0_ = (bitField0_ & ~0x00001000);
         stringType_ = "";
+        bitField0_ = (bitField0_ & ~0x00002000);
         bytesType_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00004000);
         if (mapTypeBuilder_ == null) {
           mapType_ = java.util.Collections.emptyList();
         } else {
@@ -3371,13 +3378,14 @@ public final class SampleProtos {
           mapTypeBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00008000);
-        stringListType_ =
-            com.google.protobuf.LazyStringArrayList.emptyList();
-        messageType_ = null;
-        if (messageTypeBuilder_ != null) {
-          messageTypeBuilder_.dispose();
-          messageTypeBuilder_ = null;
+        stringListType_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00010000);
+        if (messageTypeBuilder_ == null) {
+          messageType_ = null;
+        } else {
+          messageTypeBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00020000);
         if (messageListTypeBuilder_ == null) {
           messageListType_ = java.util.Collections.emptyList();
         } else {
@@ -3386,6 +3394,7 @@ public final class SampleProtos {
         }
         bitField0_ = (bitField0_ & ~0x00040000);
         enumType_ = 1;
+        bitField0_ = (bitField0_ & ~0x00080000);
         return this;
       }
 
@@ -3412,34 +3421,6 @@ public final class SampleProtos {
       @java.lang.Override
       public org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.AllTypes buildPartial() {
         org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.AllTypes result = new org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.AllTypes(this);
-        buildPartialRepeatedFields(result);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartialRepeatedFields(org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.AllTypes result) {
-        if (mapTypeBuilder_ == null) {
-          if (((bitField0_ & 0x00008000) != 0)) {
-            mapType_ = java.util.Collections.unmodifiableList(mapType_);
-            bitField0_ = (bitField0_ & ~0x00008000);
-          }
-          result.mapType_ = mapType_;
-        } else {
-          result.mapType_ = mapTypeBuilder_.build();
-        }
-        if (messageListTypeBuilder_ == null) {
-          if (((bitField0_ & 0x00040000) != 0)) {
-            messageListType_ = java.util.Collections.unmodifiableList(messageListType_);
-            bitField0_ = (bitField0_ & ~0x00040000);
-          }
-          result.messageListType_ = messageListType_;
-        } else {
-          result.messageListType_ = messageListTypeBuilder_.build();
-        }
-      }
-
-      private void buildPartial0(org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.AllTypes result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
@@ -3495,28 +3476,51 @@ public final class SampleProtos {
           to_bitField0_ |= 0x00001000;
         }
         if (((from_bitField0_ & 0x00002000) != 0)) {
-          result.stringType_ = stringType_;
           to_bitField0_ |= 0x00002000;
         }
+        result.stringType_ = stringType_;
         if (((from_bitField0_ & 0x00004000) != 0)) {
-          result.bytesType_ = bytesType_;
           to_bitField0_ |= 0x00004000;
         }
-        if (((from_bitField0_ & 0x00010000) != 0)) {
-          stringListType_.makeImmutable();
-          result.stringListType_ = stringListType_;
+        result.bytesType_ = bytesType_;
+        if (mapTypeBuilder_ == null) {
+          if (((bitField0_ & 0x00008000) != 0)) {
+            mapType_ = java.util.Collections.unmodifiableList(mapType_);
+            bitField0_ = (bitField0_ & ~0x00008000);
+          }
+          result.mapType_ = mapType_;
+        } else {
+          result.mapType_ = mapTypeBuilder_.build();
         }
+        if (((bitField0_ & 0x00010000) != 0)) {
+          stringListType_ = stringListType_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00010000);
+        }
+        result.stringListType_ = stringListType_;
         if (((from_bitField0_ & 0x00020000) != 0)) {
-          result.messageType_ = messageTypeBuilder_ == null
-              ? messageType_
-              : messageTypeBuilder_.build();
+          if (messageTypeBuilder_ == null) {
+            result.messageType_ = messageType_;
+          } else {
+            result.messageType_ = messageTypeBuilder_.build();
+          }
           to_bitField0_ |= 0x00008000;
         }
+        if (messageListTypeBuilder_ == null) {
+          if (((bitField0_ & 0x00040000) != 0)) {
+            messageListType_ = java.util.Collections.unmodifiableList(messageListType_);
+            bitField0_ = (bitField0_ & ~0x00040000);
+          }
+          result.messageListType_ = messageListType_;
+        } else {
+          result.messageListType_ = messageListTypeBuilder_.build();
+        }
         if (((from_bitField0_ & 0x00080000) != 0)) {
-          result.enumType_ = enumType_;
           to_bitField0_ |= 0x00010000;
         }
-        result.bitField0_ |= to_bitField0_;
+        result.enumType_ = enumType_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
 
       @java.lang.Override
@@ -3603,8 +3607,8 @@ public final class SampleProtos {
           setBoolType(other.getBoolType());
         }
         if (other.hasStringType()) {
-          stringType_ = other.stringType_;
           bitField0_ |= 0x00002000;
+          stringType_ = other.stringType_;
           onChanged();
         }
         if (other.hasBytesType()) {
@@ -3639,7 +3643,7 @@ public final class SampleProtos {
         if (!other.stringListType_.isEmpty()) {
           if (stringListType_.isEmpty()) {
             stringListType_ = other.stringListType_;
-            bitField0_ |= 0x00010000;
+            bitField0_ = (bitField0_ & ~0x00010000);
           } else {
             ensureStringListTypeIsMutable();
             stringListType_.addAll(other.stringListType_);
@@ -3870,9 +3874,8 @@ public final class SampleProtos {
        * @return This builder for chaining.
        */
       public Builder setDoubleType(double value) {
-
-        doubleType_ = value;
         bitField0_ |= 0x00000001;
+        doubleType_ = value;
         onChanged();
         return this;
       }
@@ -3910,9 +3913,8 @@ public final class SampleProtos {
        * @return This builder for chaining.
        */
       public Builder setFloatType(float value) {
-
-        floatType_ = value;
         bitField0_ |= 0x00000002;
+        floatType_ = value;
         onChanged();
         return this;
       }
@@ -3950,9 +3952,8 @@ public final class SampleProtos {
        * @return This builder for chaining.
        */
       public Builder setInt32Type(int value) {
-
-        int32Type_ = value;
         bitField0_ |= 0x00000004;
+        int32Type_ = value;
         onChanged();
         return this;
       }
@@ -3990,9 +3991,8 @@ public final class SampleProtos {
        * @return This builder for chaining.
        */
       public Builder setInt64Type(long value) {
-
-        int64Type_ = value;
         bitField0_ |= 0x00000008;
+        int64Type_ = value;
         onChanged();
         return this;
       }
@@ -4030,9 +4030,8 @@ public final class SampleProtos {
        * @return This builder for chaining.
        */
       public Builder setUint32Type(int value) {
-
-        uint32Type_ = value;
         bitField0_ |= 0x00000010;
+        uint32Type_ = value;
         onChanged();
         return this;
       }
@@ -4070,9 +4069,8 @@ public final class SampleProtos {
        * @return This builder for chaining.
        */
       public Builder setUint64Type(long value) {
-
-        uint64Type_ = value;
         bitField0_ |= 0x00000020;
+        uint64Type_ = value;
         onChanged();
         return this;
       }
@@ -4110,9 +4108,8 @@ public final class SampleProtos {
        * @return This builder for chaining.
        */
       public Builder setSint32Type(int value) {
-
-        sint32Type_ = value;
         bitField0_ |= 0x00000040;
+        sint32Type_ = value;
         onChanged();
         return this;
       }
@@ -4150,9 +4147,8 @@ public final class SampleProtos {
        * @return This builder for chaining.
        */
       public Builder setSint64Type(long value) {
-
-        sint64Type_ = value;
         bitField0_ |= 0x00000080;
+        sint64Type_ = value;
         onChanged();
         return this;
       }
@@ -4190,9 +4186,8 @@ public final class SampleProtos {
        * @return This builder for chaining.
        */
       public Builder setFixed32Type(int value) {
-
-        fixed32Type_ = value;
         bitField0_ |= 0x00000100;
+        fixed32Type_ = value;
         onChanged();
         return this;
       }
@@ -4230,9 +4225,8 @@ public final class SampleProtos {
        * @return This builder for chaining.
        */
       public Builder setFixed64Type(long value) {
-
-        fixed64Type_ = value;
         bitField0_ |= 0x00000200;
+        fixed64Type_ = value;
         onChanged();
         return this;
       }
@@ -4270,9 +4264,8 @@ public final class SampleProtos {
        * @return This builder for chaining.
        */
       public Builder setSfixed32Type(int value) {
-
-        sfixed32Type_ = value;
         bitField0_ |= 0x00000400;
+        sfixed32Type_ = value;
         onChanged();
         return this;
       }
@@ -4310,9 +4303,8 @@ public final class SampleProtos {
        * @return This builder for chaining.
        */
       public Builder setSfixed64Type(long value) {
-
-        sfixed64Type_ = value;
         bitField0_ |= 0x00000800;
+        sfixed64Type_ = value;
         onChanged();
         return this;
       }
@@ -4350,9 +4342,8 @@ public final class SampleProtos {
        * @return This builder for chaining.
        */
       public Builder setBoolType(boolean value) {
-
-        boolType_ = value;
         bitField0_ |= 0x00001000;
+        boolType_ = value;
         onChanged();
         return this;
       }
@@ -4417,9 +4408,11 @@ public final class SampleProtos {
        */
       public Builder setStringType(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00002000;
         stringType_ = value;
-        bitField0_ |= 0x00002000;
         onChanged();
         return this;
       }
@@ -4428,8 +4421,8 @@ public final class SampleProtos {
        * @return This builder for chaining.
        */
       public Builder clearStringType() {
-        stringType_ = getDefaultInstance().getStringType();
         bitField0_ = (bitField0_ & ~0x00002000);
+        stringType_ = getDefaultInstance().getStringType();
         onChanged();
         return this;
       }
@@ -4440,9 +4433,11 @@ public final class SampleProtos {
        */
       public Builder setStringTypeBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00002000;
         stringType_ = value;
-        bitField0_ |= 0x00002000;
         onChanged();
         return this;
       }
@@ -4470,9 +4465,11 @@ public final class SampleProtos {
        * @return This builder for chaining.
        */
       public Builder setBytesType(com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00004000;
         bytesType_ = value;
-        bitField0_ |= 0x00004000;
         onChanged();
         return this;
       }
@@ -4727,13 +4724,12 @@ public final class SampleProtos {
         return mapTypeBuilder_;
       }
 
-      private com.google.protobuf.LazyStringArrayList stringListType_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
+      private com.google.protobuf.LazyStringList stringListType_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensureStringListTypeIsMutable() {
-        if (!stringListType_.isModifiable()) {
+        if (!((bitField0_ & 0x00010000) != 0)) {
           stringListType_ = new com.google.protobuf.LazyStringArrayList(stringListType_);
-        }
-        bitField0_ |= 0x00010000;
+          bitField0_ |= 0x00010000;
+         }
       }
       /**
        * <code>repeated string stringListType = 17;</code>
@@ -4741,8 +4737,7 @@ public final class SampleProtos {
        */
       public com.google.protobuf.ProtocolStringList
           getStringListTypeList() {
-        stringListType_.makeImmutable();
-        return stringListType_;
+        return stringListType_.getUnmodifiableView();
       }
       /**
        * <code>repeated string stringListType = 17;</code>
@@ -4776,10 +4771,11 @@ public final class SampleProtos {
        */
       public Builder setStringListType(
           int index, java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
-        ensureStringListTypeIsMutable();
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureStringListTypeIsMutable();
         stringListType_.set(index, value);
-        bitField0_ |= 0x00010000;
         onChanged();
         return this;
       }
@@ -4790,10 +4786,11 @@ public final class SampleProtos {
        */
       public Builder addStringListType(
           java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
-        ensureStringListTypeIsMutable();
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureStringListTypeIsMutable();
         stringListType_.add(value);
-        bitField0_ |= 0x00010000;
         onChanged();
         return this;
       }
@@ -4807,7 +4804,6 @@ public final class SampleProtos {
         ensureStringListTypeIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, stringListType_);
-        bitField0_ |= 0x00010000;
         onChanged();
         return this;
       }
@@ -4816,9 +4812,8 @@ public final class SampleProtos {
        * @return This builder for chaining.
        */
       public Builder clearStringListType() {
-        stringListType_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
-        bitField0_ = (bitField0_ & ~0x00010000);;
+        stringListType_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00010000);
         onChanged();
         return this;
       }
@@ -4829,10 +4824,11 @@ public final class SampleProtos {
        */
       public Builder addStringListTypeBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
-        ensureStringListTypeIsMutable();
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureStringListTypeIsMutable();
         stringListType_.add(value);
-        bitField0_ |= 0x00010000;
         onChanged();
         return this;
       }
@@ -4867,11 +4863,11 @@ public final class SampleProtos {
             throw new NullPointerException();
           }
           messageType_ = value;
+          onChanged();
         } else {
           messageTypeBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00020000;
-        onChanged();
         return this;
       }
       /**
@@ -4881,11 +4877,11 @@ public final class SampleProtos {
           org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.Mesg1.Builder builderForValue) {
         if (messageTypeBuilder_ == null) {
           messageType_ = builderForValue.build();
+          onChanged();
         } else {
           messageTypeBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00020000;
-        onChanged();
         return this;
       }
       /**
@@ -4894,32 +4890,31 @@ public final class SampleProtos {
       public Builder mergeMessageType(org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.Mesg1 value) {
         if (messageTypeBuilder_ == null) {
           if (((bitField0_ & 0x00020000) != 0) &&
-            messageType_ != null &&
-            messageType_ != org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.Mesg1.getDefaultInstance()) {
-            getMessageTypeBuilder().mergeFrom(value);
+              messageType_ != null &&
+              messageType_ != org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.Mesg1.getDefaultInstance()) {
+            messageType_ =
+              org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.Mesg1.newBuilder(messageType_).mergeFrom(value).buildPartial();
           } else {
             messageType_ = value;
           }
+          onChanged();
         } else {
           messageTypeBuilder_.mergeFrom(value);
         }
-        if (messageType_ != null) {
-          bitField0_ |= 0x00020000;
-          onChanged();
-        }
+        bitField0_ |= 0x00020000;
         return this;
       }
       /**
        * <code>optional .Mesg1 messageType = 18;</code>
        */
       public Builder clearMessageType() {
-        bitField0_ = (bitField0_ & ~0x00020000);
-        messageType_ = null;
-        if (messageTypeBuilder_ != null) {
-          messageTypeBuilder_.dispose();
-          messageTypeBuilder_ = null;
+        if (messageTypeBuilder_ == null) {
+          messageType_ = null;
+          onChanged();
+        } else {
+          messageTypeBuilder_.clear();
         }
-        onChanged();
+        bitField0_ = (bitField0_ & ~0x00020000);
         return this;
       }
       /**
@@ -5212,7 +5207,8 @@ public final class SampleProtos {
        */
       @java.lang.Override
       public org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.AllTypes.Enum1 getEnumType() {
-        org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.AllTypes.Enum1 result = org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.AllTypes.Enum1.forNumber(enumType_);
+        @SuppressWarnings("deprecation")
+        org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.AllTypes.Enum1 result = org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.AllTypes.Enum1.valueOf(enumType_);
         return result == null ? org.apache.hadoop.hive.ql.io.protobuf.SampleProtos.AllTypes.Enum1.VAL1 : result;
       }
       /**
