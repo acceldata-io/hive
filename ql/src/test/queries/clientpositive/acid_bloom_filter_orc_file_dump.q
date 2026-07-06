@@ -1,4 +1,3 @@
---! qt:replace:/(File Version:)(.+)/$1#Masked#/
 SET hive.vectorized.execution.enabled=FALSE;
 SET hive.mapred.mode=nonstrict;
 
