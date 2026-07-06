@@ -1078,7 +1078,6 @@ public class EncodedTreeReaderFactory extends TreeReaderFactory {
         FilterContext filterContext, ReadPhase readPhase) throws IOException {
       if (vectors == null) {
         super.nextVector(previousVector, isNull, batchSize, filterContext, readPhase);
-        previousVector.isRepeating = false;
         return;
       }
       vectors.get(vectorIndex++).shallowCopyTo(previousVector);
