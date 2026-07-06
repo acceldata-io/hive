@@ -76,7 +76,7 @@ PREHOOK: Input: default@orcfile_merge1_n2
 #### A masked pattern was here ####
 -- BEGIN ORC FILE DUMP --
 #### A masked pattern was here ####
-File Version: 0.12 with ORC_14 by ORC Java 1.8.3
+File Version: 0.12 with ORC_14
 Rows: 50000
 Compression: ZLIB
 Compression size: 4096
@@ -160,7 +160,7 @@ Stripes:
       Entry 3: count: 10000 hasNull: false min: 1969-12-31 16:04:10.0 max: 1969-12-31 16:04:10.0 positions: 0,506,294,0,232,304
       Entry 4: count: 10000 hasNull: false min: 1969-12-31 16:04:10.0 max: 1969-12-31 16:04:10.0 positions: 0,666,54,0,312,64
 
-File length: 6692 bytes
+File length: 6685 bytes
 Padding length: 0 bytes
 Padding ratio: 0%
 ________________________________________________________________________________________________________________________
@@ -168,7 +168,7 @@ ________________________________________________________________________________
 -- END ORC FILE DUMP --
 -- BEGIN ORC FILE DUMP --
 #### A masked pattern was here ####
-File Version: 0.12 with ORC_14 by ORC Java 1.8.3
+File Version: 0.12 with ORC_14
 Rows: 50000
 Compression: ZLIB
 Compression size: 4096
@@ -252,7 +252,7 @@ Stripes:
       Entry 3: count: 10000 hasNull: false min: 1969-12-31 16:04:10.0 max: 1969-12-31 16:04:10.0 positions: 0,506,294,0,232,304
       Entry 4: count: 10000 hasNull: false min: 1969-12-31 16:04:10.0 max: 1969-12-31 16:04:10.0 positions: 0,666,54,0,312,64
 
-File length: 6692 bytes
+File length: 6685 bytes
 Padding length: 0 bytes
 Padding ratio: 0%
 ________________________________________________________________________________________________________________________
@@ -281,7 +281,7 @@ PREHOOK: Input: default@orcfile_merge1_n2
 #### A masked pattern was here ####
 -- BEGIN ORC FILE DUMP --
 #### A masked pattern was here ####
-File Version: 0.12 with ORC_14 by ORC Java 1.8.3
+File Version: 0.12 with ORC_14
 Rows: 100000
 Compression: ZLIB
 Compression size: 4096
@@ -430,7 +430,7 @@ Stripes:
       Entry 3: count: 10000 hasNull: false min: 1969-12-31 16:04:10.0 max: 1969-12-31 16:04:10.0 positions: 0,506,294,0,232,304
       Entry 4: count: 10000 hasNull: false min: 1969-12-31 16:04:10.0 max: 1969-12-31 16:04:10.0 positions: 0,666,54,0,312,64
 
-File length: 13001 bytes
+File length: 12994 bytes
 Padding length: 0 bytes
 Padding ratio: 0%
 ________________________________________________________________________________________________________________________
