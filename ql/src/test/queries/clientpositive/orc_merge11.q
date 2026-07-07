@@ -1,4 +1,3 @@
---! qt:replace:/(File Version:)(.+)/$1#Masked#/
 set hive.vectorized.execution.enabled=false;
 
 DROP TABLE orcfile_merge1_n2;

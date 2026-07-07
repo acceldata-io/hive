@@ -1,4 +1,3 @@
---! qt:replace:/(\s+totalSize\s+)\S+(\s+)/$1#Masked#/
 set hive.vectorized.execution.enabled=false;
 set hive.mapred.mode=nonstrict;
 set hive.exec.submitviachild=false;

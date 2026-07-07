@@ -58,13 +58,14 @@ import org.apache.orc.TypeDescription;
 import org.apache.orc.impl.SchemaEvolution;
 import org.apache.orc.impl.TreeReaderFactory;
 import org.apache.orc.impl.TreeReaderFactory.StructTreeReader;
+import org.apache.orc.impl.TreeReaderFactory.TreeReader;
 import org.apache.orc.impl.WriterImpl;
 import org.apache.orc.OrcProto;
-import org.apache.orc.impl.reader.tree.TypeReader;
+
 
 public class OrcEncodedDataConsumer
   extends EncodedDataConsumer<OrcBatchKey, OrcEncodedColumnBatch> {
-  private TypeReader[] columnReaders;
+  private TreeReaderFactory.TreeReader[] columnReaders;
   private int previousStripeIndex = -1;
   private ConsumerFileMetadata fileMetadata; // We assume one request is only for one file.
   private CompressionCodec codec;
@@ -190,9 +191,9 @@ public class OrcEncodedDataConsumer
            *     it doesn't get confused.
            *
            */
-          TypeReader reader = columnReaders[idx];
+          TreeReader reader = columnReaders[idx];
           ColumnVector cv = prepareColumnVector(cvb, idx, batchSize);
-          reader.nextVector(cv, null, batchSize, cvb.filterContext, TypeReader.ReadPhase.ALL);
+          reader.nextVector(cv, null, batchSize);
         }
 
         // we are done reading a batch, send it to consumer for processing
@@ -298,18 +299,18 @@ public class OrcEncodedDataConsumer
     }
   }
 
-  private void positionInStreams(TypeReader[] columnReaders,
+  private void positionInStreams(TreeReaderFactory.TreeReader[] columnReaders,
       OrcBatchKey batchKey, ConsumerStripeMetadata stripeMetadata) throws IOException {
     PositionProvider[] pps = createPositionProviders(columnReaders, batchKey, stripeMetadata);
     if (pps == null) return;
     for (int i = 0; i < columnReaders.length; i++) {
       if (columnReaders[i] == null) continue;
       // TODO: we could/should trace seek destinations; pps needs a "peek" method
-      columnReaders[i].seek(pps, TypeReader.ReadPhase.ALL);
+      columnReaders[i].seek(pps);
     }
   }
 
-  private void repositionInStreams(TypeReader[] columnReaders,
+  private void repositionInStreams(TreeReaderFactory.TreeReader[] columnReaders,
       EncodedColumnBatch<OrcBatchKey> batch, boolean sameStripe,
       ConsumerStripeMetadata stripeMetadata) throws IOException {
     PositionProvider[] pps = createPositionProviders(
@@ -319,7 +320,7 @@ public class OrcEncodedDataConsumer
     }
     if (pps == null) return;
     for (int i = 0; i < columnReaders.length; i++) {
-      TypeReader reader = columnReaders[i];
+      TreeReader reader = columnReaders[i];
       if (reader == null) continue;
       // Note: we assume this never happens for SerDe reader - the batch would never have vectors.
       // That is always true now; but it wasn't some day, the below would throw in getColumnData.
@@ -330,7 +331,7 @@ public class OrcEncodedDataConsumer
         ((EncodedTreeReaderFactory.TimestampStreamReader) reader)
                 .updateTimezone(stripeMetadata.getWriterTimezone());
       }
-      reader.seek(pps, TypeReader.ReadPhase.ALL);
+      reader.seek(pps);
     }
   }
 
@@ -351,7 +352,7 @@ public class OrcEncodedDataConsumer
   }
 
   private PositionProvider[] createPositionProviders(
-      TypeReader[] columnReaders, OrcBatchKey batchKey,
+      TreeReaderFactory.TreeReader[] columnReaders, OrcBatchKey batchKey,
       ConsumerStripeMetadata stripeMetadata) throws IOException {
     if (columnReaders.length == 0) return null;
     PositionProvider[] pps = null;
