@@ -1058,6 +1058,9 @@
                   <include>org.apache.hive:hive-standalone-metastore-common</include>
                   <include>org.apache.hive:hive-standalone-metastore-server</include>
                   <include>org.apache.hive:hive-service-rpc</include>
+                  <include>com.esotericsoftware:kryo</include>
+                  <include>com.esotericsoftware:reflectasm</include>
+                  <include>com.esotericsoftware:minlog</include>
                   <include>com.esotericsoftware.kryo:kryo5</include>
                   <include>org.objenesis:objenesis</include>
                   <include>org.apache.parquet:parquet-hadoop-bundle</include>
@@ -1100,9 +1103,11 @@
                   <include>org.apache.calcite.avatica:avatica</include>
                   <include>com.esri.geometry:esri-geometry-api</include>
                   <include>org.roaringbitmap:RoaringBitmap</include>
+                  <include>org.roaringbitmap:shims</include>
                   <include>com.github.luben:zstd-jni</include>
                   <include>org.locationtech.jts:jts-core</include>
                   <include>org.apache.tez:tez-protobuf-history-plugin</include>
+                  <include>com.google.guava:failureaccess</include>
                 </includes>
               </artifactSet>
               <filters>
@@ -1124,6 +1129,10 @@
                 </filter>
               </filters>
               <relocations>
+                <relocation>
+                  <pattern>com.google.common.util.concurrent.internal</pattern>
+                  <shadedPattern>org.apache.hive.com.google.common.util.concurrent.internal</shadedPattern>
+                </relocation>
                 <relocation>
                   <pattern>com.esotericsoftware</pattern>
                   <shadedPattern>org.apache.hive.com.esotericsoftware</shadedPattern>
@@ -1175,6 +1184,7 @@
               <sources>
                 <source>src/gen/thrift/gen-javabean</source>
                 <source>${project.build.directory}/generated-sources/java</source>
+                <source>src/gen/protobuf/gen-java</source>
               </sources>
             </configuration>
           </execution>
@@ -1187,6 +1197,7 @@
             <configuration>
               <sources>
                 <source>${project.build.directory}/generated-test-sources/java</source>
+                <source>src/gen/protobuf/gen-test</source>
               </sources>
             </configuration>
           </execution>
