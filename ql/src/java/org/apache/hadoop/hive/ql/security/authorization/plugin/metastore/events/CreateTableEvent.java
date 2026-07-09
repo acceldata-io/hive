@@ -25,6 +25,7 @@ import org.apache.hadoop.hive.metastore.api.Database;
 import org.apache.hadoop.hive.metastore.TableType;
 import org.apache.hadoop.hive.metastore.events.PreCreateTableEvent;
 import org.apache.hadoop.hive.metastore.events.PreEventContext;
+import org.apache.hadoop.hive.ql.security.authorization.AuthorizationUtils;
 import org.apache.hadoop.hive.ql.security.authorization.plugin.HiveOperationType;
 import org.apache.hadoop.hive.ql.security.authorization.plugin.HivePrivilegeObject;
 import org.apache.hadoop.hive.ql.security.authorization.plugin.HivePrivilegeObject.HivePrivilegeObjectType;
@@ -67,7 +68,17 @@ public class CreateTableEvent extends HiveMetaStoreAuthorizableEvent {
     if (StringUtils.isNotEmpty(uri)) {
       ret.add(new HivePrivilegeObject(HivePrivilegeObjectType.DFS_URI, null, uri));
     }
+    addAvroSchemaUrlInputAuth(ret, table);
     return ret;
+  }
+
+  private void addAvroSchemaUrlInputAuth(List<HivePrivilegeObject> ret, Table table) {
+    String schemaUrl = AuthorizationUtils.getFilesystemAvroSchemaUrlToAuthorize(
+        new org.apache.hadoop.hive.ql.metadata.Table(table));
+    if (schemaUrl == null) {
+      return;
+    }
+    ret.add(getHivePrivilegeObjectDfsUri(schemaUrl));
   }
 
   private List<HivePrivilegeObject> getOutputHObjs() {
