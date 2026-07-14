@@ -6111,15 +6111,13 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
 
     try {
       ret = getMS().getTables(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], pattern);
-      if(ret !=  null && !ret.isEmpty()) {
-        List<Table> tableInfo = new ArrayList<>();
-        tableInfo = getMS().getTableObjectsByName(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], ret);
-        tableInfo = FilterUtils.filterTablesIfEnabled(isServerFilterEnabled, filterHook, tableInfo);// tableInfo object has the owner information of the table which is being passed to FilterUtils.
-        ret = new ArrayList<>();
-        for (Table tbl : tableInfo) {
-          ret.add(tbl.getTableName());
-        }
-      }
+      // OCR-2033 PERF: Filter by name only. HiveMetaStoreAuthorizer (Ranger) and the other
+      // in-tree MetaStoreFilterHook impls all decide from dbName+tableName + user context;
+      // the previous getTableObjectsByName + filterTablesIfEnabled(fullTables) path
+      // materialised every Table object in the DB (unbatched -- it also StackOverflowed
+      // DataNucleus at 100k+ tables). Matches get_all_tables() which already filters names.
+      ret = FilterUtils.filterTableNamesIfEnabled(isServerFilterEnabled, filterHook,
+          parsedDbName[CAT_NAME], parsedDbName[DB_NAME], ret);
     } catch (Exception e) {
       ex = e;
       throw newMetaException(e);
