@@ -21,7 +21,7 @@
   </parent>
   <groupId>org.apache.hive</groupId>
   <artifactId>hive</artifactId>
-  <version>4.1.0.3.3.6.4-1000</version>
+  <version>4.1.0.3.3.6.5-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Hive</name>
   <url>https://hive.apache.org</url>
@@ -66,17 +66,18 @@
     <repository>
       <id>nexus-releases</id>
       <name>Releases</name>
-     <url>https://repo1.acceldata.dev/repository/odp-release/</url>
+     <url>https://repo1.acceldata.dev/repository/odp-staging-release/</url>
    </repository>
    <snapshotRepository>
      <id>nexus-snapshots</id>
      <name>Snapshot</name>
-     <url>https://repo1.acceldata.dev/repository/odp-snapshot/</url>
+     <url>https://repo1.acceldata.dev/repository/odp-staging-snapshot/</url>
    </snapshotRepository>
  </distributionManagement>
   <properties>
-    <standalone-metastore.version>4.1.0.3.3.6.4-1000</standalone-metastore.version>
-    <hive.version.shortname>4.1.0.3.3.6.4-1000</hive.version.shortname>
+    <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    <standalone-metastore.version>4.1.0.${odp.release.version}</standalone-metastore.version>
+    <hive.version.shortname>4.1.0</hive.version.shortname>
     <!-- Build Properties -->
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
@@ -144,16 +145,16 @@
     <derby.version>10.14.2.0</derby.version>
     <dropwizard.version>3.1.0</dropwizard.version>
     <dropwizard-metrics-hadoop-metrics2-reporter.version>0.1.2</dropwizard-metrics-hadoop-metrics2-reporter.version>
-    <druid.version>29.0.1.3.3.6.4-1000</druid.version>
+    <druid.version>29.0.1.${odp.release.version}</druid.version>
     <esri.version>2.2.4</esri.version>
     <flatbuffers.version>1.12.0</flatbuffers.version>
     <guava.version>31.1-jre</guava.version>
     <groovy.version>2.4.21</groovy.version>
     <h2database.version>2.2.220</h2database.version>
-    <hadoop.version>3.3.6.3.3.6.4-1000</hadoop.version>
+    <hadoop.version>3.3.6.${odp.release.version}</hadoop.version>
     <hadoop.bin.path>${basedir}/${hive.path.to.root}/testutils/hadoop</hadoop.bin.path>
     <hamcrest.version>1.3</hamcrest.version>
-    <hbase.version>2.6.2.3.3.6.4-1000</hbase.version>
+    <hbase.version>2.6.2.${odp.release.version}</hbase.version>
     <hppc.version>0.7.2</hppc.version>
     <nashorn.version>15.4</nashorn.version>
     <!-- required for logging test to avoid including hbase which pulls disruptor transitively -->
@@ -180,10 +181,10 @@
     <junit.version>4.13.2</junit.version>
     <junit.jupiter.version>5.11.2</junit.jupiter.version>
     <junit.vintage.version>5.11.2</junit.vintage.version>
-    <kafka.version>3.7.2.3.3.6.4-1000</kafka.version>
+    <kafka.version>3.7.2.${odp.release.version}</kafka.version>
     <kryo.version>5.5.0</kryo.version>
     <reflectasm.version>1.11.9</reflectasm.version>
-    <kudu.version>1.17.0.3.3.6.4-1000</kudu.version>
+    <kudu.version>1.17.0.${odp.release.version}</kudu.version>
     <!-- Leaving libfb303 at 0.9.3 regardless of libthrift: As per THRIFT-4613 The Apache Thrift project does not publish items related to fb303 at this point -->
     <libfb303.version>0.9.3</libfb303.version>
     <libthrift.version>0.16.0</libthrift.version>
@@ -215,8 +216,8 @@
     <stax.version>1.0.1</stax.version>
     <slf4j.version>1.7.30</slf4j.version>
     <ST4.version>4.0.4</ST4.version>
-    <storage-api.version>4.1.0.3.3.6.4-1000</storage-api.version>
-    <tez.version>0.10.4.3.3.6.4-1000</tez.version>
+    <storage-api.version>4.1.0.${odp.release.version}</storage-api.version>
+    <tez.version>0.10.4.${odp.release.version}</tez.version>
     <super-csv.version>2.2.0</super-csv.version>
     <tempus-fugit.version>1.1</tempus-fugit.version>
     <snappy.version>1.1.10.4</snappy.version>
@@ -225,7 +226,7 @@
     <velocity.version>2.3</velocity.version>
     <xerces.version>2.12.2</xerces.version>
     <xmlsec.version>2.3.4</xmlsec.version>
-    <zookeeper.version>3.8.4.3.3.6.4-1000</zookeeper.version>
+    <zookeeper.version>3.8.4.${odp.release.version}</zookeeper.version>
     <jpam.version>1.1</jpam.version>
     <felix.version>2.4.0</felix.version>
     <curator.version>5.7.1</curator.version>
