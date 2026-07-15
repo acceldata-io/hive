@@ -6383,15 +6383,16 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
 
     try {
       ret = getMS().getTables(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], pattern);
-      if(ret !=  null && !ret.isEmpty()) {
-        List<Table> tableInfo = new ArrayList<>();
-        tableInfo = getMS().getTableObjectsByName(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], ret);
-        tableInfo = FilterUtils.filterTablesIfEnabled(isServerFilterEnabled, filterHook, tableInfo);// tableInfo object has the owner information of the table which is being passed to FilterUtils.
-        ret = new ArrayList<>();
-        for (Table tbl : tableInfo) {
-          ret.add(tbl.getTableName());
-        }
-      }
+      // HIVE-29378: Filter by name only. HiveMetaStoreAuthorizer (Ranger) and other
+      // MetaStoreFilterHook impls decide from dbName+tableName + user context; the prior
+      // getTableObjectsByName + filterTablesIfEnabled(fullTables) path materialised every
+      // Table object in the DB (unbatched -- it also StackOverflowed DataNucleus in
+      // ExpressionCompiler.compileOrAndExpression at 100k+ tables) and each convertToTable
+      // adds 5-10ms per table. HIVE-28292 rerouted HS2 SHOW TABLES around this call site
+      // but any non-HS2 caller (HCatalog, Impala, older HS2 vs newer HMS) still trips it.
+      // Matches get_all_tables() and get_tables_by_type() which already filter names only.
+      ret = FilterUtils.filterTableNamesIfEnabled(isServerFilterEnabled, filterHook,
+          parsedDbName[CAT_NAME], parsedDbName[DB_NAME], ret);
     } catch (Exception e) {
       ex = e;
       throw newMetaException(e);

@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.hadoop.hive.metastore.annotation.MetastoreUnitTest;
 import org.apache.hadoop.hive.metastore.api.CompactionType;
@@ -36,6 +37,7 @@ import org.apache.hadoop.hive.metastore.api.Partition;
 import org.apache.hadoop.hive.metastore.api.PartitionSpec;
 import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.hadoop.hive.metastore.api.TableMeta;
+import org.apache.hadoop.hive.metastore.events.PreEventContext;
 import org.apache.hadoop.hive.metastore.client.builder.DatabaseBuilder;
 import org.apache.hadoop.hive.metastore.client.builder.TableBuilder;
 import org.apache.hadoop.hive.metastore.conf.MetastoreConf;
@@ -174,6 +176,90 @@ public class TestFilterHooks {
         return new ArrayList<>();
       }
       return dcList;
+    }
+  }
+
+  /**
+   * HIVE-29378 regression guard helper. Passthrough filter hook that records which of
+   * the two SHOW TABLES filter entry points was invoked on the server. After the
+   * HMSHandler.get_tables() fix, this handler must be reached via filterTableNames only.
+   * If a regression re-introduces the pre-fix getTableObjectsByName + filterTables path,
+   * filterTablesCalls will be non-zero and the assertion fires. Serves as a proxy for
+   * the un-batched-IN-clause StackOverflow that used to hit at 100k+ tables under
+   * server-side filtering (see HIVE-29378, HIVE-24769).
+   */
+  public static class MethodRecordingFilterHook extends DefaultMetaStoreFilterHookImpl {
+    public static final AtomicInteger filterTablesCalls = new AtomicInteger();
+    public static final AtomicInteger filterTableNamesCalls = new AtomicInteger();
+
+    public MethodRecordingFilterHook(Configuration conf) { super(conf); }
+
+    public static void reset() {
+      filterTablesCalls.set(0);
+      filterTableNamesCalls.set(0);
+    }
+
+    @Override
+    public List<Table> filterTables(List<Table> tableList) throws MetaException {
+      filterTablesCalls.incrementAndGet();
+      return tableList;
+    }
+
+    @Override
+    public List<String> filterTableNames(String catName, String dbName, List<String> tableList)
+        throws MetaException {
+      filterTableNamesCalls.incrementAndGet();
+      return tableList;
+    }
+  }
+
+  /**
+   * Pre-event listener that counts PreReadTableEvent invocations. HMSHandler fires
+   * PreReadTableEvent only from getTableInternal (get_table for a single table);
+   * neither get_tables nor get_table_objects_by_name_req should fire it. If a
+   * regression starts firing per-table events during SHOW TABLES, every listener in
+   * the chain (StorageBasedAuthorizationProvider, Atlas hook, ...) runs N times --
+   * the 121k HDFS-check storm observed at the customer.
+   */
+  public static class CountingPreEventListener extends MetaStorePreEventListener {
+    public static final AtomicInteger tableReadEvents = new AtomicInteger();
+
+    public CountingPreEventListener(Configuration config) { super(config); }
+
+    @Override
+    public void onEvent(PreEventContext context) {
+      if (context.getEventType() == PreEventContext.PreEventType.READ_TABLE) {
+        tableReadEvents.incrementAndGet();
+      }
+    }
+  }
+
+  /**
+   * Behavioural boundary marker for HIVE-29378. Its filterTables(List<Table>) rejects
+   * everything because it consults Table.owner; its filterTableNames(cat, db, names) is
+   * passthrough. After the fix, HMSHandler.get_tables() invokes filterTableNames only,
+   * so this hook lets all names through -- the test locks that in as the documented
+   * contract. Downstream hook authors whose filterTables() consults Table.owner MUST
+   * replicate that logic in filterTableNames() to keep SHOW TABLES filtering intact.
+   */
+  public static class OwnerBasedFilterHook extends DefaultMetaStoreFilterHookImpl {
+    public OwnerBasedFilterHook(Configuration conf) { super(conf); }
+
+    @Override
+    public List<Table> filterTables(List<Table> tableList) throws MetaException {
+      List<Table> keep = new ArrayList<>();
+      for (Table t : tableList) {
+        if ("keep".equals(t.getOwner())) {
+          keep.add(t);
+        }
+      }
+      return keep;
+    }
+
+    @Override
+    public List<String> filterTableNames(String catName, String dbName, List<String> tableList)
+        throws MetaException {
+      return tableList;
     }
   }
 
@@ -492,5 +578,109 @@ public class TestFilterHooks {
   protected void testFilterForDataConnector() throws Exception {
     assertNotNull(client.getDataConnector(DCNAME1));
     assertEquals(0, client.getAllDataConnectorNames().size());
+  }
+
+  // ---------------------------------------------------------------------------
+  // HIVE-29378 regression guards.
+  //
+  // HIVE-24769 (fixed 4.0.0-alpha-1) made HMSHandler.get_tables() fetch full Table
+  // objects so filter hooks could authorize on Table.owner. That path calls
+  // getTableObjectsByName(cat, db, allNames) UN-BATCHED, and DataNucleus builds a
+  // recursive OR/AND expression tree from the huge IN clause; at 100k+ tables it
+  // StackOverflows in ExpressionCompiler.compileOrAndExpression, and even below
+  // that limit each convertToTable adds 5-10 ms per table (HIVE-29378).
+  //
+  // HIVE-28292 (fixed 4.1.0) rerouted HS2 SHOW TABLES away from get_tables() via
+  // listTableNamesByFilter, but left the get_tables() body intact -- so non-HS2
+  // Thrift callers (HCatalog, Impala, older HS2 vs newer HMS) still trip the bug.
+  //
+  // The fix in this branch replaces the getTableObjectsByName + filterTables block
+  // with filterTableNamesIfEnabled, matching get_all_tables() and get_tables_by_type().
+  // The three tests below defend that fix.
+  // ---------------------------------------------------------------------------
+
+  /**
+   * HIVE-29378 StackOverflow regression guard. Asserts the server-side filter path
+   * for get_tables() goes through filterTableNames() and never through
+   * filterTables(List<Table>). Any regression that re-introduces the
+   * getTableObjectsByName(cat, db, allNames) call also re-introduces the
+   * filterTables call, so this test fires immediately and deterministically -- no
+   * 100k-table seeding required.
+   */
+  @Test
+  public void testGetTablesWithServerFilterDoesNotFetchFullTableObjects() throws Exception {
+    MetastoreConf.setBoolVar(conf, ConfVars.METASTORE_CLIENT_FILTER_ENABLED, false);
+    MetastoreConf.setBoolVar(conf, ConfVars.METASTORE_SERVER_FILTER_ENABLED, true);
+    MetastoreConf.setClass(conf, ConfVars.FILTER_HOOK,
+        MethodRecordingFilterHook.class, MetaStoreFilterHook.class);
+    DBNAME1 = "db_testGetTablesNoFullFetch_1";
+    DBNAME2 = "db_testGetTablesNoFullFetch_2";
+    creatEnv(conf);
+
+    MethodRecordingFilterHook.reset();
+    client.getTables(DBNAME1, "*");
+    assertEquals("HIVE-29378: HMSHandler.get_tables() must filter names only. "
+            + "Any filterTables(List<Table>) call from this path means the un-batched "
+            + "getTableObjectsByName(cat, db, allNames) has been re-introduced -- "
+            + "StackOverflow at 100k+ tables and 5-10ms convertToTable per table are back.",
+        0, MethodRecordingFilterHook.filterTablesCalls.get());
+    assertEquals(1, MethodRecordingFilterHook.filterTableNamesCalls.get());
+  }
+
+  /**
+   * SHOW TABLES must not fire PreReadTableEvent per table. HMSHandler fires
+   * PreReadTableEvent only from getTableInternal (single-table get_table). Any
+   * regression that starts firing per-table events during bulk listing causes the
+   * full pre-event listener chain (StorageBasedAuthorizationProvider et al.) to
+   * run N times -- the 121k HDFS-check storm observed at the customer.
+   */
+  @Test
+  public void testGetTablesDoesNotFireReadTableEventPerTable() throws Exception {
+    MetastoreConf.setBoolVar(conf, ConfVars.METASTORE_CLIENT_FILTER_ENABLED, false);
+    MetastoreConf.setClass(conf, ConfVars.PRE_EVENT_LISTENERS,
+        CountingPreEventListener.class, MetaStorePreEventListener.class);
+    DBNAME1 = "db_testNoPerTableEvent_1";
+    DBNAME2 = "db_testNoPerTableEvent_2";
+    DummyMetaStoreFilterHookImpl.blockResults = false;
+    try {
+      creatEnv(conf);
+      CountingPreEventListener.tableReadEvents.set(0);
+      client.getTables(DBNAME1, "*");
+      assertEquals("SHOW TABLES must not fire PreReadTableEvent per table "
+              + "(each event triggers the full pre-event listener chain, including "
+              + "per-table HDFS auth checks -- the customer's 121k-event storm).",
+          0, CountingPreEventListener.tableReadEvents.get());
+    } finally {
+      DummyMetaStoreFilterHookImpl.blockResults = true;
+    }
+  }
+
+  /**
+   * Behavioural boundary marker for HIVE-29378. Pre-fix get_tables() routed through
+   * filterTables(List<Table>); post-fix it routes through filterTableNames(). Hooks
+   * whose two filter methods return different results (e.g. a custom hook reading
+   * Table.owner in filterTables) will now see the filterTableNames result. This
+   * test locks the contract in:
+   *
+   *   OwnerBasedFilterHook.filterTables() would drop both TAB1 and TAB2 (owners
+   *   != "keep"). Post-fix that method is never called from get_tables(), so both
+   *   names come back. Downstream hook authors that need owner-based filtering in
+   *   bulk listing MUST replicate the logic in filterTableNames().
+   */
+  @Test
+  public void testGetTablesFilterHookContractIsFilterTableNames() throws Exception {
+    MetastoreConf.setBoolVar(conf, ConfVars.METASTORE_CLIENT_FILTER_ENABLED, false);
+    MetastoreConf.setBoolVar(conf, ConfVars.METASTORE_SERVER_FILTER_ENABLED, true);
+    MetastoreConf.setClass(conf, ConfVars.FILTER_HOOK, OwnerBasedFilterHook.class,
+        MetaStoreFilterHook.class);
+    DBNAME1 = "db_testOwnerContract_1";
+    DBNAME2 = "db_testOwnerContract_2";
+    creatEnv(conf);
+
+    List<String> names = client.getTables(DBNAME1, "*");
+    assertEquals("Post-fix get_tables() uses filterTableNames() not filterTables(); "
+            + "OwnerBasedFilterHook drops tables in filterTables() but is passthrough in "
+            + "filterTableNames(), so both seeded tables must come back.",
+        2, names.size());
   }
 }
