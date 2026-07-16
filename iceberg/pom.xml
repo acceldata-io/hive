@@ -19,7 +19,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>hive-iceberg</artifactId>
-  <version>4.1.0.${odp.release.version}</version>
+  <version>4.1.0.3.3.6.5-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Hive Iceberg Modules</name>
   <properties>
