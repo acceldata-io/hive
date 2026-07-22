@@ -37,6 +37,8 @@ import org.apache.hadoop.hive.metastore.api.CreationMetadata;
 import org.apache.hadoop.hive.metastore.api.DataOperationType;
 import org.apache.hadoop.hive.metastore.api.GetOpenTxnsInfoResponse;
 import org.apache.hadoop.hive.metastore.api.GetOpenTxnsResponse;
+import org.apache.hadoop.hive.metastore.api.GetValidWriteIdsRequest;
+import org.apache.hadoop.hive.metastore.api.GetValidWriteIdsResponse;
 import org.apache.hadoop.hive.metastore.api.HeartbeatRequest;
 import org.apache.hadoop.hive.metastore.api.HeartbeatTxnRangeRequest;
 import org.apache.hadoop.hive.metastore.api.HeartbeatTxnRangeResponse;
@@ -60,6 +62,7 @@ import org.apache.hadoop.hive.metastore.api.ShowLocksResponse;
 import org.apache.hadoop.hive.metastore.api.ShowLocksResponseElement;
 import org.apache.hadoop.hive.metastore.api.SourceTable;
 import org.apache.hadoop.hive.metastore.api.Table;
+import org.apache.hadoop.hive.metastore.api.TableValidWriteIds;
 import org.apache.hadoop.hive.metastore.api.TxnAbortedException;
 import org.apache.hadoop.hive.metastore.api.TxnInfo;
 import org.apache.hadoop.hive.metastore.api.TxnOpenException;
@@ -251,6 +254,70 @@ public class TestTxnHandler {
       Assert.assertEquals("No such transaction " + JavaUtils.txnIdToString(4), ex.getMessage());
     }
     Assert.assertTrue(gotException);
+  }
+
+  /**
+   * OCR-2541 / HIVE-23048: after committed empty TXNS cleanup (or if TXNS rows are removed while
+   * TXN_TO_WRITE_ID remains), open-txn HWM must still cover allocated write txn ids so
+   * getValidWriteIds does not collapse to writeIdList ...:1:1:1:.
+   */
+  @Test
+  public void testOpenTxnHwmSurvivesEmptyCommittedCleanup() throws Exception {
+    String dbName = "default";
+    String tableName = "ocr2541_hwm";
+
+    OpenTxnsResponse opened = txnHandler.openTxns(new OpenTxnRequest(3, "me", "localhost"));
+    List<Long> txnIds = opened.getTxn_ids();
+    long maxTxnId = Collections.max(txnIds);
+
+    AllocateTableWriteIdsRequest alloc = new AllocateTableWriteIdsRequest(dbName, tableName);
+    alloc.setTxnIds(txnIds);
+    AllocateTableWriteIdsResponse writeIds = txnHandler.allocateTableWriteIds(alloc);
+    assertEquals(3, writeIds.getTxnToWriteIdsSize());
+
+    for (long txnId : txnIds) {
+      txnHandler.commitTxn(new CommitTxnRequest(txnId));
+    }
+
+    // Allow TXN_OPENTXN_TIMEOUT window to expire, then run empty committed cleanup.
+    Thread.sleep(txnHandler.getOpenTxnTimeOutMillis() + 50);
+    txnHandler.setOpenTxnTimeOutMillis(1);
+    txnHandler.cleanEmptyAbortedAndCommittedTxns();
+    txnHandler.setOpenTxnTimeOutMillis(1000);
+
+    GetOpenTxnsResponse openTxns = txnHandler.getOpenTxns();
+    Assert.assertTrue("HWM must remain >= max allocated write txn after TXNS cleanup, got hwm="
+            + openTxns.getTxn_high_water_mark() + " maxTxn=" + maxTxnId,
+        openTxns.getTxn_high_water_mark() >= maxTxnId);
+
+    // Simulate pre-fix cleaner that deleted TXNS rows while TXN_TO_WRITE_ID still has mappings.
+    try (Connection conn = TestTxnDbUtil.getConnection(conf);
+         Statement stmt = conn.createStatement()) {
+      String inList = txnIds.stream().map(String::valueOf).collect(Collectors.joining(","));
+      stmt.executeUpdate("DELETE FROM \"TXNS\" WHERE \"TXN_ID\" IN (" + inList + ")");
+      conn.commit();
+    }
+
+    openTxns = txnHandler.getOpenTxns();
+    Assert.assertTrue("HWM must use TXN_TO_WRITE_ID when TXNS rows are gone, got hwm="
+            + openTxns.getTxn_high_water_mark() + " maxTxn=" + maxTxnId,
+        openTxns.getTxn_high_water_mark() >= maxTxnId);
+
+    GetValidWriteIdsRequest writeIdsReq = new GetValidWriteIdsRequest(
+        Collections.singletonList(TableName.getDbTable(dbName, tableName)));
+    GetValidWriteIdsResponse writeIdsRsp = txnHandler.getValidWriteIds(writeIdsReq);
+    TableValidWriteIds tableWriteIds = writeIdsRsp.getTblValidWriteIds().get(0);
+
+    Assert.assertTrue("Write HWM should reflect allocated write ids, got "
+            + tableWriteIds.getWriteIdHighWaterMark(),
+        tableWriteIds.getWriteIdHighWaterMark() >= 3);
+    // Collapsed bad snapshot is writeHwm=1, minOpen=1, invalid=[1] → ":1:1:1:"
+    Assert.assertFalse("Must not treat write id 1 as the only open write after cleanup",
+        tableWriteIds.getWriteIdHighWaterMark() == 1
+            && tableWriteIds.isSetMinOpenWriteId()
+            && tableWriteIds.getMinOpenWriteId() == 1
+            && tableWriteIds.getInvalidWriteIdsSize() == 1
+            && tableWriteIds.getInvalidWriteIds().get(0) == 1);
   }
 
   @Test

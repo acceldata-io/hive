@@ -522,9 +522,11 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
         /*
          * This method need guarantees from
          * {@link #openTxns(OpenTxnRequest)} and  {@link #commitTxn(CommitTxnRequest)}.
-         * It will look at the TXNS table and find each transaction between the max(txn_id) as HighWaterMark
-         * and the max(txn_id) before the TXN_OPENTXN_TIMEOUT period as LowWaterMark.
-         * Every transaction that is not found between these will be considered as open, since it may appear later.
+         * It looks at TXNS for open/aborted (and timeout gaps), and sets HighWaterMark to at least
+         * the highest allocated txn id still known via TXNS / TXN_TO_WRITE_ID /
+         * COMPLETED_TXN_COMPONENTS (see getAllocatedTxnHighWaterMark).
+         * Every transaction that is not found between LWM and the TXNS scan will be considered as
+         * open when inside TXN_OPENTXN_TIMEOUT, since it may appear later.
          * openTxns must ensure, that no new transaction will be opened with txn_id below LWM and
          * commitTxn must ensure, that no committed transaction will be removed before the time period expires.
          */
@@ -535,11 +537,14 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
         LOG.debug("Going to execute query<" + txnsQuery + ">");
         rs = stmt.executeQuery(txnsQuery);
         /*
-         * We can use the maximum txn_id from the TXNS table as high water mark, since the commitTxn and the Initiator
-         * guarantees, that the transaction with the highest txn_id will never be removed from the TXNS table.
-         * If there is a pending openTxns, that is already acquired it's sequenceId but not yet committed the insert
-         * into the TXNS table, will have either a lower txn_id than HWM and will be listed in the openTxn list,
-         * or will have a higher txn_id and don't effect this getOpenTxns() call.
+         * HWM must not be derived solely from rows currently present in TXNS. After HIVE-23048,
+         * cleanEmptyAbortedAndCommittedTxns() may remove committed txn rows once they fall outside
+         * TXN_OPENTXN_TIMEOUT. If HWM were MAX(TXNS.TXN_ID) only, recently committed writers can
+         * appear "above HWM" and getValidWriteIds collapses to writeIdList ...:1:1:1: (OCR-2541).
+         * Use max(TXNS, TXN_TO_WRITE_ID, COMPLETED_TXN_COMPONENTS) so allocated/committed txn ids
+         * remain visible even after empty TXNS cleanup.
+         * Pending openTxns that acquired a sequence but have not yet inserted into TXNS are still
+         * covered by the TXN_OPENTXN_TIMEOUT gap-fill below when they fall inside that window.
          */
         long hwm = 0;
         long openTxnLowBoundary = 0;
@@ -575,6 +580,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
           }
           txnInfos.add(txnInfo);
         }
+        hwm = Math.max(hwm, getAllocatedTxnHighWaterMark(dbConn));
         LOG.debug("Got OpenTxnList with hwm: {} and openTxnList size {}.", hwm, txnInfos.size());
         return new OpenTxnList(hwm, txnInfos);
       } catch (SQLException e) {
@@ -904,21 +910,44 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
   }
 
   private long getHighWaterMark(Statement stmt) throws SQLException, MetaException {
-    String s = "SELECT MAX(\"TXN_ID\") FROM \"TXNS\"";
-    LOG.debug("Going to execute query <" + s + ">");
-    long maxOpenTxnId;
-    try (ResultSet maxOpenTxnIdRs = stmt.executeQuery(s)) {
-      maxOpenTxnIdRs.next();
-      maxOpenTxnId = maxOpenTxnIdRs.getLong(1);
-      if (maxOpenTxnIdRs.wasNull()) {
-        /*
-         * TXNS always contains at least one transaction,
-         * the row where txnid = (select max(txnid) where txn_started < epoch - TXN_OPENTXN_TIMEOUT) is never deleted
-         */
-        throw new MetaException("Transaction tables not properly " + "initialized, null record found in MAX(TXN_ID)");
-      }
+    long maxOpenTxnId = getAllocatedTxnHighWaterMark(stmt.getConnection());
+    if (maxOpenTxnId <= 0) {
+      /*
+       * Fresh metastore may have no txn metadata yet. Callers that require a real HWM after
+       * openTxns will see allocated ids via TXNS / TXN_TO_WRITE_ID / COMPLETED_TXN_COMPONENTS.
+       */
+      throw new MetaException("Transaction tables not properly " +
+          "initialized, null record found in allocated txn high water mark");
     }
     return maxOpenTxnId;
+  }
+
+  /**
+   * Highest txn id known to have been allocated/committed in the warehouse, even if the
+   * corresponding row was already removed from {@code TXNS} by empty-txn cleanup (OCR-2541 /
+   * HIVE-23048 HWM regression).
+   */
+  private long getAllocatedTxnHighWaterMark(Connection dbConn) throws SQLException {
+    long hwm = 0;
+    String[] queries = new String[] {
+        "SELECT MAX(\"TXN_ID\") FROM \"TXNS\"",
+        "SELECT MAX(\"T2W_TXNID\") FROM \"TXN_TO_WRITE_ID\"",
+        "SELECT MAX(\"CTC_TXNID\") FROM \"COMPLETED_TXN_COMPONENTS\""
+    };
+    try (Statement hwmStmt = dbConn.createStatement()) {
+      for (String query : queries) {
+        LOG.debug("Going to execute query <" + query + ">");
+        try (ResultSet rs = hwmStmt.executeQuery(query)) {
+          if (rs.next()) {
+            long value = rs.getLong(1);
+            if (!rs.wasNull()) {
+              hwm = Math.max(hwm, value);
+            }
+          }
+        }
+      }
+    }
+    return hwm;
   }
 
   private List<Long> getTargetTxnIdList(String replPolicy, List<Long> sourceTxnIdList, Connection dbConn)

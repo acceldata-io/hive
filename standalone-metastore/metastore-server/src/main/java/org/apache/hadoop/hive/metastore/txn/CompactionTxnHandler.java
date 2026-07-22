@@ -817,14 +817,17 @@ class CompactionTxnHandler extends TxnHandler {
         dbConn = getDbConn(Connection.TRANSACTION_READ_COMMITTED);
         stmt = dbConn.createStatement();
         /*
-         * Only delete aborted / committed transaction in a way that guarantees two things:
+         * Only delete aborted / committed transaction in a way that guarantees:
          * 1. never deletes anything that is inside the TXN_OPENTXN_TIMEOUT window
          * 2. never deletes the maximum txnId even if it is before the TXN_OPENTXN_TIMEOUT window
+         * 3. never deletes a txn still mapped in TXN_TO_WRITE_ID (OCR-2541: removing those rows
+         *    lets open-txn HWM fall below committed writers and hide ACID data from readers)
           */
         long lowWaterMark = getOpenTxnTimeoutLowBoundaryTxnId(dbConn);
 
         String s = "SELECT \"TXN_ID\" FROM \"TXNS\" WHERE " +
             "\"TXN_ID\" NOT IN (SELECT \"TC_TXNID\" FROM \"TXN_COMPONENTS\") AND " +
+            "NOT EXISTS (SELECT 1 FROM \"TXN_TO_WRITE_ID\" WHERE \"T2W_TXNID\" = \"TXNS\".\"TXN_ID\") AND " +
             " (\"TXN_STATE\" = " + TxnStatus.ABORTED + " OR \"TXN_STATE\" = " + TxnStatus.COMMITTED + ")  AND "
             + " \"TXN_ID\" < " + lowWaterMark;
         LOG.debug("Going to execute query <" + s + ">");
