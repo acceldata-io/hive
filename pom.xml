@@ -248,6 +248,7 @@
     <spring.ldap.version>2.4.4</spring.ldap.version>
     <project.build.outputTimestamp>2025-01-01T00:00:00Z</project.build.outputTimestamp>
       <aircompressor.version>2.0.3</aircompressor.version>
+        <commons-configuration2.version>2.15.0</commons-configuration2.version>
   </properties>
   <repositories>
     <!-- This needs to be removed before checking in-->
@@ -309,6 +310,12 @@
   </repositories>
   <dependencyManagement>
     <dependencies>
+<dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-configuration2</artifactId>
+        <version>2.15.0</version>
+      </dependency>
+
       <!-- dependencies are always listed in sorted order by groupId, artifactId -->
       <dependency>
         <groupId>com.amazonaws</groupId>
