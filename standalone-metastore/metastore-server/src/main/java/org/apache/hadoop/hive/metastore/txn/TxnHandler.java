@@ -532,6 +532,9 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
          */
         stmt = dbConn.createStatement();
         List<OpenTxn> txnInfos = new ArrayList<>();
+        // OCR-2541: load before TXNS ResultSet so gap-fill can skip allocated writers without
+        // nesting queries on the same open ResultSet (unsafe on some JDBC drivers).
+        Set<Long> knownAllocated = getAllKnownAllocatedTxnIds(dbConn);
         String txnsQuery = String.format(infoFields ? OpenTxn.OPEN_TXNS_INFO_QUERY : OpenTxn.OPEN_TXNS_QUERY,
             getEpochFn(dbProduct));
         LOG.debug("Going to execute query<" + txnsQuery + ">");
@@ -544,7 +547,9 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
          * Use max(TXNS, TXN_TO_WRITE_ID, COMPLETED_TXN_COMPONENTS) so allocated/committed txn ids
          * remain visible even after empty TXNS cleanup.
          * Pending openTxns that acquired a sequence but have not yet inserted into TXNS are still
-         * covered by the TXN_OPENTXN_TIMEOUT gap-fill below when they fall inside that window.
+         * covered by the TXN_OPENTXN_TIMEOUT gap-fill below when they fall inside that window,
+         * except ids already known via TXN_TO_WRITE_ID / COMPLETED_TXN_COMPONENTS (those are
+         * allocated/committed writers whose TXNS rows were cleaned — must not be treated as open).
          */
         long hwm = 0;
         long openTxnLowBoundary = 0;
@@ -555,12 +560,17 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
           hwm = txnId;
           if (age < getOpenTxnTimeOutMillis()) {
             // We will consider every gap as an open transaction from the previous txnId
+            // unless that txn id is already known allocated via write-id / completed components.
             openTxnLowBoundary++;
             while (txnId > openTxnLowBoundary) {
-              // Add an empty open transaction for every missing value
-              txnInfos.add(new OpenTxn(openTxnLowBoundary, TxnStatus.OPEN, TxnType.DEFAULT));
-              LOG.debug("Open transaction added for missing value in TXNS {}",
-                  JavaUtils.txnIdToString(openTxnLowBoundary));
+              if (!knownAllocated.contains(openTxnLowBoundary)) {
+                txnInfos.add(new OpenTxn(openTxnLowBoundary, TxnStatus.OPEN, TxnType.DEFAULT));
+                LOG.debug("Open transaction added for missing value in TXNS {}",
+                    JavaUtils.txnIdToString(openTxnLowBoundary));
+              } else {
+                LOG.debug("Skipping gap fill for allocated txn {}",
+                    JavaUtils.txnIdToString(openTxnLowBoundary));
+              }
               openTxnLowBoundary++;
             }
           } else {
@@ -581,7 +591,8 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
           txnInfos.add(txnInfo);
         }
         hwm = Math.max(hwm, getAllocatedTxnHighWaterMark(dbConn));
-        LOG.debug("Got OpenTxnList with hwm: {} and openTxnList size {}.", hwm, txnInfos.size());
+        LOG.debug("Got OpenTxnList with hwm: {} and openTxnList size {} (knownAllocated={}).",
+            hwm, txnInfos.size(), knownAllocated.size());
         return new OpenTxnList(hwm, txnInfos);
       } catch (SQLException e) {
         checkRetryable(e, "getOpenTxnsList");
@@ -948,6 +959,29 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
       }
     }
     return hwm;
+  }
+
+  /**
+   * Txn ids that were allocated for table writes or recorded in completed components.
+   * Used so open-txn timeout gap-fill does not treat cleaned committed writers as open (OCR-2541).
+   */
+  private Set<Long> getAllKnownAllocatedTxnIds(Connection dbConn) throws SQLException {
+    Set<Long> known = new HashSet<>();
+    String[] queries = new String[] {
+        "SELECT \"T2W_TXNID\" FROM \"TXN_TO_WRITE_ID\"",
+        "SELECT \"CTC_TXNID\" FROM \"COMPLETED_TXN_COMPONENTS\""
+    };
+    try (Statement stmt = dbConn.createStatement()) {
+      for (String query : queries) {
+        LOG.debug("Going to execute query <" + query + ">");
+        try (ResultSet rs = stmt.executeQuery(query)) {
+          while (rs.next()) {
+            known.add(rs.getLong(1));
+          }
+        }
+      }
+    }
+    return known;
   }
 
   private List<Long> getTargetTxnIdList(String replPolicy, List<Long> sourceTxnIdList, Connection dbConn)

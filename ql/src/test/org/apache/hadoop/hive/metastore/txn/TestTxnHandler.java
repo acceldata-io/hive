@@ -320,6 +320,67 @@ public class TestTxnHandler {
             && tableWriteIds.getInvalidWriteIds().get(0) == 1);
   }
 
+  /**
+   * OCR-2541: after TXNS rows for committed writers are removed, opening a new txn inside
+   * TXN_OPENTXN_TIMEOUT must not gap-fill those writer ids as open (that yields writeIdList
+   * ...:1:1:1: even when HWM was raised via TXN_TO_WRITE_ID).
+   */
+  @Test
+  public void testOpenTxnGapFillSkipsAllocatedWriters() throws Exception {
+    String dbName = "default";
+    String tableName = "ocr2541_gap";
+
+    OpenTxnsResponse opened = txnHandler.openTxns(new OpenTxnRequest(3, "me", "localhost"));
+    List<Long> writerTxnIds = opened.getTxn_ids();
+    long maxWriterTxn = Collections.max(writerTxnIds);
+
+    AllocateTableWriteIdsRequest alloc = new AllocateTableWriteIdsRequest(dbName, tableName);
+    alloc.setTxnIds(writerTxnIds);
+    assertEquals(3, txnHandler.allocateTableWriteIds(alloc).getTxnToWriteIdsSize());
+
+    for (long txnId : writerTxnIds) {
+      txnHandler.commitTxn(new CommitTxnRequest(txnId));
+    }
+
+    // Remove writer TXNS rows while leaving TXN_TO_WRITE_ID mappings (HWM hole + gap-fill risk).
+    try (Connection conn = TestTxnDbUtil.getConnection(conf);
+         Statement stmt = conn.createStatement()) {
+      String inList = writerTxnIds.stream().map(String::valueOf).collect(Collectors.joining(","));
+      stmt.executeUpdate("DELETE FROM \"TXNS\" WHERE \"TXN_ID\" IN (" + inList + ")");
+      conn.commit();
+    }
+
+    // New open txn within timeout forces gap-fill between remaining TXNS and this id.
+    OpenTxnsResponse readerOpened = txnHandler.openTxns(new OpenTxnRequest(1, "me", "localhost"));
+    long readerTxnId = readerOpened.getTxn_ids().get(0);
+    Assert.assertTrue("Reader txn should be above cleaned writers", readerTxnId > maxWriterTxn);
+
+    GetOpenTxnsResponse openTxns = txnHandler.getOpenTxns();
+    Assert.assertTrue("HWM must cover cleaned writers, got hwm=" + openTxns.getTxn_high_water_mark(),
+        openTxns.getTxn_high_water_mark() >= maxWriterTxn);
+    for (long writerTxnId : writerTxnIds) {
+      Assert.assertFalse("Gap-fill must not mark allocated writer txn " + writerTxnId + " as open",
+          openTxns.getOpen_txns().contains(writerTxnId));
+    }
+
+    GetValidWriteIdsRequest writeIdsReq = new GetValidWriteIdsRequest(
+        Collections.singletonList(TableName.getDbTable(dbName, tableName)));
+    TableValidWriteIds tableWriteIds =
+        txnHandler.getValidWriteIds(writeIdsReq).getTblValidWriteIds().get(0);
+
+    Assert.assertTrue("Write HWM should reflect allocated write ids, got "
+            + tableWriteIds.getWriteIdHighWaterMark(),
+        tableWriteIds.getWriteIdHighWaterMark() >= 3);
+    Assert.assertFalse("Must not collapse to writeIdList ...:1:1:1: after gap-fill",
+        tableWriteIds.getWriteIdHighWaterMark() == 1
+            && tableWriteIds.isSetMinOpenWriteId()
+            && tableWriteIds.getMinOpenWriteId() == 1
+            && tableWriteIds.getInvalidWriteIdsSize() == 1
+            && tableWriteIds.getInvalidWriteIds().get(0) == 1);
+
+    txnHandler.abortTxn(new AbortTxnRequest(readerTxnId));
+  }
+
   @Test
   public void testAbortTxns() throws Exception {
     createDatabaseForReplTests("default", MetaStoreUtils.getDefaultCatalog(conf));
