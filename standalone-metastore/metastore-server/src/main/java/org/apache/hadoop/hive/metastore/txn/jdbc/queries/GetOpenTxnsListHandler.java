@@ -160,9 +160,11 @@ public class GetOpenTxnsListHandler implements QueryHandler<OpenTxnList> {
 
   private Set<Long> getAllKnownAllocatedTxnIds(Connection dbConn) throws SQLException {
     Set<Long> known = new HashSet<>();
+    // Unquoted identifiers: these helper queries run on a raw JDBC Connection and must work
+    // on MySQL even when session sql_mode lacks ANSI_QUOTES (QueryHandler path quotes separately).
     String[] queries = new String[] {
-        "SELECT \"T2W_TXNID\" FROM \"TXN_TO_WRITE_ID\"",
-        "SELECT \"CTC_TXNID\" FROM \"COMPLETED_TXN_COMPONENTS\""
+        "SELECT T2W_TXNID FROM TXN_TO_WRITE_ID",
+        "SELECT CTC_TXNID FROM COMPLETED_TXN_COMPONENTS"
     };
     try (Statement stmt = dbConn.createStatement()) {
       for (String query : queries) {
@@ -178,10 +180,11 @@ public class GetOpenTxnsListHandler implements QueryHandler<OpenTxnList> {
 
   private long getAllocatedTxnHighWaterMark(Connection dbConn) throws SQLException {
     long allocatedHwm = 0;
+    // Unquoted identifiers — see getAllKnownAllocatedTxnIds().
     String[] queries = new String[] {
-        "SELECT MAX(\"TXN_ID\") FROM \"TXNS\"",
-        "SELECT MAX(\"T2W_TXNID\") FROM \"TXN_TO_WRITE_ID\"",
-        "SELECT MAX(\"CTC_TXNID\") FROM \"COMPLETED_TXN_COMPONENTS\""
+        "SELECT MAX(TXN_ID) FROM TXNS",
+        "SELECT MAX(T2W_TXNID) FROM TXN_TO_WRITE_ID",
+        "SELECT MAX(CTC_TXNID) FROM COMPLETED_TXN_COMPONENTS"
     };
     try (Statement hwmStmt = dbConn.createStatement()) {
       for (String query : queries) {
