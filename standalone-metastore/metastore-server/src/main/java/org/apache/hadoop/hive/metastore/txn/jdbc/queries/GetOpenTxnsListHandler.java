@@ -20,6 +20,8 @@ package org.apache.hadoop.hive.metastore.txn.jdbc.queries;
 import org.apache.hadoop.hive.metastore.DatabaseProduct;
 import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.apache.hadoop.hive.metastore.api.TxnType;
+import org.apache.hadoop.hive.metastore.metrics.Metrics;
+import org.apache.hadoop.hive.metastore.metrics.MetricsConstants;
 import org.apache.hadoop.hive.metastore.txn.entities.OpenTxn;
 import org.apache.hadoop.hive.metastore.txn.entities.OpenTxnList;
 import org.apache.hadoop.hive.metastore.txn.entities.TxnStatus;
@@ -111,6 +113,7 @@ public class GetOpenTxnsListHandler implements QueryHandler<OpenTxnList> {
 
     long hwm = 0;
     long openTxnLowBoundary = 0;
+    long skippedAllocated = 0;
     List<OpenTxn> txnInfos = new ArrayList<>();
     // OCR-2541: pre-load allocated txn ids so gap-fill does not treat cleaned writers as open.
     Set<Long> knownAllocated = getAllKnownAllocatedTxnIds(dbConn);
@@ -128,6 +131,7 @@ public class GetOpenTxnsListHandler implements QueryHandler<OpenTxnList> {
             LOG.debug("Open transaction added for missing value in TXNS {}",
                 JavaUtils.txnIdToString(openTxnLowBoundary));
           } else {
+            skippedAllocated++;
             LOG.debug("Skipping gap fill for allocated txn {}",
                 JavaUtils.txnIdToString(openTxnLowBoundary));
           }
@@ -153,8 +157,12 @@ public class GetOpenTxnsListHandler implements QueryHandler<OpenTxnList> {
     // that still exist in TXN_TO_WRITE_ID / COMPLETED_TXN_COMPONENTS. Raise HWM so readers do
     // not treat those committed write ids as open/invalid.
     hwm = Math.max(hwm, getAllocatedTxnHighWaterMark(dbConn));
-    LOG.info("Got OpenTxnList with hwm: {} and openTxnList size {} (knownAllocated={}).",
-        hwm, txnInfos.size(), knownAllocated.size());
+    if (skippedAllocated > 0) {
+      Metrics.getOrCreateCounter(MetricsConstants.TOTAL_NUM_OPEN_TXN_GAP_FILL_SKIPPED)
+          .inc(skippedAllocated);
+    }
+    LOG.info("Got OpenTxnList with hwm: {} and openTxnList size {} (knownAllocated={}, skippedAllocated={}).",
+        hwm, txnInfos.size(), knownAllocated.size(), skippedAllocated);
     return new OpenTxnList(hwm, txnInfos);
   }
 
