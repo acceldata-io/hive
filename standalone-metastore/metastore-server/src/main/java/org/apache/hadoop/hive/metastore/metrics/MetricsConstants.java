@@ -82,6 +82,13 @@ public class MetricsConstants {
   public static final String TOTAL_NUM_ABORTED_TXNS = "total_num_aborted_transactions";
   public static final String TOTAL_NUM_COMMITTED_TXNS = "total_num_committed_transactions";
   public static final String TOTAL_NUM_TIMED_OUT_TXNS = "total_num_timed_out_transactions";
+  /**
+   * Cumulative count of TXNS id gaps that were not invented as OPEN because the txn id is still
+   * present in TXN_TO_WRITE_ID / COMPLETED_TXN_COMPONENTS (empty-TXNS cleanup race). Elevated
+   * rate can indicate aggressive cleaner / empty committed cleanup patterns.
+   */
+  public static final String TOTAL_NUM_OPEN_TXN_GAP_FILL_SKIPPED =
+      "total_num_open_txn_gap_fill_skipped";
 
   public static final String OPEN_CONNECTIONS = "open_connections";
 
