@@ -325,6 +325,8 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
   protected static DatabaseProduct dbProduct;
   protected static SQLGenerator sqlGenerator;
   private static long openTxnTimeOutMillis;
+  // Upper limit on the open transactions getOpenTxns may synthesise for txn ids missing from TXNS.
+  private static volatile int openTxnGapFillMax;
 
   // (End user) Transaction timeout, in milliseconds.
   private long timeout;
@@ -416,6 +418,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
     maxBatchSize = MetastoreConf.getIntVar(conf, ConfVars.JDBC_MAX_BATCH_SIZE);
 
     openTxnTimeOutMillis = MetastoreConf.getTimeVar(conf, ConfVars.TXN_OPENTXN_TIMEOUT, TimeUnit.MILLISECONDS);
+    openTxnGapFillMax = MetastoreConf.getIntVar(conf, ConfVars.TXN_OPENTXN_GAPFILL_MAX);
 
     try {
       boolean minHistoryConfig = MetastoreConf.getBoolVar(conf, ConfVars.TXN_USE_MIN_HISTORY_LEVEL);
@@ -532,9 +535,14 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
          */
         stmt = dbConn.createStatement();
         List<OpenTxn> txnInfos = new ArrayList<>();
-        // OCR-2541: load before TXNS ResultSet so gap-fill can skip allocated writers without
-        // nesting queries on the same open ResultSet (unsafe on some JDBC drivers).
-        Set<Long> knownAllocated = getAllKnownAllocatedTxnIds(dbConn);
+        /*
+         * OCR-2541: both of these must be resolved before the TXNS ResultSet is opened, so gap-fill
+         * can consult them without nesting queries on the same open ResultSet (unsafe on some JDBC
+         * drivers). The timeout boundary also keeps knownAllocated scoped to the ids gap-fill can
+         * reach, instead of loading every id in TXN_TO_WRITE_ID and COMPLETED_TXN_COMPONENTS.
+         */
+        long timeoutBoundary = getOpenTxnTimeoutBoundaryOrZero(dbConn);
+        Set<Long> knownAllocated = getAllKnownAllocatedTxnIds(dbConn, timeoutBoundary);
         String txnsQuery = String.format(infoFields ? OpenTxn.OPEN_TXNS_INFO_QUERY : OpenTxn.OPEN_TXNS_QUERY,
             getEpochFn(dbProduct));
         LOG.debug("Going to execute query<" + txnsQuery + ">");
@@ -552,7 +560,19 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
          * allocated/committed writers whose TXNS rows were cleaned — must not be treated as open).
          */
         long hwm = 0;
-        long openTxnLowBoundary = 0;
+        /*
+         * OCR-2541: start from the TXN_OPENTXN_TIMEOUT boundary rather than 0. The scan below reaches
+         * the same value once it walks a row older than the window, but seeding it here is what keeps
+         * the fill bounded when the first row is already inside the window.
+         * When TXNS holds no row older than the window this is 0 and the fill is unbounded, which is
+         * how a warehouse that had issued ~532M transactions materialised an OpenTxn per id and
+         * exhausted a 47 GB heap. openTxnGapFillMax below is the backstop for that state: we cannot
+         * tell a long-cleaned id apart from a pending one without that boundary, so refuse to answer
+         * rather than either lie about the snapshot or take the metastore down.
+         */
+        long openTxnLowBoundary = timeoutBoundary;
+        long gapFilled = 0;
+        long gapSkipped = 0;
 
         while (rs.next()) {
           long txnId = rs.getLong(1);
@@ -564,17 +584,29 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
             openTxnLowBoundary++;
             while (txnId > openTxnLowBoundary) {
               if (!knownAllocated.contains(openTxnLowBoundary)) {
+                if (openTxnGapFillMax > 0 && gapFilled >= openTxnGapFillMax) {
+                  Metrics.getOrCreateCounter(MetricsConstants.TOTAL_NUM_OPEN_TXN_GAP_FILL_ABORTED).inc();
+                  throw new MetaException("Open transaction gap fill exceeded " + openTxnGapFillMax
+                      + " entries (timeoutBoundary=" + timeoutBoundary + ", reached=" + openTxnLowBoundary
+                      + ", txnId=" + txnId + ", skipped=" + gapSkipped + "). TXNS has no row older than "
+                      + getOpenTxnTimeOutMillis() + " ms, so no low boundary for the gap could be established and "
+                      + "the snapshot is not being materialised. Check whether TXNS rows were removed outside "
+                      + "cleanEmptyAbortedAndCommittedTxns. See " + ConfVars.TXN_OPENTXN_GAPFILL_MAX.getVarname());
+                }
                 txnInfos.add(new OpenTxn(openTxnLowBoundary, TxnStatus.OPEN, TxnType.DEFAULT));
+                gapFilled++;
                 LOG.debug("Open transaction added for missing value in TXNS {}",
                     JavaUtils.txnIdToString(openTxnLowBoundary));
               } else {
+                gapSkipped++;
                 LOG.debug("Skipping gap fill for allocated txn {}",
                     JavaUtils.txnIdToString(openTxnLowBoundary));
               }
               openTxnLowBoundary++;
             }
           } else {
-            openTxnLowBoundary = txnId;
+            // Only ever advance: timeoutBoundary already excludes ids that can no longer be pending.
+            openTxnLowBoundary = Math.max(openTxnLowBoundary, txnId);
           }
           TxnStatus state = TxnStatus.fromString(rs.getString(2));
           if (state == TxnStatus.COMMITTED) {
@@ -591,8 +623,21 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
           txnInfos.add(txnInfo);
         }
         hwm = Math.max(hwm, getAllocatedTxnHighWaterMark(dbConn));
-        LOG.debug("Got OpenTxnList with hwm: {} and openTxnList size {} (knownAllocated={}).",
-            hwm, txnInfos.size(), knownAllocated.size());
+        if (gapFilled > 0) {
+          Metrics.getOrCreateCounter(MetricsConstants.TOTAL_NUM_OPEN_TXN_GAP_FILLED).inc(gapFilled);
+        }
+        if (gapSkipped > 0) {
+          Metrics.getOrCreateCounter(MetricsConstants.TOTAL_NUM_OPEN_TXN_GAP_FILL_SKIPPED).inc(gapSkipped);
+        }
+        if (openTxnGapFillMax > 0 && gapFilled > openTxnGapFillMax / 2) {
+          LOG.warn("Open transaction gap fill synthesised {} of a maximum {} transactions "
+                  + "(timeoutBoundary={}, hwm={}). A growing value here means TXNS is losing the rows that "
+                  + "bound the gap below the TXN_OPENTXN_TIMEOUT window.",
+              gapFilled, openTxnGapFillMax, timeoutBoundary, hwm);
+        }
+        LOG.debug("Got OpenTxnList with hwm: {} and openTxnList size {} (timeoutBoundary={}, gapFilled={}, "
+                + "gapSkipped={}, knownAllocated={}).",
+            hwm, txnInfos.size(), timeoutBoundary, gapFilled, gapSkipped, knownAllocated.size());
         return new OpenTxnList(hwm, txnInfos);
       } catch (SQLException e) {
         checkRetryable(e, "getOpenTxnsList");
@@ -945,31 +990,55 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
         "SELECT MAX(\"T2W_TXNID\") FROM \"TXN_TO_WRITE_ID\"",
         "SELECT MAX(\"CTC_TXNID\") FROM \"COMPLETED_TXN_COMPONENTS\""
     };
-    try (Statement hwmStmt = dbConn.createStatement()) {
-      for (String query : queries) {
-        LOG.debug("Going to execute query <" + query + ">");
-        try (ResultSet rs = hwmStmt.executeQuery(query)) {
-          if (rs.next()) {
-            long value = rs.getLong(1);
-            if (!rs.wasNull()) {
-              hwm = Math.max(hwm, value);
-            }
-          }
-        }
-      }
+    for (String query : queries) {
+      hwm = Math.max(hwm, queryOneLong(dbConn, query));
     }
     return hwm;
   }
 
   /**
-   * Txn ids that were allocated for table writes or recorded in completed components.
-   * Used so open-txn timeout gap-fill does not treat cleaned committed writers as open (OCR-2541).
+   * Highest txn id that is already known to have started before the {@code TXN_OPENTXN_TIMEOUT}
+   * window, or 0 when {@code TXNS} holds no such row.
+   * <p>
+   * Gap-fill only exists to cover a txn that has taken its sequence value but has not yet inserted
+   * its {@code TXNS} row, and {@link #openTxns(OpenTxnRequest)} rolls back any txn that fails to
+   * persist inside that window. Ids at or below this boundary can therefore never turn up later, so
+   * gap-fill does not have to consider them. This is the same boundary
+   * {@link CompactionTxnHandler#cleanEmptyAbortedAndCommittedTxns()} refuses to delete below, which
+   * is what normally keeps the value non-zero.
    */
-  private Set<Long> getAllKnownAllocatedTxnIds(Connection dbConn) throws SQLException {
+  private long getOpenTxnTimeoutBoundaryOrZero(Connection dbConn) throws MetaException, SQLException {
+    return queryOneLong(dbConn, "SELECT MAX(\"TXN_ID\") FROM \"TXNS\" WHERE \"TXN_STARTED\" < ("
+        + getEpochFn(dbProduct) + " - " + getOpenTxnTimeOutMillis() + ")");
+  }
+
+  /**
+   * @return the first column of the first row, or 0 when there is no row or the value is null.
+   */
+  private long queryOneLong(Connection dbConn, String query) throws SQLException {
+    LOG.debug("Going to execute query <" + query + ">");
+    try (Statement stmt = dbConn.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+      if (rs.next()) {
+        long value = rs.getLong(1);
+        if (!rs.wasNull()) {
+          return value;
+        }
+      }
+    }
+    return 0;
+  }
+
+  /**
+   * Txn ids above {@code aboveTxnId} that were allocated for table writes or recorded in completed
+   * components. Used so open-txn timeout gap-fill does not treat cleaned committed writers as open
+   * (OCR-2541). Bounded by the open-txn timeout boundary because lower ids are never gap-fill
+   * candidates, and COMPLETED_TXN_COMPONENTS can hold the full write history of the warehouse.
+   */
+  private Set<Long> getAllKnownAllocatedTxnIds(Connection dbConn, long aboveTxnId) throws SQLException {
     Set<Long> known = new HashSet<>();
     String[] queries = new String[] {
-        "SELECT \"T2W_TXNID\" FROM \"TXN_TO_WRITE_ID\"",
-        "SELECT \"CTC_TXNID\" FROM \"COMPLETED_TXN_COMPONENTS\""
+        "SELECT \"T2W_TXNID\" FROM \"TXN_TO_WRITE_ID\" WHERE \"T2W_TXNID\" > " + aboveTxnId,
+        "SELECT \"CTC_TXNID\" FROM \"COMPLETED_TXN_COMPONENTS\" WHERE \"CTC_TXNID\" > " + aboveTxnId
     };
     try (Statement stmt = dbConn.createStatement()) {
       for (String query : queries) {
