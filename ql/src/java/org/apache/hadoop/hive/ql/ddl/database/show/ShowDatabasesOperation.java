@@ -29,7 +29,6 @@ import org.apache.hadoop.hive.ql.ddl.DDLOperation;
 import org.apache.hadoop.hive.ql.ddl.DDLOperationContext;
 import org.apache.hadoop.hive.ql.ddl.ShowUtils;
 import org.apache.hadoop.hive.ql.metadata.HiveException;
-import org.apache.hadoop.hive.ql.udf.UDFLike;
 import org.apache.hadoop.io.IOUtils;
 
 /**
@@ -45,7 +44,7 @@ public class ShowDatabasesOperation extends DDLOperation<ShowDatabasesDesc> {
     List<String> databases = context.getDb().getAllDatabases();
     if (desc.getPattern() != null) {
       LOG.debug("pattern: {}", desc.getPattern());
-      Pattern pattern = Pattern.compile(UDFLike.likePatternToRegExp(desc.getPattern()), Pattern.CASE_INSENSITIVE);
+      Pattern pattern = Pattern.compile(ShowUtils.likePatternToRegExp(desc.getPattern()), Pattern.CASE_INSENSITIVE);
       databases = databases.stream().filter(name -> pattern.matcher(name).matches()).collect(Collectors.toList());
     }
 
