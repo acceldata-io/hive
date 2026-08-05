@@ -65,6 +65,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 /**
  * Utilities for SHOW ... commands.
@@ -72,6 +73,37 @@ import java.util.function.Function;
 public final class ShowUtils {
   private ShowUtils() {
     throw new UnsupportedOperationException("ShowUtils should not be instantiated");
+  }
+
+  /**
+   * Converts a SHOW ... LIKE pattern to a regex. Accepts the SQL wildcards ({@code %}, {@code _})
+   * and, for backward compatibility with pre-HIVE-23243 behavior, also treats a bare
+   * {@code *} as an alias for {@code %}. {@code \_}, {@code \%} and {@code \*} escape to literals.
+   * Intentionally separate from {@link org.apache.hadoop.hive.ql.udf.UDFLike#likePatternToRegExp}
+   * so expression-level {@code LIKE} keeps standard SQL semantics.
+   */
+  public static String likePatternToRegExp(String showLikePattern) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < showLikePattern.length(); i++) {
+      char n = showLikePattern.charAt(i);
+      if (n == '\\'
+          && i + 1 < showLikePattern.length()
+          && (showLikePattern.charAt(i + 1) == '_'
+              || showLikePattern.charAt(i + 1) == '%'
+              || showLikePattern.charAt(i + 1) == '*')) {
+        sb.append(Pattern.quote(Character.toString(showLikePattern.charAt(i + 1))));
+        i++;
+        continue;
+      }
+      if (n == '_') {
+        sb.append(".");
+      } else if (n == '%' || n == '*') {
+        sb.append(".*?");
+      } else {
+        sb.append(Pattern.quote(Character.toString(n)));
+      }
+    }
+    return sb.toString();
   }
 
   public static DataOutputStream getOutputStream(Path outputFile, DDLOperationContext context) throws HiveException {
