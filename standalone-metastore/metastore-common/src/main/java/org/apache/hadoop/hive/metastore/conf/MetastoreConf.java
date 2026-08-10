@@ -1681,8 +1681,13 @@ public class MetastoreConf {
             "holds no row older than that window, so no lower boundary for the gap can be established and\n" +
             "materialising the remaining txn id range would exhaust the metastore heap. getOpenTxns then fails\n" +
             "instead of returning a snapshot it cannot compute. The default matches metastore.max.open.txns,\n" +
-            "since openTxns already refuses to go beyond that many open transactions. Set to 0 to remove the\n" +
-            "limit and restore the unbounded behaviour."),
+            "since openTxns already refuses to go beyond that many open transactions.\n" +
+            "A healthy metastore never approaches this limit: while TXNS holds a row older than the window the\n" +
+            "fill only spans ids allocated inside it. Watch total_num_open_txn_gap_filled, which is also logged\n" +
+            "as a warning once it passes half the limit, and total_num_open_txn_gap_fill_aborted, which counts\n" +
+            "the calls refused. Raising the limit does not repair the condition that triggers it, it only makes\n" +
+            "the allocation larger before the same refusal; establish what removed the TXNS rows that bound the\n" +
+            "gap instead. Set to 0 to remove the limit and restore the unbounded behaviour."),
     TXN_USE_MIN_HISTORY_LEVEL("metastore.txn.use.minhistorylevel", "hive.txn.use.minhistorylevel", true,
         "Set this to false, for the TxnHandler and Cleaner to not use MIN_HISTORY_LEVEL table and take advantage of openTxn optimisation.\n"
             + "If the table is dropped HMS will switch this flag to false, any other value changes need a restart to take effect."),
