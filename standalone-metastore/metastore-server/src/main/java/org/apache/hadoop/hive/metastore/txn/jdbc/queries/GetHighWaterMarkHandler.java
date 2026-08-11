@@ -29,10 +29,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class GetHighWaterMarkHandler implements QueryHandler<Long> {
-  
+
+  /**
+   * Highest txn id known to have been allocated/committed, even if the corresponding row was
+   * already removed from {@code TXNS} by empty-txn cleanup (OCR-2541 / HIVE-23048 HWM regression).
+   */
   @Override
   public String getParameterizedQueryString(DatabaseProduct databaseProduct) throws MetaException {
-    return "SELECT MAX(\"TXN_ID\") FROM \"TXNS\"";
+    return "SELECT MAX(hwm) FROM ("
+        + "SELECT MAX(\"TXN_ID\") AS hwm FROM \"TXNS\" "
+        + "UNION ALL SELECT MAX(\"T2W_TXNID\") FROM \"TXN_TO_WRITE_ID\" "
+        + "UNION ALL SELECT MAX(\"CTC_TXNID\") FROM \"COMPLETED_TXN_COMPONENTS\""
+        + ") t";
   }
 
   @Override
