@@ -45,7 +45,11 @@
     <module>packaging</module>
   </modules>
   <properties>
-    <hive.version>4.1.0</hive.version>
+    <odp.release.version>3.4.3.0-1</odp.release.version>
+    <hive.version>4.1.0.${odp.release.version}</hive.version>
+    <!-- Must stay at the Apache base version: it is baked into MetastoreVersionAnnotation
+         and used by MetaStoreSchemaInfo to pick scripts/metastore/upgrade/<db>/hive-schema-<shortname>.<db>.sql
+         and to validate the VERSION table, both of which only know Apache versions. -->
     <hive.version.shortname>4.1.0</hive.version.shortname>
     <standalone.metastore.path.to.root>.</standalone.metastore.path.to.root>
     <!-- Build properties -->
