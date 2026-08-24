@@ -4072,4 +4072,12 @@ public class HiveMetaStoreClientPreCatalog implements IMetaStoreClient, AutoClos
   public void seedTxnId(long seedTxnId) throws TException {
     throw new NotImplementedException("");
   }
+
+  @Override
+  public GetDatabaseObjectsResponse get_databases_req(GetDatabaseObjectsRequest request)
+      throws TException {
+    // Catalog-aware variant: unsupported in this pre-catalog client, matching the
+    // existing getDatabases(catName, databasePattern) stub.
+    throw new UnsupportedOperationException();
+  }
 }

@@ -1591,4 +1591,10 @@ public class DummyRawStoreControlledCommit implements RawStore, Configurable {
           throws MetaException, InvalidObjectException, NoSuchObjectException, InvalidInputException {
     return objectStore.updatePartitionColumnStatisticsInBatch(partColStatsMap, tbl, listeners, validWriteIds, writeId);
   }
+
+  @Override
+  public <T> List<T> getFunctionsRequest(String catName, String dbName, String pattern,
+      boolean isReturnNames) throws MetaException {
+    return objectStore.getFunctionsRequest(catName, dbName, pattern, isReturnNames);
+  }
 }
