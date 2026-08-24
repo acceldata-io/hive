@@ -4091,4 +4091,9 @@ public class HiveMetaStoreClientPreCatalog implements IMetaStoreClient, AutoClos
   public boolean deleteColumnStatistics(DeleteColumnStatisticsRequest req) throws TException {
     throw new UnsupportedOperationException();
   }
+
+  @Override
+  public void dropCatalog(String catName, boolean ifExists) throws TException {
+    throw new UnsupportedOperationException();
+  }
 }

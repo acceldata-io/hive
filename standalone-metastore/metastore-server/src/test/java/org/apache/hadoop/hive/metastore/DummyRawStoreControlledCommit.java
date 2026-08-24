@@ -1607,10 +1607,10 @@ public class DummyRawStoreControlledCommit implements RawStore, Configurable {
 
   @Override
   public boolean deletePartitionColumnStatistics(String catName, String dbName, String tableName,
-      String partName, List<String> partVals, List<String> colNames, String engine)
+      List<String> partNames, List<String> colNames, String engine)
       throws NoSuchObjectException, MetaException, InvalidObjectException, InvalidInputException {
-    return objectStore.deletePartitionColumnStatistics(catName, dbName, tableName, partName,
-        partVals, colNames, engine);
+    return objectStore.deletePartitionColumnStatistics(catName, dbName, tableName, partNames,
+        colNames, engine);
   }
 
   @Override
