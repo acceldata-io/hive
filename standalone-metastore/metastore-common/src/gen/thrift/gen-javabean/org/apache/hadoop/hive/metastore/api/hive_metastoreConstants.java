@@ -7,7 +7,7 @@
 package org.apache.hadoop.hive.metastore.api;
 
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
-@org.apache.hadoop.classification.InterfaceAudience.Public @org.apache.hadoop.classification.InterfaceStability.Stable public class hive_metastoreConstants {
+public class hive_metastoreConstants {
 
   public static final java.lang.String DDL_TIME = "transient_lastDdlTime";
 
