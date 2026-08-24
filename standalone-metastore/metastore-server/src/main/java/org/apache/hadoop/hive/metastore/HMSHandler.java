@@ -213,24 +213,6 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   }
 
   /**
-   * Internal function to notify listeners for meta config change events
-   */
-  private void notifyMetaListeners(String key, String oldValue, String newValue) throws MetaException {
-    for (MetaStoreEventListener listener : listeners) {
-      listener.onConfigChange(new ConfigChangeEvent(this, key, oldValue, newValue));
-    }
-
-    if (transactionalListeners.size() > 0) {
-      // All the fields of this event are final, so no reason to create a new one for each
-      // listener
-      ConfigChangeEvent cce = new ConfigChangeEvent(this, key, oldValue, newValue);
-      for (MetaStoreEventListener transactionalListener : transactionalListeners) {
-        transactionalListener.onConfigChange(cce);
-      }
-    }
-  }
-
-  /**
    * Internal function to notify listeners to revert back to old values of keys
    * that were modified during setMetaConf. This would get called from HiveMetaStore#cleanupHandlerContext
    */
@@ -246,7 +228,11 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
         String currVal = entry.getValue();
         String oldVal = conf.get(key);
         if (!Objects.equals(oldVal, currVal)) {
-          notifyMetaListeners(key, oldVal, currVal);
+          for (List<MetaStoreEventListener> eventListeners :
+              new List[] { listeners, transactionalListeners }) {
+            MetaStoreListenerNotifier.notifyEvent(eventListeners, EventType.CONFIG_CHANGE,
+                new ConfigChangeEvent(this, key, oldVal, currVal));
+          }
         }
       }
       logAndAudit("Meta listeners shutdown notification completed.");
@@ -518,8 +504,11 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
       HMSHandlerContext.setHMSHandler(this);
     }
     configuration.set(key, value);
-    notifyMetaListeners(key, oldValue, value);
-
+    for (List<MetaStoreEventListener> eventListeners :
+        new List[] { listeners, transactionalListeners }) {
+      MetaStoreListenerNotifier.notifyEvent(eventListeners, EventType.CONFIG_CHANGE,
+          new ConfigChangeEvent(this, key, oldValue, value));
+    }
     if (ConfVars.TRY_DIRECT_SQL == confVar) {
       HMSHandler.LOG.info("Direct SQL optimization = {}",  value);
     }
@@ -3737,12 +3726,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
       return FilterUtils.filterTablesIfEnabled(isServerFilterEnabled, filterHook, tables);
     } catch (Exception e) {
       LOG.warn("Unexpected exception while getting table(s) in remote database " + dbname , e);
-      if (isInTest) {
-        // ignore the exception
-        return new ArrayList<Table>();
-      } else {
-        throw newMetaException(e);
-      }
+      return new ArrayList<Table>();
     }
   }
 
@@ -6089,9 +6073,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
         Database db = get_database_core(parsedDbName[CAT_NAME], parsedDbName[DB_NAME]);
         return DataConnectorProviderFactory.getDataConnectorProvider(db).getTableNames();
       }
-    } catch (Exception e) {
-      throw newMetaException(e);
-    }
+    } catch (Exception e) { /* appears we return empty set instead of throwing an exception */ }
 
     try {
       ret = getMS().getTables(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], pattern);
@@ -6759,28 +6741,6 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     return Warehouse.makeSpecFromName(part_name);
   }
 
-  public static String lowerCaseConvertPartName(String partName) throws MetaException {
-    if (partName == null) {
-      return partName;
-    }
-    boolean isFirst = true;
-    Map<String, String> partSpec = Warehouse.makeEscSpecFromName(partName);
-    String convertedPartName = new String();
-
-    for (Map.Entry<String, String> entry : partSpec.entrySet()) {
-      String partColName = entry.getKey();
-      String partColVal = entry.getValue();
-
-      if (!isFirst) {
-        convertedPartName += "/";
-      } else {
-        isFirst = false;
-      }
-      convertedPartName += partColName.toLowerCase() + "=" + partColVal;
-    }
-    return convertedPartName;
-  }
-
   @Override
   @Deprecated
   public ColumnStatistics get_table_column_statistics(String dbName, String tableName,
@@ -6848,16 +6808,15 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     String[] parsedDbName = parseDbName(dbName, conf);
     tableName = tableName.toLowerCase();
     colName = colName.toLowerCase();
-    String convertedPartName = lowerCaseConvertPartName(partName);
     startFunction("get_column_statistics_by_partition", ": table=" +
         TableName.getQualified(parsedDbName[CAT_NAME], parsedDbName[DB_NAME],
-            tableName) + " partition=" + convertedPartName + " column=" + colName);
+            tableName) + " partition=" + partName + " column=" + colName);
     ColumnStatistics statsObj = null;
 
     try {
       List<ColumnStatistics> list = getMS().getPartitionColumnStatistics(
           parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName,
-          Lists.newArrayList(convertedPartName), Lists.newArrayList(colName),
+          Lists.newArrayList(partName), Lists.newArrayList(colName),
           "hive");
       if (list.isEmpty()) {
         return null;
@@ -6885,13 +6844,9 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     for (String colName : request.getColNames()) {
       lowerCaseColNames.add(colName.toLowerCase());
     }
-    List<String> lowerCasePartNames = new ArrayList<>(request.getPartNames().size());
-    for (String partName : request.getPartNames()) {
-      lowerCasePartNames.add(lowerCaseConvertPartName(partName));
-    }
     try {
       List<ColumnStatistics> stats = getMS().getPartitionColumnStatistics(
-          catName, dbName, tblName, lowerCasePartNames, lowerCaseColNames,
+          catName, dbName, tblName, request.getPartNames(), lowerCaseColNames,
           request.getEngine(), request.isSetValidWriteIdList() ? request.getValidWriteIdList() : null);
       Map<String, List<ColumnStatisticsObj>> map = new HashMap<>();
       if (stats != null) {
@@ -6986,7 +6941,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     statsDesc.setCatName(statsDesc.isSetCatName() ? statsDesc.getCatName().toLowerCase() : getDefaultCatalog(conf));
     statsDesc.setDbName(statsDesc.getDbName().toLowerCase());
     statsDesc.setTableName(statsDesc.getTableName().toLowerCase());
-    statsDesc.setPartName(lowerCaseConvertPartName(statsDesc.getPartName()));
+    statsDesc.setPartName(statsDesc.getPartName());
     long time = System.currentTimeMillis() / 1000;
     statsDesc.setLastAnalyzed(time);
 
@@ -7145,15 +7100,14 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     if (colName != null) {
       colName = colName.toLowerCase();
     }
-    String convertedPartName = lowerCaseConvertPartName(partName);
     startFunction("delete_column_statistics_by_partition",": table=" +
         TableName.getQualified(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName) +
-        " partition=" + convertedPartName + " column=" + colName);
+        " partition=" + partName + " column=" + colName);
     boolean ret = false, committed = false;
 
     getMS().openTransaction();
     try {
-      List<String> partVals = getPartValsFromName(getMS(), parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName, convertedPartName);
+      List<String> partVals = getPartValsFromName(getMS(), parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName, partName);
       Table table = getMS().getTable(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName);
       // This API looks unused; if it were used we'd need to update stats state and write ID.
       // We cannot just randomly nuke some txn stats.
@@ -7162,19 +7116,19 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
       }
 
       ret = getMS().deletePartitionColumnStatistics(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName,
-          convertedPartName, partVals, colName, engine);
+          partName, partVals, colName, engine);
       if (ret) {
         if (transactionalListeners != null && !transactionalListeners.isEmpty()) {
           MetaStoreListenerNotifier.notifyEvent(transactionalListeners,
               EventType.DELETE_PARTITION_COLUMN_STAT,
               new DeletePartitionColumnStatEvent(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName,
-                  convertedPartName, partVals, colName, engine, this));
+                  partName, partVals, colName, engine, this));
         }
         if (!listeners.isEmpty()) {
           MetaStoreListenerNotifier.notifyEvent(listeners,
               EventType.DELETE_PARTITION_COLUMN_STAT,
               new DeletePartitionColumnStatEvent(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName,
-                  convertedPartName, partVals, colName, engine, this));
+                  partName, partVals, colName, engine, this));
         }
       }
       committed = getMS().commitTransaction();
@@ -9155,15 +9109,11 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     for (String colName : request.getColNames()) {
       lowerCaseColNames.add(colName.toLowerCase());
     }
-    List<String> lowerCasePartNames = new ArrayList<>(request.getPartNames().size());
-    for (String partName : request.getPartNames()) {
-      lowerCasePartNames.add(lowerCaseConvertPartName(partName));
-    }
     AggrStats aggrStats = null;
 
     try {
       aggrStats = getMS().get_aggr_stats_for(catName, dbName, tblName,
-          lowerCasePartNames, lowerCaseColNames, request.getEngine(), request.getValidWriteIdList());
+          request.getPartNames(), lowerCaseColNames, request.getEngine(), request.getValidWriteIdList());
       return aggrStats;
     } finally {
       endFunction("get_aggr_stats_for", aggrStats == null, null, request.getTblName());
@@ -10861,5 +10811,142 @@ public Package find_package(GetPackageRequest request) throws MetaException, NoS
     } finally {
       endFunction("get_all_write_event_info", ex == null, ex);
     }
+  }
+
+  // ODP-4696: restored alongside the get_table revert. The revert removed these three
+  // handler implementations, but the regenerated ThriftHiveMetastore.Iface still declares
+  // them (they are 4.1.0 APIs: HIVE-28921, HIVE-28655, HIVE-28294), so HMSHandler must
+  // implement them or it is not concrete. Recovered verbatim from e1ea36bf03.
+  @Override
+  public GetDatabaseObjectsResponse get_databases_req(GetDatabaseObjectsRequest request)
+      throws MetaException {
+    String pattern = request.isSetPattern() ? request.getPattern() : null;
+    String catName = request.isSetCatalogName() ? request.getCatalogName() : getDefaultCatalog(conf);
+
+    startFunction("get_databases_req", ": catalogName=" + catName + " pattern=" + pattern);
+
+    GetDatabaseObjectsResponse response = new GetDatabaseObjectsResponse();
+    List<Database> dbs = null;
+    Exception ex = null;
+
+    try {
+      dbs = getMS().getDatabaseObjects(catName, pattern);
+      dbs = FilterUtils.filterDatabaseObjectsIfEnabled(isServerFilterEnabled, filterHook, dbs);
+      response.setDatabases(dbs);
+    } catch (Exception e) {
+      ex = e;
+      throw newMetaException(e);
+    } finally {
+      endFunction("get_databases_req", dbs != null, ex);
+    }
+
+    return response;
+  }
+
+  @Override
+  public boolean delete_column_statistics_req(DeleteColumnStatisticsRequest req) throws TException {
+    String dbName = normalizeIdentifier(req.getDb_name());
+    String tableName = normalizeIdentifier(req.getTbl_name());
+    List<String> colNames = req.getCol_names();
+    String engine = req.getEngine();
+    String[] parsedDbName = parseDbName(dbName, conf);
+    if (req.getCat_name() != null) {
+      parsedDbName[CAT_NAME] = normalizeIdentifier(req.getCat_name());
+    }
+    startFunction("delete_column_statistics_req", ": table=" +
+        TableName.getQualified(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName) +
+        " partitions=" + req.getPart_names() + " column=" + colNames + " engine=" + engine);
+    boolean ret = false, committed = false;
+    List<ListenerEvent> events = new ArrayList<>();
+    EventType eventType = null;
+    final RawStore rawStore = getMS();
+    rawStore.openTransaction();
+    try {
+      Table table = rawStore.getTable(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName);
+      boolean isPartitioned = table.getPartitionKeysSize() > 0;
+      if (TxnUtils.isTransactionalTable(table)) {
+        throw new MetaException("Cannot delete stats via this API for a transactional table");
+      }
+      if (!isPartitioned || req.isTableLevel()) {
+        ret = rawStore.deleteTableColumnStatistics(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName, colNames, engine);
+        if (ret) {
+          eventType = EventType.DELETE_TABLE_COLUMN_STAT;
+          for (String colName :
+              colNames == null ? table.getSd().getCols().stream().map(FieldSchema::getName).collect(Collectors.toList()) : colNames) {
+            if (transactionalListeners != null && !transactionalListeners.isEmpty()) {
+              MetaStoreListenerNotifier.notifyEvent(transactionalListeners, eventType,
+                  new DeleteTableColumnStatEvent(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName, colName, engine, this));
+            }
+            events.add(new DeleteTableColumnStatEvent(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName, colName, engine, this));
+          }
+        }
+      } else {
+        List<String> partNames = new ArrayList<>();
+        if (req.getPart_namesSize() > 0) {
+          partNames.addAll(req.getPart_names());
+        } else {
+          partNames.addAll(rawStore.listPartitionNames(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName, (short) -1));
+        }
+        if (partNames.isEmpty()) {
+          // no partition found, bail out early
+          return true;
+        }
+        ret = rawStore.deletePartitionColumnStatistics(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName,
+                partNames, colNames, engine);
+        if (ret) {
+          eventType = EventType.DELETE_PARTITION_COLUMN_STAT;
+          for (String colName : colNames == null ? table.getSd().getCols().stream().map(FieldSchema::getName)
+              .collect(Collectors.toList()) : colNames) {
+            for (String partName : partNames) {
+              List<String> partVals = getPartValsFromName(table, partName);
+              if (transactionalListeners != null && !transactionalListeners.isEmpty()) {
+                MetaStoreListenerNotifier.notifyEvent(transactionalListeners, eventType,
+                    new DeletePartitionColumnStatEvent(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName,
+                        partName, partVals, colName, engine, this));
+              }
+              events.add(new DeletePartitionColumnStatEvent(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName,
+                  partName, partVals, colName, engine, this));
+            }
+          }
+        }
+      }
+      committed = rawStore.commitTransaction();
+    } finally {
+      if (!committed) {
+        rawStore.rollbackTransaction();
+      }
+      if (!listeners.isEmpty()) {
+        for (ListenerEvent event : events) {
+          MetaStoreListenerNotifier.notifyEvent(transactionalListeners, eventType, event);
+        }
+      }
+      endFunction("delete_column_statistics_req", ret, null, tableName);
+    }
+    return ret;
+  }
+
+  @Override
+  public GetFunctionsResponse get_functions_req(GetFunctionsRequest req)
+      throws MetaException {
+    startFunction("get_functions_req", ": db=" + req.getDbName()
+        + " pat=" + req.getPattern());
+
+    RawStore ms = getMS();
+    Exception ex = null;
+    List<Function> funcs = null;
+    String catName = req.isSetCatalogName() ? req.getCatalogName() : getDefaultCatalog(conf);
+    try {
+      funcs = ms.getFunctionsRequest(catName, req.getDbName(),
+          req.getPattern(), req.isReturnNames());
+    } catch (Exception e) {
+      ex = e;
+      throw newMetaException(e);
+    } finally {
+      endFunction("get_functions", funcs != null, ex);
+    }
+    GetFunctionsResponse response = new GetFunctionsResponse();
+    response.setFunctions(funcs);
+
+    return response;
   }
 }
