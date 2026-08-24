@@ -1597,4 +1597,24 @@ public class DummyRawStoreControlledCommit implements RawStore, Configurable {
       boolean isReturnNames) throws MetaException {
     return objectStore.getFunctionsRequest(catName, dbName, pattern, isReturnNames);
   }
+
+  @Override
+  public boolean deleteTableColumnStatistics(String catName, String dbName, String tableName,
+      List<String> colNames, String engine)
+      throws NoSuchObjectException, MetaException, InvalidObjectException, InvalidInputException {
+    return objectStore.deleteTableColumnStatistics(catName, dbName, tableName, colNames, engine);
+  }
+
+  @Override
+  public boolean deletePartitionColumnStatistics(String catName, String dbName, String tableName,
+      String partName, List<String> partVals, List<String> colNames, String engine)
+      throws NoSuchObjectException, MetaException, InvalidObjectException, InvalidInputException {
+    return objectStore.deletePartitionColumnStatistics(catName, dbName, tableName, partName,
+        partVals, colNames, engine);
+  }
+
+  @Override
+  public List<Database> getDatabaseObjects(String catalogName, String pattern) throws MetaException {
+    return objectStore.getDatabaseObjects(catalogName, pattern);
+  }
 }

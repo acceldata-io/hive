@@ -4080,4 +4080,15 @@ public class HiveMetaStoreClientPreCatalog implements IMetaStoreClient, AutoClos
     // existing getDatabases(catName, databasePattern) stub.
     throw new UnsupportedOperationException();
   }
+
+  @Override
+  public GetFunctionsResponse getFunctionsRequest(GetFunctionsRequest functionRequest)
+      throws TException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean deleteColumnStatistics(DeleteColumnStatisticsRequest req) throws TException {
+    throw new UnsupportedOperationException();
+  }
 }
