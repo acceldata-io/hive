@@ -246,7 +246,7 @@
     <!-- If upgrading, upgrade atlas as well in ql/pom.xml, which brings in some springframework dependencies transitively -->
     <spring.version>5.3.39</spring.version>
     <spring.ldap.version>2.4.4</spring.ldap.version>
-    <project.build.outputTimestamp>2025-01-01T00:00:00Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2026-08-24T20:20:53Z</project.build.outputTimestamp>
       <aircompressor.version>2.0.3</aircompressor.version>
         <commons-configuration2.version>2.15.0</commons-configuration2.version>
       <async-http-client.version>3.0.10</async-http-client.version>

@@ -80,6 +80,7 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.ByteBuffer;
 import java.security.PrivilegedExceptionAction;
+import java.util.stream.Collectors;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -88,9 +89,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.join;
@@ -174,8 +173,6 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
         logAndAudit("Done cleaning up thread local RawStore");
       }
       HMSHandlerContext.clear();
-      // remove thread local conf in Warehouse
-      Warehouse.removeWhThreadConf();
     }
   }
 
@@ -516,8 +513,6 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     if (ConfVars.TRY_DIRECT_SQL == confVar) {
       HMSHandler.LOG.info("Direct SQL optimization = {}",  value);
     }
-    // set thread local conf for Warehouse
-    wh.setWhConf(configuration);
   }
 
   @Override
@@ -541,7 +536,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     return getMSForConf(conf);
   }
 
-  public static RawStore getMSForConf(Configuration conf) throws MetaException {
+  public static synchronized RawStore getMSForConf(Configuration conf) throws MetaException {
     RawStore ms = getRawStore();
     if (ms == null) {
       ms = newRawStoreForConf(conf);
@@ -858,7 +853,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     if (timerContext != null) {
       long timeTaken = timerContext.stop();
       LOG.debug((getThreadLocalIpAddress() == null ? "" : "source:" + getThreadLocalIpAddress() + " ") +
-          function + " time taken(ns): " + timeTaken);
+          function + "time taken(ns): " + timeTaken);
     }
     Counter counter = Metrics.getOrCreateCounter(MetricsConstants.ACTIVE_CALLS + function);
     if (counter != null) {
@@ -1063,7 +1058,6 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   public void drop_catalog(DropCatalogRequest rqst)
       throws NoSuchObjectException, InvalidOperationException, MetaException {
     String catName = rqst.getName();
-    boolean ifExists = rqst.isIfExists();
     startFunction("drop_catalog", ": " + catName);
     if (DEFAULT_CATALOG_NAME.equalsIgnoreCase(catName)) {
       endFunction("drop_catalog", false, null);
@@ -1073,7 +1067,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     boolean success = false;
     Exception ex = null;
     try {
-      dropCatalogCore(catName, ifExists);
+      dropCatalogCore(catName);
       success = true;
     } catch (Exception e) {
       ex = e;
@@ -1086,7 +1080,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
 
   }
 
-  private void dropCatalogCore(String catName, boolean ifExists)
+  private void dropCatalogCore(String catName)
       throws MetaException, NoSuchObjectException, InvalidOperationException {
     boolean success = false;
     Catalog cat = null;
@@ -1108,7 +1102,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
             req.setCatalogName(catName);
             req.setDeleteData(true);
             req.setCascade(false);
-
+            
             drop_database_core(ms, req);
           } catch (InvalidOperationException e) {
             // This means there are tables of something in the database
@@ -1126,7 +1120,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
         }
       }
 
-      ms.dropCatalog(catName);
+      ms.dropCatalog(catName) ;
       if (!transactionalListeners.isEmpty()) {
         transactionalListenerResponses =
             MetaStoreListenerNotifier.notifyEvent(transactionalListeners,
@@ -1135,12 +1129,6 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
       }
 
       success = ms.commitTransaction();
-    } catch (NoSuchObjectException e) {
-      if (!ifExists) {
-        throw new NoSuchObjectException(e.getMessage());
-      } else {
-        ms.rollbackTransaction();
-      }
     } finally {
       if (success) {
         wh.deleteDir(wh.getDnsPath(new Path(cat.getLocationUri())), false, false, false);
@@ -1352,79 +1340,24 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   }
 
   @Override
-  @Deprecated
   public void create_database(final Database db)
       throws AlreadyExistsException, InvalidObjectException, MetaException {
-    CreateDatabaseRequest req = new CreateDatabaseRequest(db.getName());
-    req.setDescription(db.getDescription());
-    req.setLocationUri(db.getLocationUri());
-    req.setParameters(db.getParameters());
-    req.setPrivileges(db.getPrivileges());
-    req.setOwnerName(db.getOwnerName());
-    req.setOwnerType(db.getOwnerType());
-    req.setCatalogName(db.getCatalogName());
-    req.setCreateTime(db.getCreateTime());
-    req.setManagedLocationUri(db.getManagedLocationUri());
-    req.setType(db.getType());
-    req.setDataConnectorName(db.getConnector_name());
-    req.setRemote_dbname(db.getRemote_dbname());
-
-    create_database_req(req);
-    //location and manged location might be set/changed.
-    db.setLocationUri(req.getLocationUri());
-    db.setManagedLocationUri(req.getManagedLocationUri());
-  }
-
-  @Override
-  public void create_database_req(final CreateDatabaseRequest createDatabaseRequest)
-          throws AlreadyExistsException, InvalidObjectException, MetaException {
-    startFunction("create_database_req", ": " + createDatabaseRequest.getDatabaseName());
+    startFunction("create_database", ": " + db.toString());
     boolean success = false;
     Exception ex = null;
-    if (!createDatabaseRequest.isSetCatalogName()) {
-      createDatabaseRequest.setCatalogName(getDefaultCatalog(conf));
+    if (!db.isSetCatalogName()) {
+      db.setCatalogName(getDefaultCatalog(conf));
     }
     try {
       try {
-        if (null != get_database_core(createDatabaseRequest.getCatalogName(), createDatabaseRequest.getDatabaseName())) {
-          throw new AlreadyExistsException("Database " + createDatabaseRequest.getDatabaseName() + " already exists");
+        if (null != get_database_core(db.getCatalogName(), db.getName())) {
+          throw new AlreadyExistsException("Database " + db.getName() + " already exists");
         }
       } catch (NoSuchObjectException e) {
         // expected
       }
 
-      Database db = new Database(createDatabaseRequest.getDatabaseName(), createDatabaseRequest.getDescription(),
-              createDatabaseRequest.getLocationUri() ,createDatabaseRequest.getParameters());
-      if (createDatabaseRequest.isSetPrivileges()) {
-        db.setPrivileges(createDatabaseRequest.getPrivileges());
-      }
-      if (createDatabaseRequest.isSetOwnerName()) {
-        db.setOwnerName(createDatabaseRequest.getOwnerName());
-      }
-      if (createDatabaseRequest.isSetOwnerType()) {
-        db.setOwnerType(createDatabaseRequest.getOwnerType());
-      }
-      db.setCatalogName(createDatabaseRequest.getCatalogName());
-      if (createDatabaseRequest.isSetCreateTime()) {
-        db.setCreateTime(createDatabaseRequest.getCreateTime());
-      } else {
-        db.setCreateTime((int)(System.currentTimeMillis() / 1000));
-      }
-      if (createDatabaseRequest.isSetManagedLocationUri()) {
-        db.setManagedLocationUri(createDatabaseRequest.getManagedLocationUri());
-      }
-      if (createDatabaseRequest.isSetType()) {
-        db.setType(createDatabaseRequest.getType());
-      }
-      if (createDatabaseRequest.isSetDataConnectorName()) {
-        db.setConnector_name(createDatabaseRequest.getDataConnectorName());
-      }
-      if (createDatabaseRequest.isSetRemote_dbname()) {
-        db.setRemote_dbname(createDatabaseRequest.getRemote_dbname());
-      }
       create_database_core(getMS(), db);
-      createDatabaseRequest.setLocationUri(db.getLocationUri());
-      createDatabaseRequest.setManagedLocationUri(db.getManagedLocationUri());
       success = true;
     } catch (Exception e) {
       ex = e;
@@ -1432,12 +1365,11 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
           .throwIfInstance(MetaException.class, InvalidObjectException.class, AlreadyExistsException.class)
           .defaultMetaException();
     } finally {
-      endFunction("create_database_req", success, ex);
+      endFunction("create_database", success, ex);
     }
   }
 
   @Override
-  @Deprecated
   public Database get_database(final String name)
       throws NoSuchObjectException, MetaException {
     GetDatabaseRequest request = new GetDatabaseRequest();
@@ -1491,21 +1423,12 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   }
 
   @Override
-  @Deprecated
   public void alter_database(final String dbName, final Database newDB) throws TException {
-    AlterDatabaseRequest alterDbReq = new AlterDatabaseRequest(dbName, newDB);
-    alter_database_req(alterDbReq);
-  }
-
-  @Override
-  public void alter_database_req(final AlterDatabaseRequest alterDbReq) throws TException {
-    startFunction("alter_database_req " + alterDbReq.getOldDbName());
+    startFunction("alter_database " + dbName);
     boolean success = false;
     Exception ex = null;
     RawStore ms = getMS();
     Database oldDB = null;
-    Database newDB = alterDbReq.getNewDb();
-    String dbName = alterDbReq.getOldDbName();
     Map<String, String> transactionalListenersResponses = Collections.emptyMap();
 
     // Perform the same URI normalization as create_database_core.
@@ -1565,7 +1488,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
                   EventType.ALTER_DATABASE, event, null, transactionalListenersResponses, ms);
         }
       }
-      endFunction("alter_database_req", success, ex);
+      endFunction("alter_database", success, ex);
     }
   }
 
@@ -1587,7 +1510,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     return newReplId != null && !newReplId.equalsIgnoreCase(oldReplId);
   }
 
-  private void drop_database_core(RawStore ms, DropDatabaseRequest req) throws NoSuchObjectException,
+  private void drop_database_core(RawStore ms, DropDatabaseRequest req) throws NoSuchObjectException, 
       InvalidOperationException, MetaException, IOException, InvalidObjectException, InvalidInputException {
     boolean success = false;
     Database db = null;
@@ -1601,7 +1524,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     try {
       ms.openTransaction();
       db = ms.getDatabase(req.getCatalogName(), req.getName());
-      if (MetaStoreUtils.isDatabaseRemote(db)) {
+      if (db.getType() == DatabaseType.REMOTE) {
         success = drop_remote_database_core(ms, db);
         return;
       }
@@ -1687,10 +1610,10 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
         if (materializedViews != null && !materializedViews.isEmpty()) {
           for (Table materializedView : materializedViews) {
             boolean isSoftDelete = TxnUtils.isTableSoftDeleteEnabled(materializedView, req.isSoftDelete());
-
+            
             if (materializedView.getSd().getLocation() != null && !isSoftDelete) {
               Path materializedViewPath = wh.getDnsPath(new Path(materializedView.getSd().getLocation()));
-
+              
               if (!FileUtils.isSubdirectory(databasePath.toString(), materializedViewPath.toString()) || req.isSoftDelete()) {
                 if (!wh.isWritable(materializedViewPath.getParent())) {
                   throw new MetaException("Database metadata not deleted since table: " +
@@ -1708,7 +1631,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
             // Drop the materialized view but not its data
             drop_table_with_environment_context(
                 req.getName(), materializedView.getTableName(), false, context);
-
+            
             // Remove from all tables
             uniqueTableNames.remove(materializedView.getTableName());
           }
@@ -1719,7 +1642,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
       // drop tables before dropping db
       List<String> allTables = new ArrayList<>(uniqueTableNames);
       startIndex = 0;
-
+      
       // retrieve the tables from the metastore in batches to alleviate memory constraints
       while (startIndex < allTables.size()) {
         int endIndex = Math.min(startIndex + tableBatchSize, allTables.size());
@@ -1737,10 +1660,10 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
             // add it's locations to the list of paths to delete
             boolean isSoftDelete = TxnUtils.isTableSoftDeleteEnabled(table, req.isSoftDelete());
             Path tablePath = null;
-
-            boolean tableDataShouldBeDeleted = checkTableDataShouldBeDeleted(table, req.isDeleteData())
+            
+            boolean tableDataShouldBeDeleted = checkTableDataShouldBeDeleted(table, req.isDeleteData()) 
               && !isSoftDelete;
-
+            
             boolean isManagedTable = table.getTableType().equals(TableType.MANAGED_TABLE.toString());
             if (table.getSd().getLocation() != null && tableDataShouldBeDeleted) {
               tablePath = wh.getDnsPath(new Path(table.getSd().getLocation()));
@@ -1757,7 +1680,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
             // partitions' locations which might need to be deleted
             partitionPaths.addAll(dropPartitionsAndGetLocations(ms, req.getCatalogName(), req.getName(), table.getTableName(),
                 tablePath, tableDataShouldBeDeleted));
-
+            
             EnvironmentContext context = null;
             if (isSoftDelete) {
               context = new EnvironmentContext();
@@ -1813,7 +1736,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
           }
         }
         try {
-          Boolean deleted = UserGroupInformation.getCurrentUser().doAs((PrivilegedExceptionAction<Boolean>)
+          Boolean deleted = UserGroupInformation.getCurrentUser().doAs((PrivilegedExceptionAction<Boolean>) 
               () -> wh.deleteDir(new Path(dbFinal.getLocationUri()), true, dbFinal));
           if (!deleted) {
             LOG.error("Failed to delete database external warehouse directory " + db.getLocationUri());
@@ -1845,28 +1768,27 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   }
 
   @Override
-  @Deprecated
   public void drop_database(final String dbName, final boolean deleteData, final boolean cascade)
       throws NoSuchObjectException, InvalidOperationException, MetaException {
     String[] parsedDbName = parseDbName(dbName, conf);
-
+    
     DropDatabaseRequest req = new DropDatabaseRequest();
     req.setName(parsedDbName[DB_NAME]);
     req.setCatalogName(parsedDbName[CAT_NAME]);
     req.setDeleteData(deleteData);
     req.setCascade(cascade);
-    drop_database_req(req);
+    drop_database_req(req);  
   }
 
   @Override
   public void drop_database_req(final DropDatabaseRequest req)
       throws NoSuchObjectException, InvalidOperationException, MetaException {
     startFunction("drop_database", ": " + req.getName());
-
-    if (DEFAULT_CATALOG_NAME.equalsIgnoreCase(req.getCatalogName())
+    
+    if (DEFAULT_CATALOG_NAME.equalsIgnoreCase(req.getCatalogName()) 
           && DEFAULT_DATABASE_NAME.equalsIgnoreCase(req.getName())) {
       endFunction("drop_database", false, null);
-      throw new MetaException("Can not drop " + DEFAULT_DATABASE_NAME + " database in catalog "
+      throw new MetaException("Can not drop " + DEFAULT_DATABASE_NAME + " database in catalog " 
         + DEFAULT_CATALOG_NAME);
     }
     boolean success = false;
@@ -1892,16 +1814,13 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     List<String> ret = null;
     Exception ex = null;
     try {
-      GetDatabaseObjectsRequest req = new GetDatabaseObjectsRequest();
-      req.setCatalogName(parsedDbNamed[CAT_NAME]);
-      if (parsedDbNamed[DB_NAME] != null) {
-        req.setPattern(parsedDbNamed[DB_NAME]);
+      if (parsedDbNamed[DB_NAME] == null) {
+        ret = getMS().getAllDatabases(parsedDbNamed[CAT_NAME]);
+        ret = FilterUtils.filterDbNamesIfEnabled(isServerFilterEnabled, filterHook, ret);
+      } else {
+        ret = getMS().getDatabases(parsedDbNamed[CAT_NAME], parsedDbNamed[DB_NAME]);
+        ret = FilterUtils.filterDbNamesIfEnabled(isServerFilterEnabled, filterHook, ret);
       }
-
-      GetDatabaseObjectsResponse response = get_databases_req(req);
-      ret = response.getDatabases().stream()
-          .map(Database::getName)
-          .collect(Collectors.toList());
     } catch (Exception e) {
       ex = e;
       throw newMetaException(e);
@@ -1915,32 +1834,6 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   public List<String> get_all_databases() throws MetaException {
     // get_databases filters results already. No need to filter here
     return get_databases(MetaStoreUtils.prependCatalogToDbName(null, null, conf));
-  }
-
-  @Override
-  public GetDatabaseObjectsResponse get_databases_req(GetDatabaseObjectsRequest request)
-      throws MetaException {
-    String pattern = request.isSetPattern() ? request.getPattern() : null;
-    String catName = request.isSetCatalogName() ? request.getCatalogName() : getDefaultCatalog(conf);
-
-    startFunction("get_databases_req", ": catalogName=" + catName + " pattern=" + pattern);
-
-    GetDatabaseObjectsResponse response = new GetDatabaseObjectsResponse();
-    List<Database> dbs = null;
-    Exception ex = null;
-
-    try {
-      dbs = getMS().getDatabaseObjects(catName, pattern);
-      dbs = FilterUtils.filterDatabaseObjectsIfEnabled(isServerFilterEnabled, filterHook, dbs);
-      response.setDatabases(dbs);
-    } catch (Exception e) {
-      ex = e;
-      throw newMetaException(e);
-    } finally {
-      endFunction("get_databases_req", dbs != null, ex);
-    }
-
-    return response;
   }
 
   private void create_dataconnector_core(RawStore ms, final DataConnector connector)
@@ -1990,13 +1883,12 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   }
 
   @Override
-  public void create_dataconnector_req(final CreateDataConnectorRequest connectorReq)
+  public void create_dataconnector(final DataConnector connector)
       throws AlreadyExistsException, InvalidObjectException, MetaException {
-    startFunction("create_dataconnector_req", ": " + connectorReq.toString());
+    startFunction("create_dataconnector", ": " + connector.toString());
     boolean success = false;
     Exception ex = null;
     try {
-      DataConnector connector = connectorReq.getConnector();
       try {
         if (null != get_dataconnector_core(connector.getName())) {
           throw new AlreadyExistsException("DataConnector " + connector.getName() + " already exists");
@@ -2012,7 +1904,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
           .throwIfInstance(MetaException.class, InvalidObjectException.class, AlreadyExistsException.class)
           .defaultMetaException();
     } finally {
-      endFunction("create_dataconnector_req", success, ex);
+      endFunction("create_connector", success, ex);
     }
   }
 
@@ -2049,15 +1941,14 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   }
 
   @Override
-  public void alter_dataconnector_req(final AlterDataConnectorRequest alterReq) throws TException {
+  public void alter_dataconnector(final String dcName, final DataConnector newDC) throws TException {
+    startFunction("alter_dataconnector " + dcName);
     boolean success = false;
     Exception ex = null;
     RawStore ms = getMS();
     DataConnector oldDC = null;
     Map<String, String> transactionalListenersResponses = Collections.emptyMap();
-    String dcName = alterReq.getConnectorName();
-    DataConnector newDC = alterReq.getNewConnector();
-    startFunction("alter_dataconnector " + dcName);
+
     try {
       oldDC = get_dataconnector_core(dcName);
       if (oldDC == null) {
@@ -2119,15 +2010,12 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   }
 
   @Override
-  public void drop_dataconnector_req(final DropDataConnectorRequest dropDcReq) throws NoSuchObjectException, InvalidOperationException, MetaException {
+  public void drop_dataconnector(final String dcName, boolean ifNotExists, boolean checkReferences) throws NoSuchObjectException, InvalidOperationException, MetaException {
+    startFunction("drop_dataconnector", ": " + dcName);
     boolean success = false;
     DataConnector connector = null;
     Exception ex = null;
     RawStore ms = getMS();
-    String dcName = dropDcReq.getConnectorName();
-    boolean ifNotExists = dropDcReq.isIfNotExists();
-    boolean checkReferences = dropDcReq.isCheckReferences();
-    startFunction("drop_dataconnector_req", ": " + dcName);
     try {
       connector = getMS().getDataConnector(dcName);
       DataConnectorProviderFactory.invalidateDataConnectorFromCache(dcName);
@@ -2369,7 +2257,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     }
 
     Database db = get_database_core(tbl.getCatName(), tbl.getDbName());
-    if (MetaStoreUtils.isDatabaseRemote(db)) {
+    if (db != null && db.getType().equals(DatabaseType.REMOTE)) {
       // HIVE-24425: Create table in REMOTE db should fail
       throw new MetaException("Create table in REMOTE database " + db.getName() + " is not allowed");
     }
@@ -2605,41 +2493,37 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   }
 
   private String getTableSuffix(Table tbl) {
-    return tbl.isSetTxnId() && tbl.getParameters() != null
+    return tbl.isSetTxnId() && tbl.getParameters() != null 
         && Boolean.parseBoolean(tbl.getParameters().get(SOFT_DELETE_TABLE)) ?
       SOFT_DELETE_PATH_SUFFIX + String.format(DELTA_DIGITS, tbl.getTxnId()) : "";
   }
 
   @Override
-  @Deprecated
   public void create_table(final Table tbl) throws AlreadyExistsException,
       MetaException, InvalidObjectException, InvalidInputException {
-    CreateTableRequest createTableReq = new CreateTableRequest(tbl);
-    create_table_req(createTableReq);
+    create_table_with_environment_context(tbl, null);
   }
 
   @Override
-  @Deprecated
   public void create_table_with_environment_context(final Table tbl,
                                                     final EnvironmentContext envContext)
       throws AlreadyExistsException, MetaException, InvalidObjectException,
       InvalidInputException {
-    startFunction("create_table_with_environment_context", ": " + tbl.getTableName());
+    startFunction("create_table", ": " + tbl.toString());
     boolean success = false;
     Exception ex = null;
     try {
-      CreateTableRequest createTableReq = new CreateTableRequest(tbl);
-      if (envContext != null) {
-        createTableReq.setEnvContext(envContext);
-      }
-      create_table_req(createTableReq);
+      create_table_core(getMS(), tbl, envContext);
+      success = true;
     } catch (Exception e) {
+      LOG.warn("create_table_with_environment_context got ", e);
       ex = e;
       throw handleException(e).throwIfInstance(MetaException.class, InvalidObjectException.class)
-              .throwIfInstance(AlreadyExistsException.class, InvalidInputException.class)
-              .defaultMetaException();
+          .throwIfInstance(AlreadyExistsException.class, InvalidInputException.class)
+          .convertIfInstance(NoSuchObjectException.class, InvalidObjectException.class)
+          .defaultMetaException();
     } finally {
-      endFunction("create_table_with_environment_context", success, ex, tbl.getTableName());
+      endFunction("create_table", success, ex, tbl.getTableName());
     }
   }
 
@@ -2667,7 +2551,6 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   }
 
   @Override
-  @Deprecated
   public void create_table_with_constraints(final Table tbl,
                                             final List<SQLPrimaryKey> primaryKeys, final List<SQLForeignKey> foreignKeys,
                                             List<SQLUniqueConstraint> uniqueConstraints,
@@ -2676,7 +2559,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
                                             List<SQLCheckConstraint> checkConstraints)
       throws AlreadyExistsException, MetaException, InvalidObjectException,
       InvalidInputException {
-    startFunction("create_table_with_constraints", ": " + tbl.toString());
+    startFunction("create_table", ": " + tbl.toString());
     boolean success = false;
     Exception ex = null;
     try {
@@ -3020,7 +2903,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
 
       // HIVE-25282: Drop/Alter table in REMOTE db should fail
       db = ms.getDatabase(catName, dbname);
-      if (MetaStoreUtils.isDatabaseRemote(db)) {
+      if (db.getType() == DatabaseType.REMOTE) {
         throw new MetaException("Drop table in REMOTE database " + db.getName() + " is not allowed");
       }
       isReplicated = isDbReplicationTarget(db);
@@ -3212,7 +3095,8 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
         wh.deleteDir(path, true, ifPurge, shouldEnableCm);
       }
     } catch (Exception e) {
-      LOG.error("Failed to delete directory: {}", path, e);
+      LOG.error("Failed to delete directory: " + path +
+          " " + e.getMessage());
     }
   }
 
@@ -3293,51 +3177,15 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   }
 
   @Override
-  @Deprecated
   public void drop_table(final String dbname, final String name, final boolean deleteData)
       throws NoSuchObjectException, MetaException {
-    startFunction("drop_table", ": " + dbname + ":" + name);
-    boolean success = false;
-    Exception ex = null;
-    try {
-    String[] parsedDbName = parseDbName(dbname, conf);
-    DropTableRequest dropTableReq = new DropTableRequest(parsedDbName[DB_NAME], name);
-    dropTableReq.setDeleteData(deleteData);
-    dropTableReq.setCatalogName(parsedDbName[CAT_NAME]);
-    dropTableReq.setDropPartitions(true);
-    drop_table_req(dropTableReq);
-    } catch (Exception e) {
-      ex = e;
-      throw handleException(e).throwIfInstance(MetaException.class, NoSuchObjectException.class)
-              .convertIfInstance(IOException.class, MetaException.class).defaultMetaException();
-    } finally {
-      endFunction("drop_table", success, ex, name);
-    }
+    drop_table_with_environment_context(dbname, name, deleteData, null);
   }
 
   @Override
-  @Deprecated
   public void drop_table_with_environment_context(final String dbname, final String name, final boolean deleteData,
       final EnvironmentContext envContext) throws NoSuchObjectException, MetaException {
-    startFunction("drop_table_with_environment_context", ": " + dbname + ":" + name);
-    boolean success = false;
-    Exception ex = null;
-    try {
-      String[] parsedDbName = parseDbName(dbname, conf);
-      DropTableRequest dropTableReq = new DropTableRequest(parsedDbName[DB_NAME], name);
-      dropTableReq.setDeleteData(deleteData);
-      dropTableReq.setCatalogName(parsedDbName[CAT_NAME]);
-      dropTableReq.setDropPartitions(true);
-      dropTableReq.setEnvContext(envContext);
-      drop_table_req(dropTableReq);
-      success = true;
-    } catch (Exception e) {
-      ex = e;
-      throw handleException(e).throwIfInstance(MetaException.class, NoSuchObjectException.class)
-              .convertIfInstance(IOException.class, MetaException.class).defaultMetaException();
-    } finally {
-      endFunction("drop_table_with_environment_context", success, ex, name);
-    }
+    drop_table_with_environment_context(dbname, name, deleteData, envContext, true);
   }
 
   private void drop_table_with_environment_context(final String dbname, final String name, final boolean deleteData,
@@ -3356,23 +3204,6 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
           .convertIfInstance(IOException.class, MetaException.class).defaultMetaException();
     } finally {
       endFunction("drop_table", success, ex, name);
-    }
-  }
-
-  @Override
-  public void drop_table_req(final DropTableRequest dropTableReq) throws MetaException, NoSuchObjectException {
-    startFunction("drop_table_req", ": " + dropTableReq.getTableName());
-    boolean success = false;
-    Exception ex = null;
-    try {
-      success = drop_table_core(getMS(), dropTableReq.getCatalogName(), dropTableReq.getDbName(), dropTableReq.getTableName(),
-              dropTableReq.isDeleteData(), dropTableReq.getEnvContext(), null, dropTableReq.isDropPartitions());
-    } catch (Exception e) {
-      ex = e;
-      throw handleException(e).throwIfInstance(MetaException.class, NoSuchObjectException.class)
-              .convertIfInstance(IOException.class, MetaException.class).defaultMetaException();
-    } finally {
-      endFunction("drop_table_req", success, ex, dropTableReq.getTableName());
     }
   }
 
@@ -3396,95 +3227,95 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     return;
   }
 
-  private void alterPartitionsForTruncate(RawStore ms, String catName, String dbName, String tableName,
-      Table table, List<Partition> partitions, String validWriteIds, long writeId) throws Exception {
+  private void alterPartitionForTruncate(RawStore ms, String catName, String dbName, String tableName,
+                                         Table table, Partition partition, String validWriteIds, long writeId) throws Exception {
     EnvironmentContext environmentContext = new EnvironmentContext();
-    if (partitions.isEmpty()) {
-      return;
+    updateStatsForTruncate(partition.getParameters(), environmentContext);
+
+    if (!transactionalListeners.isEmpty()) {
+      MetaStoreListenerNotifier.notifyEvent(transactionalListeners,
+          EventType.ALTER_PARTITION,
+          new AlterPartitionEvent(partition, partition, table, true, true,
+              writeId, this));
     }
-    List<List<String>> partValsList = new ArrayList<>();
-    for (Partition partition: partitions) {
-      updateStatsForTruncate(partition.getParameters(), environmentContext);
-      if (writeId > 0) {
-        partition.setWriteId(writeId);
-      }
-      partition.putToParameters(hive_metastoreConstants.DDL_TIME, Long.toString(System
-          .currentTimeMillis() / 1000));
-      partValsList.add(partition.getValues());
+
+    if (!listeners.isEmpty()) {
+      MetaStoreListenerNotifier.notifyEvent(listeners,
+          EventType.ALTER_PARTITION,
+          new AlterPartitionEvent(partition, partition, table, true, true,
+              writeId, this));
     }
-    ms.alterPartitions(catName, dbName, tableName, partValsList, partitions, writeId, validWriteIds);
-    if (transactionalListeners != null && !transactionalListeners.isEmpty()) {
-      boolean shouldSendSingleEvent = MetastoreConf.getBoolVar(this.getConf(),
-          MetastoreConf.ConfVars.NOTIFICATION_ALTER_PARTITIONS_V2_ENABLED);
-      if (shouldSendSingleEvent) {
-        MetaStoreListenerNotifier.notifyEvent(transactionalListeners, EventMessage.EventType.ALTER_PARTITIONS,
-            new AlterPartitionsEvent(partitions, partitions, table, true, true, this), environmentContext);
-      } else {
-        for (Partition partition : partitions) {
-          MetaStoreListenerNotifier.notifyEvent(transactionalListeners, EventMessage.EventType.ALTER_PARTITION,
-              new AlterPartitionEvent(partition, partition, table, true, true, partition.getWriteId(), this),
-              environmentContext);
-        }
-      }
+
+    if (writeId > 0) {
+      partition.setWriteId(writeId);
     }
-    if (listeners != null && !listeners.isEmpty()) {
-      boolean shouldSendSingleEvent = MetastoreConf.getBoolVar(this.getConf(),
-          MetastoreConf.ConfVars.NOTIFICATION_ALTER_PARTITIONS_V2_ENABLED);
-      if (shouldSendSingleEvent) {
-        MetaStoreListenerNotifier.notifyEvent(listeners, EventMessage.EventType.ALTER_PARTITIONS,
-            new AlterPartitionsEvent(partitions, partitions, table, true, true, this), environmentContext);
-      } else {
-        for (Partition partition : partitions) {
-          MetaStoreListenerNotifier.notifyEvent(listeners, EventMessage.EventType.ALTER_PARTITION,
-              new AlterPartitionEvent(partition, partition, table, true, true, partition.getWriteId(), this),
-              environmentContext);
-        }
-      }
-    }
+    alterHandler.alterPartition(ms, wh, catName, dbName, tableName, null, partition,
+        environmentContext, this, validWriteIds);
   }
 
   private void alterTableStatsForTruncate(RawStore ms, String catName, String dbName,
-      String tableName, Table table, List<Partition> partitionsList,
-      String validWriteIds, long writeId) throws Exception {
-    if (0 != table.getPartitionKeysSize()) {
-      alterPartitionsForTruncate(ms, catName, dbName, tableName, table, partitionsList,
-          validWriteIds, writeId);
-    } else {
-      EnvironmentContext environmentContext = new EnvironmentContext();
-      updateStatsForTruncate(table.getParameters(), environmentContext);
-      boolean isReplicated = isDbReplicationTarget(ms.getDatabase(catName, dbName));
-      if (!transactionalListeners.isEmpty()) {
-        MetaStoreListenerNotifier.notifyEvent(transactionalListeners,
-            EventType.ALTER_TABLE,
-            new AlterTableEvent(table, table, true, true,
-                writeId, this, isReplicated));
-      }
+                                          String tableName, Table table, List<String> partNames,
+                                          String validWriteIds, long writeId) throws Exception {
+    if (partNames == null) {
+      if (0 != table.getPartitionKeysSize()) {
+        for (Partition partition : ms.getPartitions(catName, dbName, tableName, -1)) {
+          alterPartitionForTruncate(ms, catName, dbName, tableName, table, partition,
+              validWriteIds, writeId);
+        }
+      } else {
+        EnvironmentContext environmentContext = new EnvironmentContext();
+        updateStatsForTruncate(table.getParameters(), environmentContext);
 
-      if (!listeners.isEmpty()) {
-        MetaStoreListenerNotifier.notifyEvent(listeners,
-            EventType.ALTER_TABLE,
-            new AlterTableEvent(table, table, true, true,
-                writeId, this, isReplicated));
+        boolean isReplicated = isDbReplicationTarget(ms.getDatabase(catName, dbName));
+        if (!transactionalListeners.isEmpty()) {
+          MetaStoreListenerNotifier.notifyEvent(transactionalListeners,
+              EventType.ALTER_TABLE,
+              new AlterTableEvent(table, table, true, true,
+                  writeId, this, isReplicated));
+        }
+
+        if (!listeners.isEmpty()) {
+          MetaStoreListenerNotifier.notifyEvent(listeners,
+              EventType.ALTER_TABLE,
+              new AlterTableEvent(table, table, true, true,
+                  writeId, this, isReplicated));
+        }
+
+        // TODO: this should actually pass thru and set writeId for txn stats.
+        if (writeId > 0) {
+          table.setWriteId(writeId);
+        }
+        alterHandler.alterTable(ms, wh, catName, dbName, tableName, table,
+            environmentContext, this, validWriteIds);
       }
-      // TODO: this should actually pass thru and set writeId for txn stats.
-      if (writeId > 0) {
-        table.setWriteId(writeId);
+    } else {
+      for (Partition partition : ms.getPartitionsByNames(catName, dbName, tableName, partNames)) {
+        alterPartitionForTruncate(ms, catName, dbName, tableName, table, partition,
+            validWriteIds, writeId);
       }
-      ms.alterTable(catName, dbName, tableName, table, validWriteIds);
     }
     return;
   }
 
-  private List<Path> getLocationsForTruncate(final RawStore ms, final String catName,
-      final String dbName, final String tableName, final Table table,
-      List<Partition> partitionsList)  throws Exception {
+  private List<Path> getLocationsForTruncate(final RawStore ms,
+                                             final String catName,
+                                             final String dbName,
+                                             final String tableName,
+                                             final Table table,
+                                             final List<String> partNames) throws Exception {
     List<Path> locations = new ArrayList<>();
-    if (0 != table.getPartitionKeysSize()) {
-      for (Partition partition : partitionsList) {
-        locations.add(new Path(partition.getSd().getLocation()));
+    if (partNames == null) {
+      if (0 != table.getPartitionKeysSize()) {
+        for (Partition partition : ms.getPartitions(catName, dbName, tableName, -1)) {
+          locations.add(new Path(partition.getSd().getLocation()));
+        }
+      } else {
+        locations.add(new Path(table.getSd().getLocation()));
       }
     } else {
-      locations.add(new Path(table.getSd().getLocation()));
+      for (Partition partition : ms.getPartitionsByNames(catName, dbName, tableName, partNames)) {
+        locations.add(new Path(partition.getSd().getLocation()));
+      }
     }
     return locations;
   }
@@ -3499,14 +3330,12 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   public void truncate_table(final String dbName, final String tableName, List<String> partNames)
       throws NoSuchObjectException, MetaException {
     // Deprecated path, won't work for txn tables.
-    TruncateTableRequest truncateTableReq = new TruncateTableRequest(dbName, tableName);
-    truncateTableReq.setPartNames(partNames);
-    truncate_table_req(truncateTableReq);
+    truncateTableInternal(dbName, tableName, partNames, null, -1, null);
   }
 
   @Override
   public TruncateTableResponse truncate_table_req(TruncateTableRequest req)
-      throws NoSuchObjectException, MetaException {
+      throws MetaException, TException {
     truncateTableInternal(req.getDbName(), req.getTableName(), req.getPartNames(),
         req.getValidWriteIdList(), req.getWriteId(), req.getEnvironmentContext());
     return new TruncateTableResponse();
@@ -3524,26 +3353,17 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
           .map(prop -> prop.get(TRUNCATE_SKIP_DATA_DELETION))
           .map(Boolean::parseBoolean)
           .orElse(false);
-      List<Partition> partitionsList = new ArrayList<>();
-      if (partNames == null) {
-        if (0 != tbl.getPartitionKeysSize()) {
-          partitionsList = getMS().getPartitions(parsedDbName[CAT_NAME], parsedDbName[DB_NAME],
-              tableName, -1);
-        }
-      } else {
-        partitionsList = getMS().getPartitionsByNames(parsedDbName[CAT_NAME], parsedDbName[DB_NAME],
-            tableName, partNames);
-      }
+
       if (TxnUtils.isTransactionalTable(tbl) || !skipDataDeletion) {
         if (!skipDataDeletion) {
           isSkipTrash = MetaStoreUtils.isSkipTrash(tbl.getParameters());
-
+          
           Database db = get_database_core(parsedDbName[CAT_NAME], parsedDbName[DB_NAME]);
           needCmRecycle = ReplChangeManager.shouldEnableCm(db, tbl);
         }
         // This is not transactional
         for (Path location : getLocationsForTruncate(getMS(), parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName,
-            tbl, partitionsList)) {
+            tbl, partNames)) {
           if (!skipDataDeletion) {
             truncateDataFiles(location, isSkipTrash, needCmRecycle);
           } else {
@@ -3556,7 +3376,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
 
       // Alter the table/partition stats and also notify truncate table event
       alterTableStatsForTruncate(getMS(), parsedDbName[CAT_NAME], parsedDbName[DB_NAME],
-          tableName, tbl, partitionsList, validWriteIds, writeId);
+          tableName, tbl, partNames, validWriteIds, writeId);
     } catch (Exception e) {
       throw handleException(e).throwIfInstance(MetaException.class, NoSuchObjectException.class)
           .convertIfInstance(IOException.class, MetaException.class)
@@ -3570,11 +3390,11 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
    * @param writeId allocated writeId
    * @throws MetaException
    */
-  static void addTruncateBaseFile(Path location, long writeId, Configuration conf, DataFormat dataFormat)
+  static void addTruncateBaseFile(Path location, long writeId, Configuration conf, DataFormat dataFormat) 
       throws MetaException {
-    if (location == null)
+    if (location == null) 
       return;
-
+    
     Path basePath = new Path(location, AcidConstants.baseDir(writeId));
     try {
       FileSystem fs = location.getFileSystem(conf);
@@ -3590,13 +3410,13 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   private void truncateDataFiles(Path location, boolean isSkipTrash, boolean needCmRecycle)
       throws IOException, MetaException {
     FileSystem fs = location.getFileSystem(getConf());
-
+    
     if (!HdfsUtils.isPathEncrypted(getConf(), fs.getUri(), location) &&
         !FileUtils.pathHasSnapshotSubDir(location, fs)) {
       HdfsUtils.HadoopFileStatus status = new HdfsUtils.HadoopFileStatus(getConf(), fs, location);
       FileStatus targetStatus = fs.getFileStatus(location);
       String targetGroup = targetStatus == null ? null : targetStatus.getGroup();
-
+      
       wh.deleteDir(location, true, isSkipTrash, needCmRecycle);
       fs.mkdirs(location);
       HdfsUtils.setFullFileStatus(getConf(), status, targetGroup, fs, location, false);
@@ -3609,6 +3429,16 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
         wh.deleteDir(status.getPath(), true, isSkipTrash, needCmRecycle);
       }
     }
+  }
+
+  @Override
+  @Deprecated
+  public Table get_table(final String dbname, final String name) throws MetaException,
+      NoSuchObjectException {
+    String[] parsedDbName = parseDbName(dbname, conf);
+    GetTableRequest getTableRequest = new GetTableRequest(parsedDbName[DB_NAME],name);
+    getTableRequest.setCatName(parsedDbName[CAT_NAME]);
+    return getTableInternal(getTableRequest);
   }
 
   @Override
@@ -3801,13 +3631,15 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
       db = get_database_core(catName, dbName);
     } catch (Exception e) { /* appears exception is not thrown currently if db doesnt exist */ }
 
-    if (MetaStoreUtils.isDatabaseRemote(db)) {
-      t = DataConnectorProviderFactory.getDataConnectorProvider(db).getTable(tblName);
-      if (t == null) {
-        throw new NoSuchObjectException(TableName.getQualified(catName, dbName, tblName) + " table not found");
+    if (db != null) {
+      if (db.getType().equals(DatabaseType.REMOTE)) {
+        t = DataConnectorProviderFactory.getDataConnectorProvider(db).getTable(tblName);
+        if (t == null) {
+          throw new NoSuchObjectException(TableName.getQualified(catName, dbName, tblName) + " table not found");
+        }
+        t.setDbName(dbName);
+        return t;
       }
-      t.setDbName(dbName);
-      return t;
     }
 
     try {
@@ -3834,8 +3666,11 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   /**
    * Gets multiple tables from the hive metastore.
    *
-   * @param req
-   *          The GetTablesRequest object.
+   * @param dbName
+   *          The name of the database in which the tables reside
+   * @param tableNames
+   *          The names of the tables to get.
+   *
    * @return A list of tables whose names are in the the list "names" and
    *         are retrievable from the database specified by "dbnames."
    *         There is no guarantee of the order of the returned tables.
@@ -3844,6 +3679,13 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
    * @throws InvalidOperationException
    * @throws UnknownDBException
    */
+  @Override
+  @Deprecated
+  public List<Table> get_table_objects_by_name(final String dbName, final List<String> tableNames)
+      throws MetaException, InvalidOperationException, UnknownDBException {
+    String[] parsedDbName = parseDbName(dbName, conf);
+    return getTableObjectsInternal(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableNames, null, null, null);
+  }
 
   @Override
   public GetTablesResult get_table_objects_by_name_req(GetTablesRequest req) throws TException {
@@ -3885,12 +3727,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
       return FilterUtils.filterTablesIfEnabled(isServerFilterEnabled, filterHook, tables);
     } catch (Exception e) {
       LOG.warn("Unexpected exception while getting table(s) in remote database " + dbname , e);
-      if (isInTest) {
-        // ignore the exception
-        return new ArrayList<Table>();
-      } else {
-        throw newMetaException(e);
-      }
+      return new ArrayList<Table>();
     }
   }
 
@@ -4141,79 +3978,38 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   }
 
   @Override
-  @Deprecated
   public Partition append_partition(final String dbName, final String tableName,
-      final List<String> part_vals) throws InvalidObjectException,
+                                    final List<String> part_vals) throws InvalidObjectException,
       AlreadyExistsException, MetaException {
-    String[] parsedDbName = parseDbName(dbName, conf);
-    AppendPartitionsRequest appendPartitionsReq = new AppendPartitionsRequest();
-    appendPartitionsReq.setDbName(parsedDbName[DB_NAME]);
-    appendPartitionsReq.setTableName(tableName);
-    appendPartitionsReq.setPartVals(part_vals);
-    appendPartitionsReq.setCatalogName(parsedDbName[CAT_NAME]);
-    return append_partition_req(appendPartitionsReq);
+    return append_partition_with_environment_context(dbName, tableName, part_vals, null);
   }
 
   @Override
-  @Deprecated
   public Partition append_partition_with_environment_context(final String dbName,
-      final String tableName, final List<String> part_vals, final EnvironmentContext envContext)
+                                                             final String tableName, final List<String> part_vals, final EnvironmentContext envContext)
       throws InvalidObjectException, AlreadyExistsException, MetaException {
-    String[] parsedDbName = parseDbName(dbName, conf);
-    startPartitionFunction("append_partition_with_environment_context", parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName, part_vals);
-    Partition ret = null;
-    Exception ex = null;
-    try {
-      AppendPartitionsRequest appendPartitionsReq = new AppendPartitionsRequest();
-      appendPartitionsReq.setDbName(parsedDbName[DB_NAME]);
-      appendPartitionsReq.setTableName(tableName);
-      appendPartitionsReq.setPartVals(part_vals);
-      appendPartitionsReq.setCatalogName(parsedDbName[CAT_NAME]);
-      appendPartitionsReq.setEnvironmentContext(envContext);
-      ret = append_partition_req(appendPartitionsReq);
-    } catch (Exception e) {
-      ex = e;
-      throw handleException(e).throwIfInstance(MetaException.class, InvalidObjectException.class, AlreadyExistsException.class)
-          .defaultMetaException();
-    } finally {
-      endFunction("append_partition_with_environment_context", ret != null, ex, tableName);
-    }
-    return ret;
-  }
-
-  @Override
-  public Partition append_partition_req(final AppendPartitionsRequest appendPartitionsReq)
-      throws InvalidObjectException, AlreadyExistsException, MetaException {
-    List<String> part_vals = appendPartitionsReq.getPartVals();
-    String dbName = appendPartitionsReq.getDbName();
-    String catName = appendPartitionsReq.isSetCatalogName() ?
-        appendPartitionsReq.getCatalogName() : getDefaultCatalog(conf);
-    String tableName = appendPartitionsReq.getTableName();
-    String partName = appendPartitionsReq.getName();
-    if (partName == null && (part_vals == null || part_vals.isEmpty())) {
+    if (part_vals == null || part_vals.isEmpty()) {
       throw new MetaException("The partition values must not be null or empty.");
     }
-    if (part_vals == null || part_vals.isEmpty()) {
-      // partition name is set, get partition vals and then append partition
-      part_vals = getPartValsFromName(getMS(), catName, dbName, tableName, partName);
-    }
-    startPartitionFunction("append_partition_req", catName, dbName, tableName, part_vals);
+    String[] parsedDbName = parseDbName(dbName, conf);
+    startPartitionFunction("append_partition", parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName, part_vals);
     if (LOG.isDebugEnabled()) {
       for (String part : part_vals) {
         LOG.debug(part);
       }
     }
+
     Partition ret = null;
     Exception ex = null;
     try {
-      ret = append_partition_common(getMS(), catName, dbName, tableName, part_vals, appendPartitionsReq.getEnvironmentContext());
+      ret = append_partition_common(getMS(), parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName, part_vals, envContext);
     } catch (Exception e) {
       ex = e;
       throw handleException(e)
           .throwIfInstance(MetaException.class, InvalidObjectException.class, AlreadyExistsException.class)
           .defaultMetaException();
     } finally {
-      endFunction("append_partition_req", ret != null, ex, tableName);
+      endFunction("append_partition", ret != null, ex, tableName);
     }
     return ret;
   }
@@ -4270,7 +4066,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
 
   private List<Partition> add_partitions_core(final RawStore ms, String catName,
       String dbName, String tblName, List<Partition> parts, final boolean ifNotExists,
-      boolean isSkipColSchemaForPartition, EnvironmentContext envContext) throws TException {
+      boolean isSkipColSchemaForPartition) throws TException {
     if (dbName == null || tblName == null) {
       throw new MetaException("The database and table name cannot be null.");
     }
@@ -4302,6 +4098,10 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
       MTable mTable = getMS().ensureGetMTable(catName, dbName, tblName);
       db = ms.getDatabase(catName, dbName);
 
+      if (!parts.isEmpty()) {
+        firePreEvent(new PreAddPartitionEvent(tbl, parts, this));
+      }
+
       Set<PartValEqWrapperLite> partsToAdd = new HashSet<>(parts.size());
       List<Partition> partitionsToAdd = new ArrayList<>(parts.size());
       List<FieldSchema> partitionKeys = tbl.getPartitionKeys();
@@ -4331,12 +4131,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
         }
       }
 
-      // Only authorize on newly created partitions
-      if (!partitionsToAdd.isEmpty()) {
-        firePreEvent(new PreAddPartitionEvent(tbl, partitionsToAdd, this));
-      }
-
-      newParts.addAll(createPartitionFolders(partitionsToAdd, tbl, addedPartitions, envContext));
+      newParts.addAll(createPartitionFolders(partitionsToAdd, tbl, addedPartitions));
 
       if (!newParts.isEmpty()) {
         ms.addPartitions(catName, dbName, tblName, newParts);
@@ -4348,7 +4143,23 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
         transactionalListenerResponses =
             MetaStoreListenerNotifier.notifyEvent(transactionalListeners,
                 EventType.ADD_PARTITION,
-                new AddPartitionEvent(tbl, newParts, true, this), envContext);
+                new AddPartitionEvent(tbl, newParts, true, this));
+      }
+
+      if (!listeners.isEmpty()) {
+        MetaStoreListenerNotifier.notifyEvent(listeners,
+            EventType.ADD_PARTITION,
+            new AddPartitionEvent(tbl, newParts, true, this),
+            null,
+            transactionalListenerResponses, ms);
+
+        if (!existingParts.isEmpty()) {
+          // The request has succeeded but we failed to add these partitions.
+          MetaStoreListenerNotifier.notifyEvent(listeners,
+              EventType.ADD_PARTITION,
+              new AddPartitionEvent(tbl, existingParts, false, this),
+              null, null, ms);
+        }
       }
 
       // Update partition column statistics if available. We need a valid writeId list to
@@ -4377,19 +4188,12 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
         if (!success) {
           ms.rollbackTransaction();
           cleanupPartitionFolders(addedPartitions, db);
-        }
-        if (!listeners.isEmpty()) {
-          MetaStoreListenerNotifier.notifyEvent(listeners,
-              EventType.ADD_PARTITION,
-              new AddPartitionEvent(tbl, newParts, success, this),
-              envContext, transactionalListenerResponses, ms);
 
-          if (!existingParts.isEmpty()) {
-            // The request has succeeded but we failed to add these partitions.
+          if (!listeners.isEmpty()) {
             MetaStoreListenerNotifier.notifyEvent(listeners,
                 EventType.ADD_PARTITION,
-                new AddPartitionEvent(tbl, existingParts, false, this),
-                envContext, null, ms);
+                new AddPartitionEvent(tbl, parts, false, this),
+                null, null, ms);
           }
         }
       } finally {
@@ -4501,8 +4305,9 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
    * @throws MetaException
    */
   private List<Partition> createPartitionFolders(final List<Partition> partitionsToAdd,
-      final Table table, final Map<PartValEqWrapperLite, Boolean> addedPartitions,
-      EnvironmentContext envContext) throws MetaException {
+                                                 final Table table, final Map<PartValEqWrapperLite, Boolean> addedPartitions)
+      throws MetaException {
+
     final AtomicBoolean failureOccurred = new AtomicBoolean(false);
     final List<Future<Partition>> partFutures = new ArrayList<>(partitionsToAdd.size());
     final Map<PartValEqWrapperLite, Boolean> addedParts = new ConcurrentHashMap<>();
@@ -4514,11 +4319,6 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
       throw new RuntimeException(e);
     }
 
-    // Capture the current thread's Warehouse configuration to propagate to worker threads.
-    // This is needed because metaconf settings (like S3 credentials) are stored in ThreadLocal
-    // and won't be available in thread pool workers otherwise.
-    final Configuration parentThreadWhConf = wh.getWhConf();
-
     for (final Partition partition : partitionsToAdd) {
       initializePartitionParameters(table, partition);
 
@@ -4526,24 +4326,17 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
         if (failureOccurred.get()) {
           return null;
         }
-        // Propagate the parent thread's Warehouse configuration to this worker thread
-        wh.setWhConf(parentThreadWhConf);
-        try {
-          ugi.doAs((PrivilegedExceptionAction<Partition>) () -> {
-            try {
-              boolean madeDir = createLocationForAddedPartition(table, partition);
-              addedParts.put(new PartValEqWrapperLite(partition), madeDir);
-              initializeAddedPartition(table, partition, madeDir, envContext);
-            } catch (MetaException e) {
-              throw new IOException(e.getMessage(), e);
-            }
-            return null;
-          });
-          return partition;
-        } finally {
-          // Clean up ThreadLocal to prevent memory leaks in thread pool
-          Warehouse.removeWhThreadConf();
-        }
+        ugi.doAs((PrivilegedExceptionAction<Partition>) () -> {
+          try {
+            boolean madeDir = createLocationForAddedPartition(table, partition);
+            addedParts.put(new PartValEqWrapperLite(partition), madeDir);
+            initializeAddedPartition(table, partition, madeDir, null);
+          } catch (MetaException e) {
+            throw new IOException(e.getMessage(), e);
+          }
+          return null;
+        });
+        return partition;
       }));
     }
 
@@ -4608,9 +4401,9 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
       boolean isColSkippedForPartitions = request.isSkipColumnSchemaForPartition();
       // Make sure all the partitions have the catalog set as well
       request.getParts().forEach(p -> p.setCatName(catName));
-      List<Partition> parts = add_partitions_core(getMS(),catName, dbName, tblName,
-          request.getParts(), request.isIfNotExists(),
-          request.isSkipColumnSchemaForPartition(), request.getEnvironmentContext());
+      List<Partition> parts = add_partitions_core(getMS(),
+          catName, dbName, tblName, request.getParts(),
+          request.isIfNotExists(), request.isSkipColumnSchemaForPartition());
       if (request.isNeedResult()) {
         if (isColSkippedForPartitions) {
           if (!parts.isEmpty()) {
@@ -4630,7 +4423,6 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     return result;
   }
 
-  @Deprecated
   @Override
   public int add_partitions(final List<Partition> parts) throws MetaException,
       InvalidObjectException, AlreadyExistsException {
@@ -4652,15 +4444,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
       if (!parts.get(0).isSetCatName()) {
         parts.forEach(p -> p.setCatName(catName));
       }
-      AddPartitionsRequest addPartitionsReq = new AddPartitionsRequest();
-      addPartitionsReq.setDbName(parts.get(0).getDbName());
-      addPartitionsReq.setTblName(parts.get(0).getTableName());
-      addPartitionsReq.setParts(parts);
-      addPartitionsReq.setIfNotExists(false);
-      if (parts.get(0).isSetCatName()) {
-        addPartitionsReq.setCatName(parts.get(0).getCatName());
-      }
-      ret = add_partitions_req(addPartitionsReq).getPartitions().size();
+      ret = add_partitions_core(getMS(), catName, dbName, tableName, parts, false, false).size();
       assert ret == parts.size();
     } catch (Exception e) {
       ex = e;
@@ -4709,8 +4493,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
         partitionsToAdd.add(part);
         partitionIterator.next();
       }
-      ret = add_partitions_core(getMS(), catName, dbName, tableName, partitionsToAdd,
-          false, false, null).size();
+      ret = add_partitions_core(getMS(), catName, dbName, tableName, partitionsToAdd, false, false).size();
     } catch (Exception e) {
       ex = e;
       throw handleException(e)
@@ -4920,29 +4703,35 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     return part;
   }
 
-  @Deprecated
   @Override
   public Partition add_partition(final Partition part)
       throws InvalidObjectException, AlreadyExistsException, MetaException {
     return add_partition_with_environment_context(part, null);
   }
 
-  @Deprecated
   @Override
-  public Partition add_partition_with_environment_context( final Partition part, EnvironmentContext envContext)
-          throws InvalidObjectException, AlreadyExistsException, MetaException {
+  public Partition add_partition_with_environment_context(
+      final Partition part, EnvironmentContext envContext)
+      throws InvalidObjectException, AlreadyExistsException,
+      MetaException {
     if (part == null) {
       throw new MetaException("Partition cannot be null.");
     }
-    AddPartitionsRequest addPartitionsReq = new AddPartitionsRequest(part.getDbName(), part.getTableName(),
-            new ArrayList<>(Arrays.asList(part)), false);
-    addPartitionsReq.setEnvironmentContext(envContext);
+    startTableFunction("add_partition",
+        part.getCatName(), part.getDbName(), part.getTableName());
+    Partition ret = null;
+    Exception ex = null;
     try {
-      return add_partitions_req(addPartitionsReq).getPartitions().get(0);
+      ret = add_partition_core(getMS(), part, envContext);
     } catch (Exception e) {
-      throw handleException(e).throwIfInstance(MetaException.class, InvalidObjectException.class,
-          AlreadyExistsException.class).defaultMetaException();
+      ex = e;
+      throw handleException(e)
+          .throwIfInstance(MetaException.class, InvalidObjectException.class, AlreadyExistsException.class)
+          .defaultMetaException();
+    } finally {
+      endFunction("add_partition", ret != null, ex, part != null ?  part.getTableName(): null);
     }
+    return ret;
   }
 
   @Override
@@ -5134,7 +4923,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     }
   }
 
-  private boolean drop_partition_common(RawStore ms, String catName, String db_name, String tbl_name,
+  private boolean drop_partition_common(RawStore ms, String catName, String db_name, String tbl_name, 
       List<String> part_vals, boolean deleteData, final EnvironmentContext envContext)
       throws MetaException, NoSuchObjectException, IOException, InvalidObjectException, InvalidInputException {
     Path partPath = null;
@@ -5147,7 +4936,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     boolean mustPurge = false;
     boolean tableDataShouldBeDeleted = false;
     long writeId = 0;
-
+    
     Map<String, String> transactionalListenerResponses = Collections.emptyMap();
     boolean needsCm = false;
 
@@ -5163,7 +4952,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
 
     try {
       ms.openTransaction();
-
+      
       part = ms.getPartition(catName, db_name, tbl_name, part_vals);
       GetTableRequest request = new GetTableRequest(db_name,tbl_name);
       request.setCatName(catName);
@@ -5173,20 +4962,19 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
       tableDataShouldBeDeleted = checkTableDataShouldBeDeleted(tbl, deleteData);
       mustPurge = isMustPurge(envContext, tbl);
       writeId = getWriteId(envContext);
-
+            
       if (part == null) {
         throw new NoSuchObjectException("Partition doesn't exist. " + part_vals);
       }
       isArchived = MetaStoreUtils.isArchived(part);
-      if (tableDataShouldBeDeleted) {
-        if (isArchived) {
-          // Archived partition is only able to delete original location.
-          archiveParentDir = MetaStoreUtils.getOriginalLocation(part);
-          verifyIsWritablePath(archiveParentDir);
-        } else if ((part.getSd() != null) && (part.getSd().getLocation() != null)) {
-          partPath = new Path(part.getSd().getLocation());
-          verifyIsWritablePath(partPath);
-        }
+      if (tableDataShouldBeDeleted && isArchived) {
+        archiveParentDir = MetaStoreUtils.getOriginalLocation(part);
+        verifyIsWritablePath(archiveParentDir);
+      }
+
+      if (tableDataShouldBeDeleted && (part.getSd() != null) && (part.getSd().getLocation() != null)) {
+        partPath = new Path(part.getSd().getLocation());
+        verifyIsWritablePath(partPath);
       }
 
       String partName = Warehouse.makePartName(tbl.getPartitionKeys(), part_vals);
@@ -5208,7 +4996,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
         LOG.info(mustPurge ?
           "dropPartition() will purge " + partPath + " directly, skipping trash." :
           "dropPartition() will move " + partPath + " to trash-directory.");
-
+          
         // Archived partitions have har:/to_har_file as their location.
         // The original directory was saved in params
         if (isArchived) {
@@ -5221,7 +5009,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
       } else if (TxnUtils.isTransactionalTable(tbl) && writeId > 0) {
         addTruncateBaseFile(partPath, writeId, conf, DataFormat.DROPPED);
       }
-
+    
       if (!listeners.isEmpty()) {
         MetaStoreListenerNotifier.notifyEvent(listeners,
             EventType.DROP_PARTITION,
@@ -5264,10 +5052,13 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     try {
       String[] parsedDbName = parseDbName(name, conf);
       Database db = get_database_core(parsedDbName[CAT_NAME], parsedDbName[DB_NAME]);
-      return MetaStoreUtils.isDatabaseRemote(db);
+      if (db != null && db.getType() != null && db.getType() == DatabaseType.REMOTE) {
+        return true;
+      }
     } catch (Exception e) {
       return false;
     }
+    return false;
   }
 
   private void deleteParentRecursive(Path parent, int depth, boolean mustPurge, boolean needRecycle)
@@ -5278,7 +5069,6 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     }
   }
 
-  @Deprecated
   @Override
   public boolean drop_partition(final String db_name, final String tbl_name,
                                 final List<String> part_vals, final boolean deleteData)
@@ -5327,7 +5117,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     RawStore ms = getMS();
     String dbName = request.getDbName(), tblName = request.getTblName();
     String catName = request.isSetCatName() ? request.getCatName() : getDefaultCatalog(conf);
-
+    
     boolean ifExists = request.isSetIfExists() && request.isIfExists();
     boolean deleteData = request.isSetDeleteData() && request.isDeleteData();
     boolean ignoreProtection = request.isSetIgnoreProtection() && request.isIgnoreProtection();
@@ -5335,16 +5125,16 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
 
     List<PathAndDepth> dirsToDelete = new ArrayList<>();
     List<Path> archToDelete = new ArrayList<>();
-    EnvironmentContext envContext =
+    EnvironmentContext envContext = 
         request.isSetEnvironmentContext() ? request.getEnvironmentContext() : null;
     boolean success = false;
-
+    
     Table tbl = null;
     List<Partition> parts = null;
     boolean mustPurge = false;
     boolean tableDataShouldBeDeleted = false;
     long writeId = 0;
-
+    
     Map<String, String> transactionalListenerResponses = null;
     boolean needsCm = false;
 
@@ -5356,11 +5146,11 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
       mustPurge = isMustPurge(envContext, tbl);
       tableDataShouldBeDeleted = checkTableDataShouldBeDeleted(tbl, deleteData);
       writeId = getWriteId(envContext);
-
+      
       boolean hasMissingParts = false;
       RequestPartsSpec spec = request.getParts();
       List<String> partNames = null;
-
+      
       if (spec.isSetExprs()) {
         // Dropping by expressions.
         parts = new ArrayList<>(spec.getExprs().size());
@@ -5426,17 +5216,15 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
         if (colNames != null) {
           partNames.add(FileUtils.makePartName(colNames, part.getValues()));
         }
-        if (tableDataShouldBeDeleted) {
-          if (MetaStoreUtils.isArchived(part)) {
-            // Archived partition is only able to delete original location.
-            Path archiveParentDir = MetaStoreUtils.getOriginalLocation(part);
-            verifyIsWritablePath(archiveParentDir);
-            archToDelete.add(archiveParentDir);
-          } else if ((part.getSd() != null) && (part.getSd().getLocation() != null)) {
-            Path partPath = new Path(part.getSd().getLocation());
-            verifyIsWritablePath(partPath);
-            dirsToDelete.add(new PathAndDepth(partPath, part.getValues().size()));
-          }
+        if (tableDataShouldBeDeleted && MetaStoreUtils.isArchived(part)) {
+          Path archiveParentDir = MetaStoreUtils.getOriginalLocation(part);
+          verifyIsWritablePath(archiveParentDir);
+          archToDelete.add(archiveParentDir);
+        }
+        if (tableDataShouldBeDeleted && (part.getSd() != null) && (part.getSd().getLocation() != null)) {
+          Path partPath = new Path(part.getSd().getLocation());
+          verifyIsWritablePath(partPath);
+          dirsToDelete.add(new PathAndDepth(partPath, part.getValues().size()));
         }
       }
 
@@ -5448,7 +5236,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
       }
       success = ms.commitTransaction();
       needsCm = ReplChangeManager.shouldEnableCm(ms.getDatabase(catName, dbName), tbl);
-
+      
       DropPartitionsResult result = new DropPartitionsResult();
       if (needResult) {
         result.setPartitions(parts);
@@ -5501,7 +5289,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
           if ((part.getSd() != null) && (part.getSd().getLocation() != null)) {
             Path partPath = new Path(part.getSd().getLocation());
             verifyIsWritablePath(partPath);
-
+            
             addTruncateBaseFile(partPath, writeId, conf, DataFormat.DROPPED);
           }
         }
@@ -5539,43 +5327,30 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     }
   }
 
-  @Deprecated
   @Override
-  public boolean drop_partition_with_environment_context(final String db_name, final String tbl_name, final List<String> part_vals,
-      final boolean deleteData, final EnvironmentContext envContext) throws TException {
+  public boolean drop_partition_with_environment_context(final String db_name,
+                                                         final String tbl_name, final List<String> part_vals, final boolean deleteData,
+                                                         final EnvironmentContext envContext)
+      throws TException {
     String[] parsedDbName = parseDbName(db_name, conf);
-    DropPartitionRequest dropPartitionReq = new DropPartitionRequest(parsedDbName[DB_NAME], tbl_name);
-    dropPartitionReq.setCatName(parsedDbName[CAT_NAME]);
-    dropPartitionReq.setPartVals(part_vals);
-    dropPartitionReq.setDeleteData(deleteData);
-    dropPartitionReq.setEnvironmentContext(envContext);
-    return drop_partition_req(dropPartitionReq);
-  }
+    startPartitionFunction("drop_partition", parsedDbName[CAT_NAME], parsedDbName[DB_NAME],
+        tbl_name, part_vals);
+    LOG.info("Partition values:" + part_vals);
 
-  @Override
-  public boolean drop_partition_req(final DropPartitionRequest dropPartitionReq) throws TException {
-    String dbName = dropPartitionReq.getDbName();
-    String catName = dropPartitionReq.getCatName();
-    String tbl_name = dropPartitionReq.getTblName();
-    List<String> part_vals = dropPartitionReq.getPartVals();
     boolean ret = false;
     Exception ex = null;
     try {
-      if (part_vals == null || part_vals.isEmpty()) {
-        part_vals = getPartValsFromName(getMS(), catName, dbName, tbl_name, dropPartitionReq.getPartName());
-      }
-      startPartitionFunction("drop_partition_req", catName, dbName, tbl_name, part_vals);
-      LOG.info("Partition values:" + part_vals);
-      ret = drop_partition_common(getMS(), catName, dbName,
-              tbl_name, part_vals, dropPartitionReq.isDeleteData(), dropPartitionReq.getEnvironmentContext());
+      ret = drop_partition_common(getMS(), parsedDbName[CAT_NAME], parsedDbName[DB_NAME],
+          tbl_name, part_vals, deleteData, envContext);
     } catch (Exception e) {
       ex = e;
-      handleException(e).convertIfInstance(InvalidObjectException.class, NoSuchObjectException.class)
+      handleException(e).convertIfInstance(IOException.class, MetaException.class)
           .rethrowException(e);
     } finally {
-      endFunction("drop_partition_req", ret, ex, tbl_name);
+      endFunction("drop_partition", ret, ex, tbl_name);
     }
     return ret;
+
   }
 
   /**
@@ -5593,9 +5368,10 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     Partition ret = null;
     Exception ex = null;
     try {
-      GetPartitionRequest getPartitionRequest = new GetPartitionRequest(parsedDbName[DB_NAME], tbl_name, part_vals);
-      getPartitionRequest.setCatName(parsedDbName[CAT_NAME]);
-      ret = get_partition_req(getPartitionRequest).getPartition();
+      authorizeTableForPartitionMetadata(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tbl_name);
+      fireReadTablePreEvent(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tbl_name);
+      ret = getMS().getPartition(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tbl_name, part_vals);
+      ret = FilterUtils.filterPartitionIfEnabled(isServerFilterEnabled, filterHook, ret);
     } catch (Exception e) {
       ex = e;
       throw handleException(e).throwIfInstance(MetaException.class, NoSuchObjectException.class).defaultMetaException();
@@ -5605,34 +5381,12 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     return ret;
   }
 
-  private Partition get_partition_core(final String db_name, final String tbl_name,
-                                 final List<String> part_vals) throws MetaException, NoSuchObjectException {
-    String[] parsedDbName = parseDbName(db_name, conf);
-    startPartitionFunction("get_partition_core", parsedDbName[CAT_NAME], parsedDbName[DB_NAME],
-            tbl_name, part_vals);
-
-    Partition ret = null;
-    Exception ex = null;
-    try {
-      authorizeTableForPartitionMetadata(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tbl_name);
-      fireReadTablePreEvent(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tbl_name);
-      ret = getMS().getPartition(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tbl_name, part_vals);
-      ret = FilterUtils.filterPartitionIfEnabled(isServerFilterEnabled, filterHook, ret);
-    } catch (Exception e) {
-      ex = e;
-      throw handleException(e).throwIfInstance(MetaException.class, NoSuchObjectException.class).defaultMetaException();
-    } finally {
-      endFunction("get_partition_core", ret != null, ex, tbl_name);
-    }
-    return ret;
-  }
-
   @Override
   public GetPartitionResponse get_partition_req(GetPartitionRequest req)
       throws MetaException, NoSuchObjectException, TException {
     // TODO Move the logic from get_partition to here, as that method is getting deprecated
     String dbName = MetaStoreUtils.prependCatalogToDbName(req.getCatName(), req.getDbName(), conf);
-    Partition p = get_partition_core(dbName, req.getTblName(), req.getPartVals());
+    Partition p = get_partition(dbName, req.getTblName(), req.getPartVals());
     GetPartitionResponse res = new GetPartitionResponse();
     res.setPartition(p);
     return res;
@@ -5750,7 +5504,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   @Override
   @Deprecated
   public List<Partition> get_partitions(final String db_name, final String tbl_name,
-      final short max_parts) throws NoSuchObjectException, MetaException {
+                                        final short max_parts) throws NoSuchObjectException, MetaException {
     return get_partitions(db_name, tbl_name,
         new GetPartitionsArgs.GetPartitionsArgsBuilder().max(max_parts).build());
   }
@@ -5758,28 +5512,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   private List<Partition> get_partitions(final String db_name, final String tbl_name,
     GetPartitionsArgs args) throws NoSuchObjectException, MetaException {
     String[] parsedDbName = parseDbName(db_name, conf);
-    List<Partition> ret = null;
-    Exception ex = null;
-    try {
-      PartitionsRequest req = new PartitionsRequest(parsedDbName[DB_NAME], tbl_name);
-      req.setCatName(parsedDbName[CAT_NAME]);
-      req.setMaxParts((short)args.getMax());
-      req.setSkipColumnSchemaForPartition(false);
-      req.setIncludeParamKeyPattern(args.getIncludeParamKeyPattern());
-      req.setExcludeParamKeyPattern(args.getExcludeParamKeyPattern());
-      ret = get_partitions_req(req).getPartitions();
-    } catch (Exception e) {
-      ex = e;
-      throwMetaException(e);
-    }
-    return ret;
-
-  }
-
-  private List<Partition> get_partitions_core(final String db_name, final String tbl_name,
-      GetPartitionsArgs args) throws NoSuchObjectException, MetaException {
-    String[] parsedDbName = parseDbName(db_name, conf);
-    startTableFunction("get_partitions_core", parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tbl_name);
+    startTableFunction("get_partitions", parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tbl_name);
     fireReadTablePreEvent(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tbl_name);
     List<Partition> ret = null;
     Exception ex = null;
@@ -5795,7 +5528,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
       ex = e;
       throwMetaException(e);
     } finally {
-      endFunction("get_partitions_core", ret != null, ex, tbl_name);
+      endFunction("get_partitions", ret != null, ex, tbl_name);
     }
     return ret;
 
@@ -5805,8 +5538,8 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   public PartitionsResponse get_partitions_req(PartitionsRequest req)
       throws NoSuchObjectException, MetaException, TException {
     String dbName = MetaStoreUtils.prependCatalogToDbName(req.getCatName(), req.getDbName(), conf);
-    List<Partition> partitions = get_partitions_core(dbName, req.getTblName(),
-            new GetPartitionsArgs.GetPartitionsArgsBuilder()
+    List<Partition> partitions = get_partitions(dbName, req.getTblName(),
+        new GetPartitionsArgs.GetPartitionsArgsBuilder()
             .max(req.getMaxParts())
             .includeParamKeyPattern(req.getIncludeParamKeyPattern())
             .excludeParamKeyPattern(req.getExcludeParamKeyPattern())
@@ -5879,8 +5612,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     try {
       Table table = get_table_core(catName, dbName, tableName);
       // get_partitions will parse out the catalog and db names itself
-      List<Partition> partitions = get_partitions(db_name, tableName,
-          new GetPartitionsArgs.GetPartitionsArgsBuilder().max(max_parts).build());
+      List<Partition> partitions = get_partitions(db_name, tableName, (short) max_parts);
 
       if (is_partition_spec_grouping_enabled(table)) {
         partitionSpecs = MetaStoreServerUtils
@@ -5965,39 +5697,16 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     List<String> ret = null;
     Exception ex = null;
     try {
-      PartitionsRequest partitionReq = new PartitionsRequest(parsedDbName[DB_NAME], tbl_name);
-      partitionReq.setCatName(parsedDbName[CAT_NAME]);
-      partitionReq.setMaxParts(max_parts);
-      ret = fetch_partition_names_req(partitionReq);
+      authorizeTableForPartitionMetadata(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tbl_name);
+      ret = getMS().listPartitionNames(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tbl_name,
+          max_parts);
+      ret = FilterUtils.filterPartitionNamesIfEnabled(isServerFilterEnabled,
+          filterHook, parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tbl_name, ret);
     } catch (Exception e) {
       ex = e;
       throw newMetaException(e);
     } finally {
       endFunction("get_partition_names", ret != null, ex, tbl_name);
-    }
-    return ret;
-  }
-
-  @Override
-  public List<String> fetch_partition_names_req(final PartitionsRequest partitionReq)
-      throws NoSuchObjectException, MetaException {
-    String catName = partitionReq.getCatName();
-    String dbName = partitionReq.getDbName();
-    String tbl_name = partitionReq.getTblName();
-    startTableFunction("fetch_partition_names_req", catName, dbName, tbl_name);
-    fireReadTablePreEvent(catName, dbName, tbl_name);
-    List<String> ret = null;
-    Exception ex = null;
-    try {
-      authorizeTableForPartitionMetadata(catName, dbName, tbl_name);
-      ret = getMS().listPartitionNames(catName, dbName, tbl_name, partitionReq.getMaxParts());
-      ret = FilterUtils.filterPartitionNamesIfEnabled(isServerFilterEnabled,
-              filterHook, catName, dbName, tbl_name, ret);
-    } catch (Exception e) {
-      ex = e;
-      throw newMetaException(e);
-    } finally {
-      endFunction("fetch_partition_names_req", ret != null, ex, tbl_name);
     }
     return ret;
   }
@@ -6062,7 +5771,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     EnvironmentContext context = new EnvironmentContext();
     context.putToProperties(RENAME_PARTITION_MAKE_COPY, String.valueOf(req.isClonePart()));
     context.putToProperties(hive_metastoreConstants.TXN_ID, String.valueOf(req.getTxnId()));
-
+    
     alter_partition_core(req.getCatName(), req.getDbName(), req.getTableName(), req.getPartVals(),
         req.getNewPart(), context, req.getValidWriteIdList());
     return new RenamePartitionResponse();
@@ -6126,15 +5835,13 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     }
   }
 
-  @Deprecated
   @Override
   public void alter_partitions(final String db_name, final String tbl_name,
                                final List<Partition> new_parts)
       throws TException {
     String[] o = parseDbName(db_name, conf);
-    AlterPartitionsRequest req = new AlterPartitionsRequest(o[1], tbl_name, new_parts);
-    req.setCatName(o[0]);
-    alter_partitions_req(req);
+    alter_partitions_with_environment_context(o[0], o[1],
+        tbl_name, new_parts, null, null, -1);
   }
 
   @Override
@@ -6153,10 +5860,8 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
                                                         final List<Partition> new_parts, EnvironmentContext environmentContext)
       throws TException {
     String[] o = parseDbName(db_name, conf);
-    AlterPartitionsRequest req = new AlterPartitionsRequest(o[1], tbl_name, new_parts);
-    req.setCatName(o[0]);
-    req.setEnvironmentContext(environmentContext);
-    alter_partitions_req(req);
+    alter_partitions_with_environment_context(o[0], o[1], tbl_name, new_parts, environmentContext,
+        null, -1);
   }
 
   private void alter_partitions_with_environment_context(String catName, String db_name, final String tbl_name,
@@ -6199,8 +5904,8 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
         }
         firePreEvent(new PreAlterPartitionEvent(db_name, tbl_name, table, null, tmpPart, this));
       }
-      oldParts = alterHandler.alterPartitions(getMS(), wh, catName, db_name, tbl_name, new_parts,
-          environmentContext, writeIdList, writeId, this);
+      oldParts = alterHandler.alterPartitions(getMS(), wh,
+          catName, db_name, tbl_name, new_parts, environmentContext, writeIdList, writeId, this);
       Iterator<Partition> olditr = oldParts.iterator();
 
       for (Partition tmpPart : new_parts) {
@@ -6238,19 +5943,16 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     return version;
   }
 
-  @Deprecated
   @Override
   public void alter_table(final String dbname, final String name,
                           final Table newTable)
       throws InvalidOperationException, MetaException {
     // Do not set an environment context.
     String[] parsedDbName = parseDbName(dbname, conf);
-    AlterTableRequest req = new AlterTableRequest(parsedDbName[DB_NAME], name, newTable);
-    req.setCatName(parsedDbName[CAT_NAME]);
-    alter_table_req(req);
+    alter_table_core(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], name, newTable,
+        null, null, null, null, null, null);
   }
 
-  @Deprecated
   @Override
   public void alter_table_with_cascade(final String dbname, final String name,
                                        final Table newTable, final boolean cascade)
@@ -6261,15 +5963,13 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
       envContext.putToProperties(StatsSetupConst.CASCADE, StatsSetupConst.TRUE);
     }
     String[] parsedDbName = parseDbName(dbname, conf);
-    AlterTableRequest req = new AlterTableRequest(parsedDbName[DB_NAME], name, newTable);
-    req.setCatName(parsedDbName[CAT_NAME]);
-    req.setEnvironmentContext(envContext);
-    alter_table_req(req);
+    alter_table_core(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], name, newTable,
+        envContext, null, null, null, null, null);
   }
 
   @Override
   public AlterTableResponse alter_table_req(AlterTableRequest req)
-      throws InvalidOperationException, MetaException {
+      throws InvalidOperationException, MetaException, TException {
     alter_table_core(req.getCatName(), req.getDbName(), req.getTableName(),
         req.getTable(), req.getEnvironmentContext(), req.getValidWriteIdList(),
         req.getProcessorCapabilities(), req.getProcessorIdentifier(),
@@ -6277,17 +5977,14 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     return new AlterTableResponse();
   }
 
-  @Deprecated
   @Override
   public void alter_table_with_environment_context(final String dbname,
                                                    final String name, final Table newTable,
                                                    final EnvironmentContext envContext)
       throws InvalidOperationException, MetaException {
     String[] parsedDbName = parseDbName(dbname, conf);
-    AlterTableRequest req = new AlterTableRequest(parsedDbName[DB_NAME], name, newTable);
-    req.setCatName(parsedDbName[CAT_NAME]);
-    req.setEnvironmentContext(envContext);
-    alter_table_req(req);
+    alter_table_core(parsedDbName[CAT_NAME], parsedDbName[DB_NAME],
+        name, newTable, envContext, null, null, null, null, null);
   }
 
   private void alter_table_core(String catName, String dbname, String name, Table newTable,
@@ -6314,7 +6011,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     // HIVE-25282: Drop/Alter table in REMOTE db should fail
     try {
       Database db = get_database_core(catName, dbname);
-      if (MetaStoreUtils.isDatabaseRemote(db)) {
+      if (db != null && db.getType().equals(DatabaseType.REMOTE)) {
         throw new MetaException("Alter table in REMOTE database " + db.getName() + " is not allowed");
       }
     } catch (NoSuchObjectException e) {
@@ -6377,22 +6074,19 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
         Database db = get_database_core(parsedDbName[CAT_NAME], parsedDbName[DB_NAME]);
         return DataConnectorProviderFactory.getDataConnectorProvider(db).getTableNames();
       }
-    } catch (Exception e) {
-      throw newMetaException(e);
-    }
+    } catch (Exception e) { /* appears we return empty set instead of throwing an exception */ }
 
     try {
       ret = getMS().getTables(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], pattern);
-      // HIVE-29378: Filter by name only. HiveMetaStoreAuthorizer (Ranger) and other
-      // MetaStoreFilterHook impls decide from dbName+tableName + user context; the prior
-      // getTableObjectsByName + filterTablesIfEnabled(fullTables) path materialised every
-      // Table object in the DB (unbatched -- it also StackOverflowed DataNucleus in
-      // ExpressionCompiler.compileOrAndExpression at 100k+ tables) and each convertToTable
-      // adds 5-10ms per table. HIVE-28292 rerouted HS2 SHOW TABLES around this call site
-      // but any non-HS2 caller (HCatalog, Impala, older HS2 vs newer HMS) still trips it.
-      // Matches get_all_tables() and get_tables_by_type() which already filter names only.
-      ret = FilterUtils.filterTableNamesIfEnabled(isServerFilterEnabled, filterHook,
-          parsedDbName[CAT_NAME], parsedDbName[DB_NAME], ret);
+      if(ret !=  null && !ret.isEmpty()) {
+        List<Table> tableInfo = new ArrayList<>();
+        tableInfo = getMS().getTableObjectsByName(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], ret);
+        tableInfo = FilterUtils.filterTablesIfEnabled(isServerFilterEnabled, filterHook, tableInfo);// tableInfo object has the owner information of the table which is being passed to FilterUtils.
+        ret = new ArrayList<>();
+        for (Table tbl : tableInfo) {
+          ret.add(tbl.getTableName());
+        }
+      }
     } catch (Exception e) {
       ex = e;
       throw newMetaException(e);
@@ -6433,8 +6127,10 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     Database db = null;
     try {
       db = get_database_core(catName, dbname);
-      if (MetaStoreUtils.isDatabaseRemote(db)) {
-        return DataConnectorProviderFactory.getDataConnectorProvider(db).getTableNames();
+      if (db != null) {
+        if (db.getType().equals(DatabaseType.REMOTE)) {
+          return DataConnectorProviderFactory.getDataConnectorProvider(db).getTableNames();
+        }
       }
     } catch (Exception e) { /* ignore */ }
 
@@ -6501,14 +6197,9 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     } catch (Exception e) { /* ignore */ }
 
     try {
-      if (getIfServerFilterenabled()) {
-        List<TableMeta> filteredTableMetas = get_table_meta(dbname, "*", null);
-        ret = filteredTableMetas.stream()
-            .map(TableMeta::getTableName)
-            .collect(Collectors.toList());
-      } else {
-        ret = getMS().getAllTables(parsedDbName[CAT_NAME], parsedDbName[DB_NAME]);
-      }
+      ret = getMS().getAllTables(parsedDbName[CAT_NAME], parsedDbName[DB_NAME]);
+      ret = FilterUtils.filterTableNamesIfEnabled(isServerFilterEnabled, filterHook,
+          parsedDbName[CAT_NAME], parsedDbName[DB_NAME], ret);
     } catch (Exception e) {
       ex = e;
       throw newMetaException(e);
@@ -6534,16 +6225,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   public List<FieldSchema> get_fields_with_environment_context(String db, String tableName,
                                                                final EnvironmentContext envContext)
       throws MetaException, UnknownTableException, UnknownDBException {
-    String[] parsedDbName = parseDbName(db, conf);
-    GetFieldsRequest req = new GetFieldsRequest(parsedDbName[DB_NAME], tableName);
-    req.setCatName(parsedDbName[CAT_NAME]);
-    req.setEnvContext(envContext);
-    return get_fields_req(req).getFields();
-  }
-
-  private List<FieldSchema> get_fields_with_environment_context_core(String db, String tableName, final EnvironmentContext envContext)
-          throws MetaException, UnknownTableException, UnknownDBException {
-    startFunction("get_fields_with_environment_context_core", ": db=" + db + "tbl=" + tableName);
+    startFunction("get_fields_with_environment_context", ": db=" + db + "tbl=" + tableName);
     String[] names = tableName.split("\\.");
     String base_table_name = names[0];
     String[] parsedDbName = parseDbName(db, conf);
@@ -6559,9 +6241,9 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
         throw new UnknownTableException(e.getMessage());
       }
       if (null == tbl.getSd().getSerdeInfo().getSerializationLib() ||
-              MetastoreConf.getStringCollection(conf,
-                      ConfVars.SERDES_USING_METASTORE_FOR_SCHEMA).contains(
-                      tbl.getSd().getSerdeInfo().getSerializationLib())) {
+          MetastoreConf.getStringCollection(conf,
+              ConfVars.SERDES_USING_METASTORE_FOR_SCHEMA).contains(
+              tbl.getSd().getSerdeInfo().getSerializationLib())) {
         ret = tbl.getSd().getCols();
       } else {
         StorageSchemaReader schemaReader = getStorageSchemaReader();
@@ -6571,16 +6253,17 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
       ex = e;
       throw handleException(e).throwIfInstance(UnknownTableException.class, MetaException.class).defaultMetaException();
     } finally {
-      endFunction("get_fields_with_environment_context_core", ret != null, ex, tableName);
+      endFunction("get_fields_with_environment_context", ret != null, ex, tableName);
     }
+
     return ret;
   }
 
   @Override
   public GetFieldsResponse get_fields_req(GetFieldsRequest req)
-      throws MetaException, UnknownTableException, UnknownDBException {
+      throws MetaException, UnknownTableException, UnknownDBException, TException {
     String dbName = MetaStoreUtils.prependCatalogToDbName(req.getCatName(), req.getDbName(), conf);
-    List<FieldSchema> fields = get_fields_with_environment_context_core(
+    List<FieldSchema> fields = get_fields_with_environment_context(
         dbName, req.getTblName(), req.getEnvContext());
     GetFieldsResponse res = new GetFieldsResponse();
     res.setFields(fields);
@@ -6634,16 +6317,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   public List<FieldSchema> get_schema_with_environment_context(String db, String tableName,
                                                                final EnvironmentContext envContext)
       throws MetaException, UnknownTableException, UnknownDBException {
-    String[] parsedDbName = parseDbName(db, conf);
-    GetSchemaRequest req = new GetSchemaRequest(parsedDbName[DB_NAME], tableName);
-    req.setCatName(parsedDbName[CAT_NAME]);
-    req.setEnvContext(envContext);
-    return get_schema_req(req).getFields();
-  }
-
-  private List<FieldSchema> get_schema_with_environment_context_core(String db, String tableName, final EnvironmentContext envContext)
-          throws MetaException, UnknownTableException, UnknownDBException {
-    startFunction("get_schema_with_environment_context_core", ": db=" + db + "tbl=" + tableName);
+    startFunction("get_schema_with_environment_context", ": db=" + db + "tbl=" + tableName);
     boolean success = false;
     Exception ex = null;
     try {
@@ -6658,8 +6332,8 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
         throw new UnknownTableException(e.getMessage());
       }
       // Pass unparsed db name here
-      List<FieldSchema> fieldSchemas = get_fields_with_environment_context_core(db, base_table_name,
-              envContext);
+      List<FieldSchema> fieldSchemas = get_fields_with_environment_context(db, base_table_name,
+          envContext);
 
       if (tbl == null || fieldSchemas == null) {
         throw new UnknownTableException(tableName + " doesn't exist");
@@ -6675,18 +6349,18 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     } catch (Exception e) {
       ex = e;
       throw handleException(e)
-              .throwIfInstance(UnknownDBException.class, UnknownTableException.class, MetaException.class)
-              .defaultMetaException();
+          .throwIfInstance(UnknownDBException.class, UnknownTableException.class, MetaException.class)
+          .defaultMetaException();
     } finally {
-      endFunction("get_schema_with_environment_context_core", success, ex, tableName);
+      endFunction("get_schema_with_environment_context", success, ex, tableName);
     }
   }
 
   @Override
   public GetSchemaResponse get_schema_req(GetSchemaRequest req)
-      throws MetaException, UnknownTableException, UnknownDBException {
+      throws MetaException, UnknownTableException, UnknownDBException, TException {
     String dbName = MetaStoreUtils.prependCatalogToDbName(req.getCatName(), req.getDbName(), conf);
-    List<FieldSchema> fields = get_schema_with_environment_context_core(
+    List<FieldSchema> fields = get_schema_with_environment_context(
         dbName, req.getTblName(), req.getEnvContext());
     GetSchemaResponse res = new GetSchemaResponse();
     res.setFields(fields);
@@ -6816,29 +6490,27 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     return ret;
   }
 
-  @Deprecated
   @Override
   public Partition append_partition_by_name(final String db_name, final String tbl_name,
                                             final String part_name) throws TException {
     return append_partition_by_name_with_environment_context(db_name, tbl_name, part_name, null);
   }
 
-  @Deprecated
   @Override
   public Partition append_partition_by_name_with_environment_context(final String db_name,
-      final String tbl_name, final String part_name, final EnvironmentContext env_context)
+                                                                     final String tbl_name, final String part_name, final EnvironmentContext env_context)
       throws TException {
     String[] parsedDbName = parseDbName(db_name, conf);
+    startFunction("append_partition_by_name", ": tbl="
+        + TableName.getQualified(parsedDbName[CAT_NAME], parsedDbName[DB_NAME],
+        tbl_name) + " part=" + part_name);
+
     Partition ret = null;
     Exception ex = null;
     try {
-      AppendPartitionsRequest appendPartitionRequest = new AppendPartitionsRequest();
-      appendPartitionRequest.setDbName(parsedDbName[DB_NAME]);
-      appendPartitionRequest.setTableName(tbl_name);
-      appendPartitionRequest.setName(part_name);
-      appendPartitionRequest.setCatalogName(parsedDbName[CAT_NAME]);
-      appendPartitionRequest.setEnvironmentContext(env_context);
-      ret = append_partition_req(appendPartitionRequest);
+      RawStore ms = getMS();
+      List<String> partVals = getPartValsFromName(ms, parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tbl_name, part_name);
+      ret = append_partition_common(ms, parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tbl_name, partVals, env_context);
     } catch (Exception e) {
       ex = e;
       throw handleException(e)
@@ -6851,8 +6523,9 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   }
 
   private boolean drop_partition_by_name_core(final RawStore ms, final String catName,
-      final String db_name, final String tbl_name, final String part_name,
-      final boolean deleteData, final EnvironmentContext envContext)
+                                              final String db_name, final String tbl_name,
+                                              final String part_name, final boolean deleteData,
+                                              final EnvironmentContext envContext)
       throws TException, IOException {
 
     List<String> partVals;
@@ -6865,7 +6538,6 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     return drop_partition_common(ms, catName, db_name, tbl_name, partVals, deleteData, envContext);
   }
 
-  @Deprecated
   @Override
   public boolean drop_partition_by_name(final String db_name, final String tbl_name,
                                         final String part_name, final boolean deleteData) throws TException {
@@ -6873,18 +6545,28 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
         deleteData, null);
   }
 
-  @Deprecated
   @Override
   public boolean drop_partition_by_name_with_environment_context(final String db_name,
                                                                  final String tbl_name, final String part_name, final boolean deleteData,
                                                                  final EnvironmentContext envContext) throws TException {
     String[] parsedDbName = parseDbName(db_name, conf);
-    DropPartitionRequest dropPartitionReq = new DropPartitionRequest(parsedDbName[DB_NAME], tbl_name);
-    dropPartitionReq.setCatName(parsedDbName[CAT_NAME]);
-    dropPartitionReq.setPartName(part_name);
-    dropPartitionReq.setDeleteData(deleteData);
-    dropPartitionReq.setEnvironmentContext(envContext);
-    return drop_partition_req(dropPartitionReq);
+    startFunction("drop_partition_by_name", ": tbl=" +
+        TableName.getQualified(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tbl_name)
+        + " part=" + part_name);
+
+    boolean ret = false;
+    Exception ex = null;
+    try {
+      ret = drop_partition_by_name_core(getMS(), parsedDbName[CAT_NAME], parsedDbName[DB_NAME],
+          tbl_name, part_name, deleteData, envContext);
+    } catch (Exception e) {
+      ex = e;
+      handleException(e).convertIfInstance(IOException.class, MetaException.class).rethrowException(e);
+    } finally {
+      endFunction("drop_partition_by_name", ret, ex, tbl_name);
+    }
+
+    return ret;
   }
 
   @Override
@@ -6984,35 +6666,11 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   @Override
   @Deprecated
   public List<String> get_partition_names_ps(final String db_name,
-      final String tbl_name, final List<String> part_vals, final short max_parts)
+                                             final String tbl_name, final List<String> part_vals, final short max_parts)
       throws TException {
     String[] parsedDbName = parseDbName(db_name, conf);
     startPartitionFunction("get_partitions_names_ps", parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tbl_name,
         max_parts, part_vals);
-
-    List<String> ret = null;
-    Exception ex = null;
-    try {
-      GetPartitionNamesPsRequest getPartitionNamesPsRequest = new GetPartitionNamesPsRequest(parsedDbName[DB_NAME], tbl_name);
-      getPartitionNamesPsRequest.setCatName(parsedDbName[CAT_NAME]);
-      getPartitionNamesPsRequest.setPartValues(part_vals);
-      getPartitionNamesPsRequest.setMaxParts(max_parts);
-      ret = get_partition_names_ps_req(getPartitionNamesPsRequest).getNames();
-    } catch (Exception e) {
-      ex = e;
-      rethrowException(e);
-    } finally {
-      endFunction("get_partitions_names_ps", ret != null, ex, tbl_name);
-    }
-    return ret;
-  }
-
-  private List<String> get_partition_names_ps_core(final String db_name,
-      final String tbl_name, final List<String> part_vals, final short max_parts)
-      throws TException {
-    String[] parsedDbName = parseDbName(db_name, conf);
-    startPartitionFunction("get_partitions_names_ps", parsedDbName[CAT_NAME],
-            parsedDbName[DB_NAME], tbl_name, part_vals);
     fireReadTablePreEvent(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tbl_name);
     List<String> ret = null;
     Exception ex = null;
@@ -7035,7 +6693,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   public GetPartitionNamesPsResponse get_partition_names_ps_req(GetPartitionNamesPsRequest req)
       throws MetaException, NoSuchObjectException, TException {
     String dbName = MetaStoreUtils.prependCatalogToDbName(req.getCatName(), req.getDbName(), conf);
-    List<String> names = get_partition_names_ps_core(dbName, req.getTblName(), req.getPartValues(),
+    List<String> names = get_partition_names_ps(dbName, req.getTblName(), req.getPartValues(),
         req.getMaxParts());
     GetPartitionNamesPsResponse res = new GetPartitionNamesPsResponse();
     res.setNames(names);
@@ -7312,7 +6970,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     List<String> partVals;
     boolean committed = false;
     getMS().openTransaction();
-
+    
     try {
       tbl = Optional.ofNullable(tbl).orElse(getTable(catName, dbName, tableName));
       mTable = Optional.ofNullable(mTable).orElse(getMS().ensureGetMTable(catName, dbName, tableName));
@@ -7434,7 +7092,6 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     return new SetPartitionsStatsResponse(ret);
   }
 
-  @Deprecated
   @Override
   public boolean delete_partition_column_statistics(String dbName, String tableName,
                                                     String partName, String colName, String engine) throws TException {
@@ -7444,97 +7101,47 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     if (colName != null) {
       colName = colName.toLowerCase();
     }
-    DeleteColumnStatisticsRequest request = new DeleteColumnStatisticsRequest(parsedDbName[DB_NAME], tableName);
-    request.setEngine(engine);
-    request.setCat_name(parsedDbName[CAT_NAME]);
-    request.addToCol_names(colName);
-    request.addToPart_names(partName);
-    return delete_column_statistics_req(request);
-  }
-
-  @Override
-  public boolean delete_column_statistics_req(DeleteColumnStatisticsRequest req) throws TException {
-    String dbName = normalizeIdentifier(req.getDb_name());
-    String tableName = normalizeIdentifier(req.getTbl_name());
-    List<String> colNames = req.getCol_names();
-    String engine = req.getEngine();
-    String[] parsedDbName = parseDbName(dbName, conf);
-    if (req.getCat_name() != null) {
-      parsedDbName[CAT_NAME] = normalizeIdentifier(req.getCat_name());
-    }
-    startFunction("delete_column_statistics_req", ": table=" +
+    startFunction("delete_column_statistics_by_partition",": table=" +
         TableName.getQualified(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName) +
-        " partitions=" + req.getPart_names() + " column=" + colNames + " engine=" + engine);
+        " partition=" + partName + " column=" + colName);
     boolean ret = false, committed = false;
-    List<ListenerEvent> events = new ArrayList<>();
-    EventType eventType = null;
-    final RawStore rawStore = getMS();
-    rawStore.openTransaction();
+
+    getMS().openTransaction();
     try {
-      Table table = rawStore.getTable(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName);
-      boolean isPartitioned = table.getPartitionKeysSize() > 0;
+      List<String> partVals = getPartValsFromName(getMS(), parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName, partName);
+      Table table = getMS().getTable(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName);
+      // This API looks unused; if it were used we'd need to update stats state and write ID.
+      // We cannot just randomly nuke some txn stats.
       if (TxnUtils.isTransactionalTable(table)) {
         throw new MetaException("Cannot delete stats via this API for a transactional table");
       }
-      if (!isPartitioned || req.isTableLevel()) {
-        ret = rawStore.deleteTableColumnStatistics(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName, colNames, engine);
-        if (ret) {
-          eventType = EventType.DELETE_TABLE_COLUMN_STAT;
-          for (String colName :
-              colNames == null ? table.getSd().getCols().stream().map(FieldSchema::getName).collect(Collectors.toList()) : colNames) {
-            if (transactionalListeners != null && !transactionalListeners.isEmpty()) {
-              MetaStoreListenerNotifier.notifyEvent(transactionalListeners, eventType,
-                  new DeleteTableColumnStatEvent(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName, colName, engine, this));
-            }
-            events.add(new DeleteTableColumnStatEvent(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName, colName, engine, this));
-          }
-        }
-      } else {
-        List<String> partNames = new ArrayList<>();
-        if (req.getPart_namesSize() > 0) {
-          partNames.addAll(req.getPart_names());
-        } else {
-          partNames.addAll(rawStore.listPartitionNames(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName, (short) -1));
-        }
-        if (partNames.isEmpty()) {
-          // no partition found, bail out early
-          return true;
-        }
-        ret = rawStore.deletePartitionColumnStatistics(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName,
-                partNames, colNames, engine);
-        if (ret) {
-          eventType = EventType.DELETE_PARTITION_COLUMN_STAT;
-          for (String colName : colNames == null ? table.getSd().getCols().stream().map(FieldSchema::getName)
-              .collect(Collectors.toList()) : colNames) {
-            for (String partName : partNames) {
-              List<String> partVals = getPartValsFromName(table, partName);
-              if (transactionalListeners != null && !transactionalListeners.isEmpty()) {
-                MetaStoreListenerNotifier.notifyEvent(transactionalListeners, eventType,
-                    new DeletePartitionColumnStatEvent(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName,
-                        partName, partVals, colName, engine, this));
-              }
-              events.add(new DeletePartitionColumnStatEvent(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName,
+
+      ret = getMS().deletePartitionColumnStatistics(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName,
+          partName, partVals, colName, engine);
+      if (ret) {
+        if (transactionalListeners != null && !transactionalListeners.isEmpty()) {
+          MetaStoreListenerNotifier.notifyEvent(transactionalListeners,
+              EventType.DELETE_PARTITION_COLUMN_STAT,
+              new DeletePartitionColumnStatEvent(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName,
                   partName, partVals, colName, engine, this));
-            }
-          }
+        }
+        if (!listeners.isEmpty()) {
+          MetaStoreListenerNotifier.notifyEvent(listeners,
+              EventType.DELETE_PARTITION_COLUMN_STAT,
+              new DeletePartitionColumnStatEvent(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName,
+                  partName, partVals, colName, engine, this));
         }
       }
-      committed = rawStore.commitTransaction();
+      committed = getMS().commitTransaction();
     } finally {
       if (!committed) {
-        rawStore.rollbackTransaction();
+        getMS().rollbackTransaction();
       }
-      if (!listeners.isEmpty()) {
-        for (ListenerEvent event : events) {
-          MetaStoreListenerNotifier.notifyEvent(transactionalListeners, eventType, event);
-        }
-      }
-      endFunction("delete_column_statistics_req", ret, null, tableName);
+      endFunction("delete_column_statistics_by_partition", ret != false, null, tableName);
     }
     return ret;
   }
 
-  @Deprecated
   @Override
   public boolean delete_table_column_statistics(String dbName, String tableName, String colName, String engine)
       throws TException {
@@ -7546,13 +7153,44 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     if (colName != null) {
       colName = colName.toLowerCase();
     }
+    startFunction("delete_column_statistics_by_table", ": table=" +
+        TableName.getQualified(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName) + " column=" +
+        colName);
 
-    DeleteColumnStatisticsRequest request = new DeleteColumnStatisticsRequest(parsedDbName[DB_NAME], tableName);
-    request.setEngine(engine);
-    request.setCat_name(parsedDbName[CAT_NAME]);
-    request.addToCol_names(colName);
-    request.setTableLevel(true);
-    return delete_column_statistics_req(request);
+
+    boolean ret = false, committed = false;
+    getMS().openTransaction();
+    try {
+      Table table = getMS().getTable(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName);
+      // This API looks unused; if it were used we'd need to update stats state and write ID.
+      // We cannot just randomly nuke some txn stats.
+      if (TxnUtils.isTransactionalTable(table)) {
+        throw new MetaException("Cannot delete stats via this API for a transactional table");
+      }
+
+      ret = getMS().deleteTableColumnStatistics(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName, colName, engine);
+      if (ret) {
+        if (transactionalListeners != null && !transactionalListeners.isEmpty()) {
+          MetaStoreListenerNotifier.notifyEvent(transactionalListeners,
+              EventType.DELETE_TABLE_COLUMN_STAT,
+              new DeleteTableColumnStatEvent(parsedDbName[CAT_NAME], parsedDbName[DB_NAME],
+                  tableName, colName, engine, this));
+        }
+        if (!listeners.isEmpty()) {
+          MetaStoreListenerNotifier.notifyEvent(listeners,
+              EventType.DELETE_TABLE_COLUMN_STAT,
+              new DeleteTableColumnStatEvent(parsedDbName[CAT_NAME], parsedDbName[DB_NAME],
+                  tableName, colName, engine, this));
+        }
+      }
+      committed = getMS().commitTransaction();
+    } finally {
+      if (!committed) {
+        getMS().rollbackTransaction();
+      }
+      endFunction("delete_column_statistics_by_table", ret != false, null, tableName);
+    }
+    return ret;
   }
 
   @Override
@@ -8809,7 +8447,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
         throw new NoSuchObjectException("The database " + func.getDbName() + " does not exist");
       }
 
-      if (MetaStoreUtils.isDatabaseRemote(db)) {
+      if (db.getType() == DatabaseType.REMOTE) {
         throw new MetaException("Operation create_function not support for REMOTE database");
       }
 
@@ -8966,31 +8604,6 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     }
 
     return funcNames;
-  }
-
-  @Override
-  public GetFunctionsResponse get_functions_req(GetFunctionsRequest req)
-      throws MetaException {
-    startFunction("get_functions_req", ": db=" + req.getDbName()
-        + " pat=" + req.getPattern());
-
-    RawStore ms = getMS();
-    Exception ex = null;
-    List<Function> funcs = null;
-    String catName = req.isSetCatalogName() ? req.getCatalogName() : getDefaultCatalog(conf);
-    try {
-      funcs = ms.getFunctionsRequest(catName, req.getDbName(),
-          req.getPattern(), req.isReturnNames());
-    } catch (Exception e) {
-      ex = e;
-      throw newMetaException(e);
-    } finally {
-      endFunction("get_functions", funcs != null, ex);
-    }
-    GetFunctionsResponse response = new GetFunctionsResponse();
-    response.setFunctions(funcs);
-
-    return response;
   }
 
   @Override
@@ -10072,12 +9685,11 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
 
   @VisibleForTesting
   void updateMetrics() throws MetaException {
-    if (Metrics.getRegistry() != null &&
-        MetastoreConf.getBoolVar(conf, ConfVars.INIT_METADATA_COUNT_ENABLED)) {
+    if (Metrics.getRegistry() != null) {
       LOG.info("Begin calculating metadata count metrics.");
-      Metrics.getOrCreateGauge(MetricsConstants.TOTAL_TABLES).set(getMS().getTableCount());
-      Metrics.getOrCreateGauge(MetricsConstants.TOTAL_PARTITIONS).set(getMS().getPartitionCount());
-      Metrics.getOrCreateGauge(MetricsConstants.TOTAL_DATABASES).set(getMS().getDatabaseCount());
+      Metrics.getOrCreateGauge(MetricsConstants.TOTAL_DATABASES).set(getMS().getTableCount());
+      Metrics.getOrCreateGauge(MetricsConstants.TOTAL_TABLES).set(getMS().getPartitionCount());
+      Metrics.getOrCreateGauge(MetricsConstants.TOTAL_PARTITIONS).set(getMS().getDatabaseCount());
     }
   }
 
@@ -10980,57 +10592,14 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     startFunction("scheduled_query_poll");
     Exception ex = null;
     try {
-      String query = request.getScheduledQuery().getQuery();
-      ScheduledQueryMaintenanceRequestType requestType = request.getType();
       RawStore ms = getMS();
       ms.scheduledQueryMaintenance(request);
-      if (requestType == ScheduledQueryMaintenanceRequestType.DROP) {
-        abortReplCreatedOpenTxnsForDatabase(query);
-      }
     } catch (Exception e) {
       LOG.error("Caught exception", e);
       ex = e;
       throw e;
     } finally {
       endFunction("scheduled_query_poll", ex == null, ex);
-    }
-  }
-
-  private void abortReplCreatedOpenTxnsForDatabase(String query) throws TException {
-    List<Long> toBeAbortedTxns = null;
-    List<TxnType> txnListExcludingReplCreated = new ArrayList<>();
-    String pattern = "(?<=REPL LOAD )\\w+(?= INTO \\w+)";
-    Pattern regex = Pattern.compile(pattern);
-    Matcher matcher = regex.matcher(query);
-    String dbName;
-    if (matcher.find()) {
-      dbName = matcher.group();
-      String replPolicy = dbName + ".*";
-      for (TxnType type : TxnType.values()) {
-        // exclude REPL_CREATED txn
-        if (type != TxnType.REPL_CREATED) {
-          txnListExcludingReplCreated.add(type);
-        }
-      }
-      List<Long> openTxnList = null;
-      GetOpenTxnsResponse openTxnsResponse = null;
-      try {
-        openTxnsResponse = getTxnHandler()
-                .getOpenTxns(txnListExcludingReplCreated);
-      } catch (Exception e) {
-        LOG.error("Got an error : " + e);
-      }
-      if (openTxnsResponse != null) {
-        openTxnList = openTxnsResponse.getOpen_txns();
-        if (openTxnList != null) {
-          toBeAbortedTxns = getTxnHandler()
-                  .getOpenTxnForPolicy(openTxnList, replPolicy);
-          if (!toBeAbortedTxns.isEmpty()) {
-            LOG.info("Aborting Repl created open transactions");
-            abort_txns(new AbortTxnsRequest(toBeAbortedTxns));
-          }
-        }
-      }
     }
   }
 
@@ -11243,5 +10812,142 @@ public Package find_package(GetPackageRequest request) throws MetaException, NoS
     } finally {
       endFunction("get_all_write_event_info", ex == null, ex);
     }
+  }
+
+  // ODP-4696: restored alongside the get_table revert. The revert removed these three
+  // handler implementations, but the regenerated ThriftHiveMetastore.Iface still declares
+  // them (they are 4.1.0 APIs: HIVE-28921, HIVE-28655, HIVE-28294), so HMSHandler must
+  // implement them or it is not concrete. Recovered verbatim from e1ea36bf03.
+  @Override
+  public GetDatabaseObjectsResponse get_databases_req(GetDatabaseObjectsRequest request)
+      throws MetaException {
+    String pattern = request.isSetPattern() ? request.getPattern() : null;
+    String catName = request.isSetCatalogName() ? request.getCatalogName() : getDefaultCatalog(conf);
+
+    startFunction("get_databases_req", ": catalogName=" + catName + " pattern=" + pattern);
+
+    GetDatabaseObjectsResponse response = new GetDatabaseObjectsResponse();
+    List<Database> dbs = null;
+    Exception ex = null;
+
+    try {
+      dbs = getMS().getDatabaseObjects(catName, pattern);
+      dbs = FilterUtils.filterDatabaseObjectsIfEnabled(isServerFilterEnabled, filterHook, dbs);
+      response.setDatabases(dbs);
+    } catch (Exception e) {
+      ex = e;
+      throw newMetaException(e);
+    } finally {
+      endFunction("get_databases_req", dbs != null, ex);
+    }
+
+    return response;
+  }
+
+  @Override
+  public boolean delete_column_statistics_req(DeleteColumnStatisticsRequest req) throws TException {
+    String dbName = normalizeIdentifier(req.getDb_name());
+    String tableName = normalizeIdentifier(req.getTbl_name());
+    List<String> colNames = req.getCol_names();
+    String engine = req.getEngine();
+    String[] parsedDbName = parseDbName(dbName, conf);
+    if (req.getCat_name() != null) {
+      parsedDbName[CAT_NAME] = normalizeIdentifier(req.getCat_name());
+    }
+    startFunction("delete_column_statistics_req", ": table=" +
+        TableName.getQualified(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName) +
+        " partitions=" + req.getPart_names() + " column=" + colNames + " engine=" + engine);
+    boolean ret = false, committed = false;
+    List<ListenerEvent> events = new ArrayList<>();
+    EventType eventType = null;
+    final RawStore rawStore = getMS();
+    rawStore.openTransaction();
+    try {
+      Table table = rawStore.getTable(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName);
+      boolean isPartitioned = table.getPartitionKeysSize() > 0;
+      if (TxnUtils.isTransactionalTable(table)) {
+        throw new MetaException("Cannot delete stats via this API for a transactional table");
+      }
+      if (!isPartitioned || req.isTableLevel()) {
+        ret = rawStore.deleteTableColumnStatistics(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName, colNames, engine);
+        if (ret) {
+          eventType = EventType.DELETE_TABLE_COLUMN_STAT;
+          for (String colName :
+              colNames == null ? table.getSd().getCols().stream().map(FieldSchema::getName).collect(Collectors.toList()) : colNames) {
+            if (transactionalListeners != null && !transactionalListeners.isEmpty()) {
+              MetaStoreListenerNotifier.notifyEvent(transactionalListeners, eventType,
+                  new DeleteTableColumnStatEvent(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName, colName, engine, this));
+            }
+            events.add(new DeleteTableColumnStatEvent(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName, colName, engine, this));
+          }
+        }
+      } else {
+        List<String> partNames = new ArrayList<>();
+        if (req.getPart_namesSize() > 0) {
+          partNames.addAll(req.getPart_names());
+        } else {
+          partNames.addAll(rawStore.listPartitionNames(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName, (short) -1));
+        }
+        if (partNames.isEmpty()) {
+          // no partition found, bail out early
+          return true;
+        }
+        ret = rawStore.deletePartitionColumnStatistics(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName,
+                partNames, colNames, engine);
+        if (ret) {
+          eventType = EventType.DELETE_PARTITION_COLUMN_STAT;
+          for (String colName : colNames == null ? table.getSd().getCols().stream().map(FieldSchema::getName)
+              .collect(Collectors.toList()) : colNames) {
+            for (String partName : partNames) {
+              List<String> partVals = getPartValsFromName(table, partName);
+              if (transactionalListeners != null && !transactionalListeners.isEmpty()) {
+                MetaStoreListenerNotifier.notifyEvent(transactionalListeners, eventType,
+                    new DeletePartitionColumnStatEvent(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName,
+                        partName, partVals, colName, engine, this));
+              }
+              events.add(new DeletePartitionColumnStatEvent(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableName,
+                  partName, partVals, colName, engine, this));
+            }
+          }
+        }
+      }
+      committed = rawStore.commitTransaction();
+    } finally {
+      if (!committed) {
+        rawStore.rollbackTransaction();
+      }
+      if (!listeners.isEmpty()) {
+        for (ListenerEvent event : events) {
+          MetaStoreListenerNotifier.notifyEvent(transactionalListeners, eventType, event);
+        }
+      }
+      endFunction("delete_column_statistics_req", ret, null, tableName);
+    }
+    return ret;
+  }
+
+  @Override
+  public GetFunctionsResponse get_functions_req(GetFunctionsRequest req)
+      throws MetaException {
+    startFunction("get_functions_req", ": db=" + req.getDbName()
+        + " pat=" + req.getPattern());
+
+    RawStore ms = getMS();
+    Exception ex = null;
+    List<Function> funcs = null;
+    String catName = req.isSetCatalogName() ? req.getCatalogName() : getDefaultCatalog(conf);
+    try {
+      funcs = ms.getFunctionsRequest(catName, req.getDbName(),
+          req.getPattern(), req.isReturnNames());
+    } catch (Exception e) {
+      ex = e;
+      throw newMetaException(e);
+    } finally {
+      endFunction("get_functions", funcs != null, ex);
+    }
+    GetFunctionsResponse response = new GetFunctionsResponse();
+    response.setFunctions(funcs);
+
+    return response;
   }
 }

@@ -51,7 +51,6 @@ import org.apache.hadoop.hive.metastore.api.FireEventRequestData;
 import org.apache.hadoop.hive.metastore.api.FireEventResponse;
 import org.apache.hadoop.hive.metastore.api.Function;
 import org.apache.hadoop.hive.metastore.api.FunctionType;
-import org.apache.hadoop.hive.metastore.api.GetTableRequest;
 import org.apache.hadoop.hive.metastore.api.InsertEventRequestData;
 import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.apache.hadoop.hive.metastore.api.NotificationEvent;
@@ -65,7 +64,6 @@ import org.apache.hadoop.hive.metastore.api.ResourceUri;
 import org.apache.hadoop.hive.metastore.api.SerDeInfo;
 import org.apache.hadoop.hive.metastore.api.StorageDescriptor;
 import org.apache.hadoop.hive.metastore.api.Table;
-import org.apache.hadoop.hive.metastore.client.builder.TableBuilder;
 import org.apache.hadoop.hive.metastore.conf.MetastoreConf;
 import org.apache.hadoop.hive.metastore.events.AddPartitionEvent;
 import org.apache.hadoop.hive.metastore.events.AlterPartitionEvent;
@@ -85,7 +83,7 @@ import org.apache.hadoop.hive.metastore.events.AllocWriteIdEvent;
 import org.apache.hadoop.hive.metastore.events.AcidWriteEvent;
 import org.apache.hadoop.hive.metastore.messaging.AddPartitionMessage;
 import org.apache.hadoop.hive.metastore.messaging.AlterDatabaseMessage;
-import org.apache.hadoop.hive.metastore.messaging.AlterPartitionsMessage;
+import org.apache.hadoop.hive.metastore.messaging.AlterPartitionMessage;
 import org.apache.hadoop.hive.metastore.messaging.AlterTableMessage;
 import org.apache.hadoop.hive.metastore.messaging.CreateDatabaseMessage;
 import org.apache.hadoop.hive.metastore.messaging.CreateFunctionMessage;
@@ -269,8 +267,6 @@ public class TestDbNotificationListener
   @BeforeClass
   public static void connectToMetastore() throws Exception {
     HiveConf conf = new HiveConf();
-    //TODO: HIVE-27998: hcatalog tests on Tez
-    conf.setVar(HiveConf.ConfVars.HIVE_EXECUTION_ENGINE, "mr");
     conf.setVar(HiveConf.ConfVars.METASTORE_TRANSACTIONAL_EVENT_LISTENERS,
         DbNotificationListener.class.getName());
     conf.setVar(HiveConf.ConfVars.METASTORE_EVENT_LISTENERS, MockMetaStoreEventListener.class.getName());
@@ -343,7 +339,6 @@ public class TestDbNotificationListener
     String dbLocationUri = testTempDir;
     String dbDescription = "no description";
     Database db = new Database(dbName, dbDescription, dbLocationUri, emptyParameters);
-    db.setOwnerName("test_user");
     msClient.createDatabase(db);
 
     // Read notification from metastore
@@ -361,7 +356,7 @@ public class TestDbNotificationListener
     // Parse the message field
     CreateDatabaseMessage createDbMsg = md.getCreateDatabaseMessage(event.getMessage());
     assertEquals(dbName, createDbMsg.getDB());
-    assertEqualsSansTime(db, createDbMsg.getDatabaseObject());
+    assertEquals(db, createDbMsg.getDatabaseObject());
 
     // Verify the eventID was passed to the non-transactional listener
     MockMetaStoreEventListener.popAndVerifyLastEventId(EventType.CREATE_DATABASE, firstEventId + 1);
@@ -763,17 +758,16 @@ public class TestDbNotificationListener
     NotificationEvent event = rsp.getEvents().get(2);
     assertEquals(firstEventId + 3, event.getEventId());
     assertTrue(event.getEventTime() >= startTime);
-    assertEquals(EventType.ALTER_PARTITIONS.toString(), event.getEventType());
+    assertEquals(EventType.ALTER_PARTITION.toString(), event.getEventType());
     assertEquals(defaultDbName, event.getDbName());
     assertEquals(tblName, event.getTableName());
 
     // Parse the message field
-    AlterPartitionsMessage alterPtnsMsg = md.getAlterPartitionsMessage(event.getMessage());
-    assertEquals(defaultDbName, alterPtnsMsg.getDB());
-    assertEquals(tblName, alterPtnsMsg.getTable());
-    assertEquals(newPart, alterPtnsMsg.getPartitionObjs().iterator().next());
-    assertEquals(1, alterPtnsMsg.getPartitions().size());
-    assertEquals(TableType.MANAGED_TABLE.toString(), alterPtnsMsg.getTableType());
+    AlterPartitionMessage alterPtnMsg = md.getAlterPartitionMessage(event.getMessage());
+    assertEquals(defaultDbName, alterPtnMsg.getDB());
+    assertEquals(tblName, alterPtnMsg.getTable());
+    assertEquals(newPart, alterPtnMsg.getPtnObjAfter());
+    assertEquals(TableType.MANAGED_TABLE.toString(), alterPtnMsg.getTableType());
 
     // Verify the eventID was passed to the non-transactional listener
     MockMetaStoreEventListener.popAndVerifyLastEventId(EventType.ADD_PARTITION, firstEventId + 2);
@@ -791,112 +785,6 @@ public class TestDbNotificationListener
     rsp = msClient.getNextNotification(firstEventId, 0, null);
     assertEquals(3, rsp.getEventsSize());
     testEventCounts(defaultDbName, firstEventId, null, null, 3);
-  }
-
-  @Test
-  public void alterPartitions() throws Exception {
-    String defaultDbName = "default";
-    String tblName = "alterptns";
-    new TableBuilder()
-        .setDbName(defaultDbName).setTableName(tblName).setOwner("me")
-        .addCol("col1", "int")
-        .addPartCol("col2", "int")
-        .addPartCol("col3", "string")
-        .setLocation(testTempDir)
-        .create(msClient, new HiveConf());
-
-    Table table = msClient.getTable(new GetTableRequest(defaultDbName, tblName));
-    List<Partition> partitions = new ArrayList<>();
-    for (int i = 0; i < 5; i++) {
-      List<String> values = Arrays.asList(i + "", "part" + i);
-      Partition part = new Partition(values, defaultDbName, tblName,
-          0,  0, table.getSd(), emptyParameters);
-      partitions.add(part);
-    }
-    msClient.add_partitions(partitions);
-    partitions.forEach(partition -> partition.setCreateTime(startTime));
-    msClient.alter_partitions(defaultDbName, tblName, partitions, null, null, -1);
-
-    // Get notifications from metastore
-    NotificationEventResponse rsp = msClient.getNextNotification(firstEventId, 0, null);
-    assertEquals(3, rsp.getEventsSize());
-    NotificationEvent event = rsp.getEvents().get(2);
-    assertEquals(firstEventId + 3, event.getEventId());
-    assertTrue(event.getEventTime() >= startTime);
-    assertEquals(EventType.ALTER_PARTITIONS.toString(), event.getEventType());
-    assertEquals(defaultDbName, event.getDbName());
-    assertEquals(tblName, event.getTableName());
-    // Parse the message field
-    AlterPartitionsMessage alterPtnsMsg = md.getAlterPartitionsMessage(event.getMessage());
-    assertEquals(defaultDbName, alterPtnsMsg.getDB());
-    assertEquals(tblName, alterPtnsMsg.getTable());
-    Iterator<Partition> expectedIterator = partitions.iterator(),
-        actualIterator = alterPtnsMsg.getPartitionObjs().iterator();
-    while (expectedIterator.hasNext() && actualIterator.hasNext()) {
-      assertEquals(expectedIterator.next(), actualIterator.next());
-    }
-    assertFalse(expectedIterator.hasNext() || actualIterator.hasNext());
-    assertEquals(table.getTableType(), alterPtnsMsg.getTableType());
-
-    // Verify the eventID was passed to the non-transactional listener
-    MockMetaStoreEventListener.popAndVerifyLastEventId(EventType.ADD_PARTITION, firstEventId + 2);
-    MockMetaStoreEventListener.popAndVerifyLastEventId(EventType.CREATE_TABLE, firstEventId + 1);
-
-    // When hive.metastore.transactional.event.listeners is set,
-    // a failed event should not create a new notification
-    DummyRawStoreFailEvent.setEventSucceed(false);
-    try {
-      msClient.alter_partitions(defaultDbName, tblName, partitions, null, null, -1);
-      fail("Error: alter partition should've failed");
-    } catch (Exception ex) {
-      // expected
-    }
-    rsp = msClient.getNextNotification(firstEventId, 0, null);
-    assertEquals(3, rsp.getEventsSize());
-    testEventCounts(defaultDbName, firstEventId, null, null, 3);
-  }
-
-  @Test
-  public void testTruncatePartitionedTable() throws Exception {
-    String defaultDbName = "default";
-    String unPartitionedTblName = "unPartitionedTable";
-    new TableBuilder()
-        .setDbName(defaultDbName)
-        .setTableName(unPartitionedTblName)
-        .addCol("col1", "int")
-        .setLocation(testTempDir)
-        .create(msClient, new HiveConf());
-
-    Table table = msClient.getTable(new GetTableRequest(defaultDbName,
-        unPartitionedTblName));
-    msClient.truncateTable(defaultDbName, unPartitionedTblName, null);
-    NotificationEventResponse rsp = msClient.getNextNotification(firstEventId, 0, null);
-    assertEquals(2, rsp.getEventsSize()); // create unpartitioned table + alter table events
-
-    String partitionedTblName = "partitionedTbl";
-    new TableBuilder()
-        .setDbName(defaultDbName)
-        .setTableName(partitionedTblName)
-        .addCol("col1", "int")
-        .addPartCol("col2", "int")
-        .addPartCol("col3", "string")
-        .setLocation(testTempDir)
-        .create(msClient, new HiveConf());
-    table = msClient.getTable(new GetTableRequest(defaultDbName,
-        partitionedTblName));
-    List<Partition> partitions = new ArrayList<>();
-    for (int i = 0; i < 5; i++) {
-      List<String> values = Arrays.asList(i + "", "part" + i);
-      Partition part = new Partition(values, defaultDbName, partitionedTblName,
-          0,  0, table.getSd(), emptyParameters);
-      partitions.add(part);
-    }
-    msClient.add_partitions(partitions);
-    msClient.truncateTable(defaultDbName, partitionedTblName, null);
-    rsp = msClient.getNextNotification(firstEventId, 0, null);
-    // 5 events - create unpartitioned table, alter table events
-    // create partitioned table, add partition, alter table events.
-    assertEquals(5, rsp.getEventsSize());
   }
 
   @Test
@@ -1642,7 +1530,7 @@ public class TestDbNotificationListener
 
     event = rsp.getEvents().get(26);
     assertEquals(firstEventId + 27, event.getEventId());
-    assertEquals(EventType.ALTER_PARTITIONS.toString(), event.getEventType());
+    assertEquals(EventType.ALTER_PARTITION.toString(), event.getEventType());
     assertTrue(event.getMessage().matches(".*\"ds\":\"todaytwo\".*"));
 
     // Test fromEventId different from the very first
@@ -1660,12 +1548,12 @@ public class TestDbNotificationListener
 
     event = rsp.getEvents().get(29);
     assertEquals(firstEventId + 30, event.getEventId());
-    assertEquals(EventType.ALTER_PARTITIONS.toString(), event.getEventType());
+    assertEquals(EventType.ALTER_PARTITION.toString(), event.getEventType());
     assertTrue(event.getMessage().matches(".*\"ds\":\"todaytwo\".*"));
 
     event = rsp.getEvents().get(30);
     assertEquals(firstEventId + 31, event.getEventId());
-    assertEquals(EventType.ALTER_PARTITIONS.toString(), event.getEventType());
+    assertEquals(EventType.ALTER_PARTITION.toString(), event.getEventType());
     assertTrue(event.getMessage().matches(".*\"ds\":\"todaytwo\".*"));
     testEventCounts(defaultDbName, firstEventId, null, null, 31);
 
@@ -1677,16 +1565,6 @@ public class TestDbNotificationListener
     testEventCounts(defaultDbName, firstEventId, firstEventId + 100, 10, 10);
     // Test toEventId greater than current eventId with some limit beyond available events
     testEventCounts(defaultDbName, firstEventId, firstEventId + 100, 50, 31);
-  }
-
-  /**
-   * Asserts that two database objects are equals ignoring the creation time. If not an {@link AssertionError} is thrown.
-   * The creation time of the database is overridden internally by the HMS server thus not predictable.
-   */
-  private static void assertEqualsSansTime(Database expected, Database actual) {
-    Database copy = expected.deepCopy();
-    copy.setCreateTime(actual.getCreateTime());
-    assertEquals(copy, actual);
   }
 
   private void verifyInsert(NotificationEvent event, String dbName, String tblName) throws Exception {
@@ -1749,32 +1627,6 @@ public class TestDbNotificationListener
     assertEquals(24, msClient.getNotificationEventsCount(eventsReq).getEventsCount());
     eventsReq.unsetTableNames();
     assertEquals(36, msClient.getNotificationEventsCount(eventsReq).getEventsCount());
-  }
-
-  @Test
-  public void fetchNotificationEventBasedOnEventTypes() throws Exception {
-    String dbName = "default";
-    String table1 = "test_event_based_tbl1";
-    String table2 = "test_event_based_tbl2";
-    String table3 = "test_event_based_tbl3";
-    // Generate some table events
-    generateSometableEvents(dbName, table1);
-    generateSometableEvents(dbName, table2);
-    generateSometableEvents(dbName, table3);
-
-    // Verify events by table names
-    NotificationEventRequest request = new NotificationEventRequest();
-    request.setLastEvent(firstEventId);
-    request.setMaxEvents(-1);
-    request.setDbName(dbName);
-    request.setTableNames(Arrays.asList(table1, table2));
-    request.setEventTypeList(Arrays.asList("CREATE_TABLE"));
-    NotificationEventResponse rsp1 = msClient.getNextNotification(request, true, null);
-    assertEquals(2, rsp1.getEventsSize());
-    request.setTableNames(Arrays.asList(table1, table2, table3));
-    request.setEventTypeList(Arrays.asList("CREATE_TABLE", "ADD_PARTITION"));
-    NotificationEventResponse rsp2 = msClient.getNextNotification(request, true, null);
-    assertEquals(9, rsp2.getEventsSize());
   }
 
   private void generateSometableEvents(String dbName, String tableName) throws Exception {

@@ -16,36 +16,36 @@ use Thrift\Protocol\TProtocol;
 use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
-class ThriftHiveMetastore_alter_dataconnector_req_args
+class ThriftHiveMetastore_create_dataconnector_args
 {
     static public $isValidate = false;
 
     static public $_TSPEC = array(
         1 => array(
-            'var' => 'alterReq',
+            'var' => 'connector',
             'isRequired' => false,
             'type' => TType::STRUCT,
-            'class' => '\metastore\AlterDataConnectorRequest',
+            'class' => '\metastore\DataConnector',
         ),
     );
 
     /**
-     * @var \metastore\AlterDataConnectorRequest
+     * @var \metastore\DataConnector
      */
-    public $alterReq = null;
+    public $connector = null;
 
     public function __construct($vals = null)
     {
         if (is_array($vals)) {
-            if (isset($vals['alterReq'])) {
-                $this->alterReq = $vals['alterReq'];
+            if (isset($vals['connector'])) {
+                $this->connector = $vals['connector'];
             }
         }
     }
 
     public function getName()
     {
-        return 'ThriftHiveMetastore_alter_dataconnector_req_args';
+        return 'ThriftHiveMetastore_create_dataconnector_args';
     }
 
 
@@ -64,8 +64,8 @@ class ThriftHiveMetastore_alter_dataconnector_req_args
             switch ($fid) {
                 case 1:
                     if ($ftype == TType::STRUCT) {
-                        $this->alterReq = new \metastore\AlterDataConnectorRequest();
-                        $xfer += $this->alterReq->read($input);
+                        $this->connector = new \metastore\DataConnector();
+                        $xfer += $this->connector->read($input);
                     } else {
                         $xfer += $input->skip($ftype);
                     }
@@ -83,13 +83,13 @@ class ThriftHiveMetastore_alter_dataconnector_req_args
     public function write($output)
     {
         $xfer = 0;
-        $xfer += $output->writeStructBegin('ThriftHiveMetastore_alter_dataconnector_req_args');
-        if ($this->alterReq !== null) {
-            if (!is_object($this->alterReq)) {
+        $xfer += $output->writeStructBegin('ThriftHiveMetastore_create_dataconnector_args');
+        if ($this->connector !== null) {
+            if (!is_object($this->connector)) {
                 throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
             }
-            $xfer += $output->writeFieldBegin('alterReq', TType::STRUCT, 1);
-            $xfer += $this->alterReq->write($output);
+            $xfer += $output->writeFieldBegin('connector', TType::STRUCT, 1);
+            $xfer += $this->connector->write($output);
             $xfer += $output->writeFieldEnd();
         }
         $xfer += $output->writeFieldStop();
