@@ -21,12 +21,11 @@ package org.apache.hive.hcatalog.templeton;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import javax.ws.rs.NotFoundException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.eclipse.jetty.http.HttpStatus;
-
-import com.sun.jersey.api.NotFoundException;
 
 /**
  * Map all exceptions to the Jersey response.  This lets us have nice
