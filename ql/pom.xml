@@ -53,6 +53,22 @@
           <groupId>org.slf4j</groupId>
           <artifactId>jul-to-slf4j</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>com.sun.jersey</groupId>
+          <artifactId>jersey-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.jersey</groupId>
+          <artifactId>jersey-client</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.jersey.contribs</groupId>
+          <artifactId>jersey-multipart</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.ws.rs</groupId>
+          <artifactId>jsr311-api</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -69,8 +85,24 @@
           <artifactId>jul-to-slf4j</artifactId>
         </exclusion>
         <exclusion>
+          <groupId>org.glassfish.jersey.core</groupId>
+          <artifactId>jersey-client</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.jersey</groupId>
+          <artifactId>jersey-core</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>com.sun.jersey</groupId>
           <artifactId>jersey-client</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.jersey.contribs</groupId>
+          <artifactId>jersey-multipart</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.ws.rs</groupId>
+          <artifactId>jsr311-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -90,6 +122,22 @@
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-context</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.jersey</groupId>
+          <artifactId>jersey-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.jersey</groupId>
+          <artifactId>jersey-client</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.jersey.contribs</groupId>
+          <artifactId>jersey-multipart</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.ws.rs</groupId>
+          <artifactId>jsr311-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -641,11 +689,11 @@
           <artifactId>servlet-api</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>com.sun.jersey</groupId>
-          <artifactId>jersey-json</artifactId>
+          <groupId>org.glassfish.jersey.media</groupId>
+          <artifactId>jersey-media-json-jackson</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>com.sun.jersey</groupId>
+          <groupId>org.glassfish.jersey.core</groupId>
           <artifactId>jersey-client</artifactId>
         </exclusion>
       </exclusions>
@@ -875,9 +923,33 @@
       <artifactId>value-annotations</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.sun.jersey.contribs</groupId>
-      <artifactId>jersey-multipart</artifactId>
-      <version>${jersey.version}</version>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>javax.ws.rs-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-multipart</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.core</groupId>
+      <artifactId>jersey-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.inject</groupId>
+      <artifactId>jersey-hk2</artifactId>
+    </dependency>
+    <!-- Jersey 1.x for Atlas API compatibility (Atlas library exposes Jersey 1.x types) -->
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-core</artifactId>
+      <version>1.19.4</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-client</artifactId>
+      <version>1.19.4</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.esri.geometry</groupId>

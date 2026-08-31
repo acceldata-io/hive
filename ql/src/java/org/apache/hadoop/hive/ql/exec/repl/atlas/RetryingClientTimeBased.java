@@ -18,7 +18,7 @@
 
 package org.apache.hadoop.hive.ql.exec.repl.atlas;
 
-import com.sun.jersey.api.client.UniformInterfaceException;
+import javax.ws.rs.WebApplicationException;
 import org.apache.atlas.AtlasServiceException;
 import org.apache.hadoop.hive.ql.ErrorMsg;
 import org.apache.hadoop.hive.ql.parse.SemanticException;
@@ -92,7 +92,7 @@ public class RetryingClientTimeBased {
   }
 
   private boolean processInvalidParameterException(Exception e) {
-    if (e instanceof UniformInterfaceException) {
+    if (e instanceof WebApplicationException) {
       return true;
     }
     if (!(e instanceof AtlasServiceException)) {

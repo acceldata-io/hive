@@ -135,12 +135,12 @@
           <artifactId>commons-logging</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>com.sun.jersey</groupId>
-          <artifactId>jersey-json</artifactId>
+          <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-json-jackson</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>com.sun.jersey</groupId>
-          <artifactId>jersey-client</artifactId>
+          <groupId>org.glassfish.jersey.core</groupId>
+      <artifactId>jersey-client</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
