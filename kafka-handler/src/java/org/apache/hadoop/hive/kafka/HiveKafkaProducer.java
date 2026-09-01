@@ -67,6 +67,10 @@ class HiveKafkaProducer<K, V> implements Producer<K, V> {
     transactionalId = properties.getProperty(ProducerConfig.TRANSACTIONAL_ID_CONFIG);
     kafkaProducer = new KafkaProducer<>(properties);
   }
+  @Override
+  public Uuid clientInstanceId(Duration timeout) {
+    throw new UnsupportedOperationException();
+  }
 
   @Override
   public Uuid clientInstanceId(Duration timeout) {
