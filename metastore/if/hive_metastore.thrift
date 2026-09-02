@@ -843,7 +843,8 @@ struct CurrentNotificationEventId {
 }
 
 struct InsertEventRequestData {
-    1: required list<string> filesAdded,
+    // optional for Spark/legacy clients that fire insert events without populating filesAdded
+    1: optional list<string> filesAdded,
     // Checksum of files (hex string of checksum byte payload)
     2: optional list<string> filesAddedChecksum,
 }

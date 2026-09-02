@@ -10316,8 +10316,6 @@ class InsertEventRequestData(object):
         oprot.writeStructEnd()
 
     def validate(self):
-        if self.filesAdded is None:
-            raise TProtocolException(message='Required field filesAdded is unset!')
         return
 
     def __repr__(self):
