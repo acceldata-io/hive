@@ -21,7 +21,7 @@ package org.apache.hadoop.hive.metastore.api;
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new InsertEventRequestDataTupleSchemeFactory();
 
   private boolean replace; // optional
-  private @org.apache.thrift.annotation.Nullable java.util.List<java.lang.String> filesAdded; // required
+  private @org.apache.thrift.annotation.Nullable java.util.List<java.lang.String> filesAdded; // optional
   private @org.apache.thrift.annotation.Nullable java.util.List<java.lang.String> filesAddedChecksum; // optional
   private @org.apache.thrift.annotation.Nullable java.util.List<java.lang.String> subDirectoryList; // optional
   private @org.apache.thrift.annotation.Nullable java.util.List<java.lang.String> partitionVal; // optional
@@ -101,13 +101,13 @@ package org.apache.hadoop.hive.metastore.api;
   // isset id assignments
   private static final int __REPLACE_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.REPLACE,_Fields.FILES_ADDED_CHECKSUM,_Fields.SUB_DIRECTORY_LIST,_Fields.PARTITION_VAL};
+  private static final _Fields optionals[] = {_Fields.REPLACE,_Fields.FILES_ADDED,_Fields.FILES_ADDED_CHECKSUM,_Fields.SUB_DIRECTORY_LIST,_Fields.PARTITION_VAL};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.REPLACE, new org.apache.thrift.meta_data.FieldMetaData("replace", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
-    tmpMap.put(_Fields.FILES_ADDED, new org.apache.thrift.meta_data.FieldMetaData("filesAdded", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.FILES_ADDED, new org.apache.thrift.meta_data.FieldMetaData("filesAdded", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     tmpMap.put(_Fields.FILES_ADDED_CHECKSUM, new org.apache.thrift.meta_data.FieldMetaData("filesAddedChecksum", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -656,11 +656,6 @@ package org.apache.hadoop.hive.metastore.api;
   }
 
   public void validate() throws org.apache.thrift.TException {
-    // check for required fields
-    if (!isSetFilesAdded()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'filesAdded' is unset! Struct:" + toString());
-    }
-
     // check for sub-struct validity
   }
 
