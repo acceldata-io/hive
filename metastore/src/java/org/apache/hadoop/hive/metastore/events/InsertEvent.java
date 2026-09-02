@@ -56,7 +56,8 @@ public class InsertEvent extends ListenerEvent {
     super(status, handler);
     this.db = db;
     this.table = table;
-    this.files = insertData.getFilesAdded();
+    this.files = insertData.isSetFilesAdded() && insertData.getFilesAdded() != null
+        ? insertData.getFilesAdded() : new ArrayList<String>();
     GetTableRequest req = new GetTableRequest(db, table);
     req.setCapabilities(HiveMetaStoreClient.TEST_VERSION);
     Table t = handler.get_table_req(req).getTable();
