@@ -1215,6 +1215,60 @@ public class TestDbNotificationListener {
     testEventCounts(defaultDbName, firstEventId, null, null, 2);
   }
 
+  /**
+   * Backward compatibility for legacy clients (e.g. Spark) that fire insert events without
+   * populating filesAdded in InsertEventRequestData.
+   */
+  @Test
+  public void insertTableWithoutFilesAdded() throws Exception {
+    String defaultDbName = "default";
+    String tblName = "inserttbl_nofiles";
+    String tblOwner = "me";
+    String serdeLocation = testTempDir;
+    FieldSchema col1 = new FieldSchema("col1", "int", "no comment");
+    List<FieldSchema> cols = new ArrayList<FieldSchema>();
+    cols.add(col1);
+    SerDeInfo serde = new SerDeInfo("serde", "seriallib", null);
+    StorageDescriptor sd =
+        new StorageDescriptor(cols, serdeLocation, "input", "output", false, 0, serde, null, null,
+            emptyParameters);
+    Table table =
+        new Table(tblName, defaultDbName, tblOwner, startTime, startTime, 0, sd, null,
+            emptyParameters, null, null, null);
+    msClient.createTable(table);
+
+    FireEventRequestData data = new FireEventRequestData();
+    InsertEventRequestData insertData = new InsertEventRequestData();
+    data.setInsertData(insertData);
+    insertData.setReplace(false);
+    FireEventRequest rqst = new FireEventRequest(true, data);
+    rqst.setDbName(defaultDbName);
+    rqst.setTableName(tblName);
+
+    FireEventResponse response = msClient.fireListenerEvent(rqst);
+    assertTrue("Event id must be set in the fireEvent response", response.isSetEventIds());
+    Assert.assertNotNull(response.getEventIds());
+    Assert.assertEquals(1, response.getEventIds().size());
+
+    NotificationEventResponse rsp = msClient.getNextNotification(firstEventId, 0, null);
+    assertEquals(2, rsp.getEventsSize());
+    NotificationEvent event = rsp.getEvents().get(1);
+    assertEquals(EventType.INSERT.toString(), event.getEventType());
+    assertEquals(defaultDbName, event.getDbName());
+    assertEquals(tblName, event.getTableName());
+    verifyInsert(event, defaultDbName, tblName);
+
+    InsertMessage insertMessage = md.getInsertMessage(event.getMessage());
+    assertEquals(defaultDbName, insertMessage.getDB());
+    assertEquals(tblName, insertMessage.getTable());
+    assertFalse(insertMessage.isReplace());
+    assertNotNull(insertMessage.getFiles());
+
+    MockMetaStoreEventListener.popAndVerifyLastEventId(EventType.INSERT, firstEventId + 2);
+    MockMetaStoreEventListener.popAndVerifyLastEventId(EventType.CREATE_TABLE, firstEventId + 1);
+    testEventCounts(defaultDbName, firstEventId, null, null, 2);
+  }
+
   @Test
   public void insertPartition() throws Exception {
     String defaultDbName = "default";

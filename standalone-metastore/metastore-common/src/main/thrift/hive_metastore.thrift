@@ -1440,7 +1440,7 @@ struct NotificationEventsCountResponse {
 
 struct InsertEventRequestData {
     1: optional bool replace,
-    2: required list<string> filesAdded,
+    2: optional list<string> filesAdded,
     // Checksum of files (hex string of checksum byte payload)
     3: optional list<string> filesAddedChecksum,
     // Used by acid operation to create the sub directory
