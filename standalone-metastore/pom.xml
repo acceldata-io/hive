@@ -21,7 +21,7 @@
   </parent>
   <groupId>org.apache.hive</groupId>
   <artifactId>hive-standalone-metastore</artifactId>
-  <version>4.1.0.3.4.3.0-1</version>
+  <version>4.1.0.3.4.3.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Hive Standalone Metastore</name>
   <inceptionYear>2008</inceptionYear>
@@ -45,7 +45,7 @@
     <module>packaging</module>
   </modules>
   <properties>
-    <odp.release.version>3.4.3.0-1</odp.release.version>
+    <odp.release.version>3.4.3.0-SNAPSHOT</odp.release.version>
     <hive.version>4.1.0.${odp.release.version}</hive.version>
     <!-- Must stay at the Apache base version: it is baked into MetastoreVersionAnnotation
          and used by MetaStoreSchemaInfo to pick scripts/metastore/upgrade/<db>/hive-schema-<shortname>.<db>.sql

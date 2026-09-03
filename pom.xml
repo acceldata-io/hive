@@ -21,7 +21,7 @@
   </parent>
   <groupId>org.apache.hive</groupId>
   <artifactId>hive</artifactId>
-  <version>4.1.0.3.4.3.0-1</version>
+  <version>4.1.0.3.4.3.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Hive</name>
   <url>https://hive.apache.org</url>
@@ -75,7 +75,7 @@
     </snapshotRepository>
   </distributionManagement>
   <properties>
-    <odp.release.version>3.4.3.0-1</odp.release.version>
+    <odp.release.version>3.4.3.0-SNAPSHOT</odp.release.version>
     <standalone-metastore.version>4.1.0.${odp.release.version}</standalone-metastore.version>
     <hive.version.shortname>4.1.0</hive.version.shortname>
     <!-- Build Properties -->
