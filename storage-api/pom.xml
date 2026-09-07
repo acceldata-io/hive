@@ -21,12 +21,12 @@
   </parent>
   <groupId>org.apache.hive</groupId>
   <artifactId>hive-storage-api</artifactId>
-  <version>4.1.0.3.3.6.5-SNAPSHOT</version>
+  <version>4.1.0.3.3.6.6-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Hive Storage API</name>
   <inceptionYear>2008</inceptionYear>
   <properties>
-    <odp.release.version>3.3.6.5-SNAPSHOT</odp.release.version>
+    <odp.release.version>3.3.6.6-SNAPSHOT</odp.release.version>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
     <commons-logging.version>1.1.3</commons-logging.version>
