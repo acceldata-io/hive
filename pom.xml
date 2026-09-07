@@ -35,7 +35,7 @@
     <module>cli</module>
     <module>common</module>
     <module>contrib</module>
-    <module>druid-handler</module>
+<!--    <module>druid-handler</module>-->
     <module>hbase-handler</module>
     <module>jdbc-handler</module>
     <module>hcatalog</module>
