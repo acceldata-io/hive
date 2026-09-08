@@ -1915,7 +1915,9 @@ public class TezCompiler extends TaskCompiler {
           semijoinRsToRemove.add(rs);
         } else {
           // This semijoin qualifies, add it to the result set
-          if (filterStats != null) {
+          // Only proceed if filterStats has column statistics available, as updateStats
+          // will be called with useColStats=true later
+          if (filterStats != null && filterStats.getColumnStats() != null) {
             ImmutableSet.Builder<String> colNames = ImmutableSet.builder();
             for (ExprNodeDesc tsExpr : targetColumns) {
               Set<ExprNodeColumnDesc> allReferencedColumns = ExprNodeDescUtils.findAllColumnDescs(tsExpr);
@@ -1963,8 +1965,9 @@ public class TezCompiler extends TaskCompiler {
           LOG.debug("Old stats for {}: {}", roi.filterOperator, roi.filterStats);
           LOG.debug("Number of rows reduction: {}/{}", newNumRows, roi.filterStats.getNumRows());
         }
+        boolean useColStats = roi.filterStats.getColumnStats() != null;
         StatsUtils.updateStats(roi.filterStats, newNumRows,
-            true, roi.filterOperator, roi.colNames);
+            useColStats, roi.filterOperator, roi.colNames);
         if (LOG.isDebugEnabled()) {
           LOG.debug("New stats for {}: {}", roi.filterOperator, roi.filterStats);
         }
