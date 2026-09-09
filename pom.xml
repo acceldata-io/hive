@@ -248,6 +248,9 @@
     <spring.version>5.3.39</spring.version>
     <spring.ldap.version>2.4.4</spring.ldap.version>
     <aircompressor.version>2.0.3</aircompressor.version>
+    <commons-vfs2.version>2.10.0</commons-vfs2.version>
+    <grpc-netty-shaded.version>1.75.0</grpc-netty-shaded.version>
+    <json-smart.version>2.5.2</json-smart.version>
     <project.build.outputTimestamp>2026-06-09T10:06:50Z</project.build.outputTimestamp>
   </properties>
   <repositories>
@@ -1509,6 +1512,21 @@
         <groupId>io.airlift</groupId>
         <artifactId>aircompressor</artifactId>
         <version>${aircompressor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-vfs2</artifactId>
+        <version>${commons-vfs2.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-netty-shaded</artifactId>
+        <version>${grpc-netty-shaded.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.minidev</groupId>
+        <artifactId>json-smart</artifactId>
+        <version>${json-smart.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
