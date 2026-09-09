@@ -247,6 +247,7 @@
     <!-- If upgrading, upgrade atlas as well in ql/pom.xml, which brings in some springframework dependencies transitively -->
     <spring.version>5.3.39</spring.version>
     <spring.ldap.version>2.4.4</spring.ldap.version>
+    <aircompressor.version>2.0.3</aircompressor.version>
     <project.build.outputTimestamp>2026-06-09T10:06:50Z</project.build.outputTimestamp>
   </properties>
   <repositories>
@@ -1503,6 +1504,11 @@
         <artifactId>postgresql</artifactId>
         <version>${postgres.version}</version>
         <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.airlift</groupId>
+        <artifactId>aircompressor</artifactId>
+        <version>${aircompressor.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
