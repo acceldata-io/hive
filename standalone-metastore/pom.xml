@@ -119,7 +119,7 @@
     <jline.version>2.14.6</jline.version>
     <ST4.version>4.0.4</ST4.version>
     <storage-api.version>4.1.0.${odp.release.version}</storage-api.version>
-    <beanutils.version>1.9.4</beanutils.version>
+    <beanutils.version>1.11.0</beanutils.version>
     <hamcrest.version>1.3</hamcrest.version>
     <curator.version>5.7.1</curator.version>
     <zookeeper.version>3.8.4.${odp.release.version}</zookeeper.version>
