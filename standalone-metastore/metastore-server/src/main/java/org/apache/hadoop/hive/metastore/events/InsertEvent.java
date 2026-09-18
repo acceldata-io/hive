@@ -18,11 +18,17 @@
 
 package org.apache.hadoop.hive.metastore.events;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hive.metastore.IHMSHandler;
 import org.apache.hadoop.hive.metastore.api.ClientCapabilities;
 import org.apache.hadoop.hive.metastore.api.ClientCapability;
@@ -32,14 +38,19 @@ import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
 import org.apache.hadoop.hive.metastore.api.Partition;
 import org.apache.hadoop.hive.metastore.api.Table;
+import org.apache.hadoop.hive.metastore.utils.FileUtils;
 import org.apache.hadoop.hive.metastore.utils.MetaStoreUtils;
 import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
 @InterfaceAudience.Public
 @InterfaceStability.Stable
 public class InsertEvent extends ListenerEvent {
+
+  private static final Logger LOG = LoggerFactory.getLogger(InsertEvent.class);
 
   private final Table tableObj;
   private final Partition ptnObj;
@@ -85,9 +96,53 @@ public class InsertEvent extends ListenerEvent {
 
     // If replace flag is not set by caller, then by default set it to true to maintain backward compatibility
     this.replace = (insertData.isSetReplace() ? insertData.isReplace() : true);
-    this.files = insertData.getFilesAdded();
+    this.files = resolveFilesAdded(insertData, handler.getConf(), ptnObj, tableObj);
     if (insertData.isSetFilesAddedChecksum()) {
       fileChecksums = insertData.getFilesAddedChecksum();
+    }
+  }
+
+  private static List<String> resolveFilesAdded(InsertEventRequestData insertData,
+      Configuration conf, Partition ptn, Table table) {
+    if (insertData.isSetFilesAdded() && insertData.getFilesAdded() != null) {
+      return insertData.getFilesAdded();
+    }
+    return inferFilesFromLocation(conf, ptn, table);
+  }
+
+  /**
+   * Backward compatibility for legacy clients (e.g. Spark) that fire insert events without
+   * populating filesAdded. Infer file paths from the partition or table storage location so
+   * DbNotificationListener can still record them in NOTIFICATION_LOG.
+   */
+  private static List<String> inferFilesFromLocation(Configuration conf, Partition ptn,
+      Table table) {
+    String location = null;
+    if (ptn != null && ptn.getSd() != null) {
+      location = ptn.getSd().getLocation();
+    }
+    if ((location == null || location.isEmpty()) && table != null && table.getSd() != null) {
+      location = table.getSd().getLocation();
+    }
+    if (location == null || location.isEmpty()) {
+      return Collections.emptyList();
+    }
+    try {
+      Path path = new Path(location);
+      FileSystem fs = path.getFileSystem(conf);
+      List<FileStatus> statuses = FileUtils.getFileStatusRecurse(path, fs);
+      if (statuses == null || statuses.isEmpty()) {
+        return Collections.emptyList();
+      }
+      List<String> inferredFiles = new ArrayList<>(statuses.size());
+      for (FileStatus status : statuses) {
+        inferredFiles.add(status.getPath().toString());
+      }
+      return inferredFiles;
+    } catch (IOException e) {
+      LOG.warn("Could not infer inserted files from location {}. Using empty file list for " +
+          "insert notification.", location, e);
+      return Collections.emptyList();
     }
   }
 
