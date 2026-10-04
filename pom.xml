@@ -744,6 +744,13 @@
         <artifactId>libfb303</artifactId>
         <version>${libfb303.version}</version>
       </dependency>
+      <!-- thrift 0.24 no longer transitively supplies javax.annotation-api; the
+           generated code's @javax.annotation.Generated needs it explicitly. -->
+      <dependency>
+        <groupId>javax.annotation</groupId>
+        <artifactId>javax.annotation-api</artifactId>
+        <version>1.3.2</version>
+      </dependency>
       <dependency>
         <groupId>org.apache.thrift</groupId>
         <artifactId>libthrift</artifactId>
