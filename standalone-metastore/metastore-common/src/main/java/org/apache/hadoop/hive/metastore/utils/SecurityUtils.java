@@ -41,14 +41,14 @@ import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.apache.zookeeper.client.ZooKeeperSaslClient;
-import org.apache.http.config.Registry;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.conn.ssl.DefaultHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
-import org.apache.http.ssl.SSLContexts;
+import org.apache.hc.client5.http.impl.io.BasicHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.ssl.ClientTlsStrategyBuilder;
+import org.apache.hc.client5.http.ssl.DefaultHostnameVerifier;
+import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
+import org.apache.hc.core5.http.config.Registry;
+import org.apache.hc.core5.http.config.RegistryBuilder;
+import org.apache.hc.core5.ssl.SSLContexts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -309,12 +309,16 @@ public class SecurityUtils {
     SSLContext sslContext =
         SSLContexts.custom().setTrustManagerFactoryAlgorithm(trustStoreAlgorithm).
             loadTrustMaterial(sslTrustStore, null).build();
-    SSLConnectionSocketFactory socketFactory =
-        new SSLConnectionSocketFactory(sslContext, new DefaultHostnameVerifier(null));
-    final Registry<ConnectionSocketFactory> registry =
-        RegistryBuilder.<ConnectionSocketFactory> create().register("https", socketFactory)
-            .build();
-    underlyingHttpClientBuilder.setConnectionManager(new BasicHttpClientConnectionManager(registry));
+    TlsSocketStrategy tlsStrategy = ClientTlsStrategyBuilder.create()
+        .setSslContext(sslContext)
+        .setHostnameVerifier(new DefaultHostnameVerifier())
+        .buildClassic();
+
+    final Registry<TlsSocketStrategy> registry = RegistryBuilder.<TlsSocketStrategy>create()
+        .register("https", tlsStrategy)
+        .build();
+
+    underlyingHttpClientBuilder.setConnectionManager(BasicHttpClientConnectionManager.create(registry));
     return new THttpClient(httpsUrl, underlyingHttpClientBuilder.build());
   }
 
