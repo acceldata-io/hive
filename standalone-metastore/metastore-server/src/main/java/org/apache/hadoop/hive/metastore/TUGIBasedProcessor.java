@@ -90,7 +90,7 @@ public class TUGIBasedProcessor<I extends Iface> extends TSetIpAddressProcessor<
    // Store ugi in transport if the rpc is set_ugi
    if (msg.name.equalsIgnoreCase("set_ugi")){
      try {
-       handleSetUGI(ugiTrans, (ThriftHiveMetastore.Processor.set_ugi<Iface>)fn, msg, in, out);
+       handleSetUGI(ugiTrans, (ThriftHiveMetastore.Processor.set_ugi<Iface>)(Object)fn, msg, in, out);
      } catch (TException e) {
        throw e;
      } catch (Exception e) {
