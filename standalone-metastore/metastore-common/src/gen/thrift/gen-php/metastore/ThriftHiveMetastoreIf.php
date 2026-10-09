@@ -2044,4 +2044,21 @@ interface ThriftHiveMetastoreIf extends \FacebookServiceIf
      * @throws \metastore\MetaException
      */
     public function get_all_write_event_info(\metastore\GetAllWriteEventInfoRequest $request);
+    /**
+     * @param string $dbname
+     * @param string $tbl_name
+     * @return \metastore\Table
+     * @throws \metastore\MetaException
+     * @throws \metastore\NoSuchObjectException
+     */
+    public function get_table($dbname, $tbl_name);
+    /**
+     * @param string $dbname
+     * @param string[] $tbl_names
+     * @return \metastore\Table[]
+     * @throws \metastore\MetaException
+     * @throws \metastore\InvalidOperationException
+     * @throws \metastore\UnknownDBException
+     */
+    public function get_table_objects_by_name($dbname, array $tbl_names);
 }

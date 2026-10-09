@@ -3331,6 +3331,13 @@ PartitionsResponse get_partitions_req(1:PartitionsRequest req)
   list<string> get_all_packages(1: ListPackageRequest request) throws (1:MetaException o1)
   void drop_package(1: DropPackageRequest request) throws (1:MetaException o1)
   list<WriteEventInfo> get_all_write_event_info(1: GetAllWriteEventInfoRequest request) throws (1:MetaException o1)
+
+  // ODP-8272: pre-HIVE-26537 calls, kept for Hive 2.x/3.x clients (Spark 3.x bundles a 2.3 client). Last in the
+  // service on purpose, so the generated code of every other call keeps its numbering.
+  Table get_table(1:string dbname, 2:string tbl_name)
+                       throws (1:MetaException o1, 2:NoSuchObjectException o2)
+  list<Table> get_table_objects_by_name(1:string dbname, 2:list<string> tbl_names)
+                       throws (1:MetaException o1, 2:InvalidOperationException o2, 3:UnknownDBException o3)
 }
 
 // * Note about the DDL_TIME: When creating or altering a table or a partition,

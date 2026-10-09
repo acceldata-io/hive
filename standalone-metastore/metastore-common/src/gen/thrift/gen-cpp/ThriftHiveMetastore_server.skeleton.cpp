@@ -1435,6 +1435,16 @@ class ThriftHiveMetastoreHandler : virtual public ThriftHiveMetastoreIf {
     printf("get_all_write_event_info\n");
   }
 
+  void get_table(Table& _return, const std::string& dbname, const std::string& tbl_name) {
+    // Your implementation goes here
+    printf("get_table\n");
+  }
+
+  void get_table_objects_by_name(std::vector<Table> & _return, const std::string& dbname, const std::vector<std::string> & tbl_names) {
+    // Your implementation goes here
+    printf("get_table_objects_by_name\n");
+  }
+
 };
 
 int main(int argc, char **argv) {
