@@ -3860,6 +3860,9 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
   public List<Table> get_table_objects_by_name(final String dbName, final List<String> tableNames)
       throws MetaException, InvalidOperationException, UnknownDBException {
     String[] parsedDbName = parseDbName(dbName, conf);
+    if (isDatabaseRemote(dbName)) {
+      return getRemoteTableObjectsInternal(dbName, tableNames, null);
+    }
     return getTableObjectsInternal(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], tableNames, null, null, null);
   }
 
