@@ -431,6 +431,15 @@
                       <pattern>org.apache.http</pattern>
                       <shadedPattern>org.apache.hive.org.apache.http</shadedPattern>
                     </relocation>
+                    <!-- httpclient5/httpcore5 use the org.apache.hc package; the upstream
+                         org.apache.http relocation above does NOT cover it, so without
+                         this the hc5 classes ship unrelocated in the standalone driver
+                         and can clash with another httpclient5 on the consuming
+                         classpath (NoSuchMethodError / ClassCastException). -->
+                    <relocation>
+                      <pattern>org.apache.hc</pattern>
+                      <shadedPattern>org.apache.hive.org.apache.hc</shadedPattern>
+                    </relocation>
                     <relocation>
                       <pattern>org.apache.thrift</pattern>
                       <shadedPattern>org.apache.hive.org.apache.thrift</shadedPattern>

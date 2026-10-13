@@ -42,7 +42,11 @@ public class HttpBasicAuthInterceptor extends HttpRequestInterceptorBase {
     super(cookieStore, cn, isSSL, additionalHeaders, customCookies);
     this.authScheme = new BasicScheme();
     if (username != null) {
-      this.credentials = new UsernamePasswordCredentials(username, password.toCharArray());
+      // Guard against a null password: hc4's String-based constructor accepted it, but
+      // the hc5 constructor takes a char[] and password.toCharArray() would NPE here
+      // (e.g. a user configured with no password).
+      this.credentials = new UsernamePasswordCredentials(username,
+          password == null ? new char[0] : password.toCharArray());
       this.authScheme.initPreemptive(credentials);
     }
   }
