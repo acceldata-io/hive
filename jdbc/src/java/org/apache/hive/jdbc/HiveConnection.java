@@ -103,19 +103,15 @@ import org.apache.hc.client5.http.impl.DefaultHttpRequestRetryStrategy;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.client5.http.impl.io.BasicHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.io.HttpClientConnectionManager;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
-import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
 import org.apache.hc.client5.http.ssl.DefaultHostnameVerifier;
 import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
 import org.apache.hc.core5.http.HttpRequest;
 import org.apache.hc.core5.http.HttpResponse;
 import org.apache.hc.core5.http.HttpStatus;
 import org.apache.hc.core5.http.NoHttpResponseException;
-import org.apache.hc.core5.http.config.Registry;
-import org.apache.hc.core5.http.config.RegistryBuilder;
 import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.ssl.SSLContexts;
 import org.apache.hc.core5.util.Args;
@@ -673,8 +669,20 @@ public class HiveConnection implements java.sql.Connection {
     }
     final boolean cookieAuthEnabled = isCookieEnabled;
 
+    // hc5 removed hc4's HttpClientContext.isRequestSent(), so a request interceptor
+    // cannot track whether the request was actually written (it runs before any bytes
+    // go out, which made the "unsent request" retry below dead code). A response
+    // interceptor only fires after the server has responded, i.e. after the request
+    // hit the wire, so a failure on a stale pooled connection (nothing sent) leaves
+    // the flag unset and a non-idempotent request is still retried.
+    httpClientBuilder.addResponseInterceptorLast((response, entity, context) ->
+        context.setAttribute("hive.request_sent", Boolean.TRUE)
+    );
+
+    // Stash whether the request is idempotent; the response-retry hook below only
+    // receives the HttpResponse (not the HttpRequest), so we record it here.
     httpClientBuilder.addRequestInterceptorLast((request, entity, context) ->
-      context.setAttribute("hive.request_sent", Boolean.TRUE)
+        context.setAttribute("hive.request_idempotent", isIdempotent(request.getMethod()))
     );
 
     // Beeline <------> LB <------> Reverse Proxy <-----> Hiveserver2
@@ -776,7 +784,15 @@ public class HiveConnection implements java.sql.Connection {
           }
           return ret;
         }
-        return super.retryRequest(response, executionCount, context);
+        // hc5's DefaultHttpRequestRetryStrategy retries HTTP 429/503 for every request,
+        // idempotent or not. Only surface that default for idempotent methods; we must
+        // not auto-resubmit a non-idempotent thrift POST when the server is throttled
+        // or unavailable.
+        Object idempotent = context.getAttribute("hive.request_idempotent");
+        if (idempotent == Boolean.TRUE) {
+          return super.retryRequest(response, executionCount, context);
+        }
+        return false;
       }
 
       @Override
@@ -855,10 +871,15 @@ public class HiveConnection implements java.sql.Connection {
           socketFactory =
               new SSLConnectionSocketFactory(sslContext, new DefaultHostnameVerifier(null));
         }
-        final Registry<ConnectionSocketFactory> registry =
-            RegistryBuilder.<ConnectionSocketFactory> create().register("https", socketFactory)
-                .build();
-        httpClientBuilder.setConnectionManager(new BasicHttpClientConnectionManager(registry));
+        // hc5 carries the connect/socket timeouts on the connection manager (via
+        // ConnectionConfig), not in the shared RequestConfig as hc4 did. Rebuild the
+        // manager with the custom TLS socket factory but keep the ConnectionConfig,
+        // otherwise every https connection silently loses the loginTimeout timeouts.
+        HttpClientConnectionManager sslCm = PoolingHttpClientConnectionManagerBuilder.create()
+            .setDefaultConnectionConfig(connectionConfig)
+            .setSSLSocketFactory(socketFactory)
+            .build();
+        httpClientBuilder.setConnectionManager(sslCm);
       } catch (Exception e) {
         String msg =
             "Could not create an https connection to " + jdbcUriString + ". " + e.getMessage();

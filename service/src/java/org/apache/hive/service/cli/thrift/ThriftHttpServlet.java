@@ -653,39 +653,39 @@ public class ThriftHttpServlet extends HttpServlet {
     if (queryString == null) {
       return null;
     }
-    Map<String, String[]> params = javax.servlet.http.HttpUtils.parseQueryString( queryString );
+    Map<String, String[]> params = javax.servlet.http.HttpUtils.parseQueryString(queryString);
     Set<String> keySet = params.keySet();
-    for (String key: keySet) {
+    for (String key : keySet) {
       if (key.equalsIgnoreCase("doAs")) {
-            return params.get(key)[0];
-            }
-          }
-          return null;
-        }
-
-        private void processThriftRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-          try {
-            response.setContentType("application/x-thrift");
-            if (customHeaders != null) {
-              for (Map.Entry<String, String> header : customHeaders) {
-                response.addHeader(header.getKey(), header.getValue());
-              }
-            }
-            ServletInputStream in = request.getInputStream();
-            ServletOutputStream out = response.getOutputStream();
-            TTransport transport = new TIOStreamTransport(in, out);
-
-            TProtocol inProtocol = inProtocolFactory.getProtocol(transport);
-            TProtocol outProtocol = outProtocolFactory.getProtocol(transport);
-
-            processor.process(inProtocol, outProtocol);
-            out.flush();
-          } catch (TException te) {
-            throw new ServletException(te);
-          }
-        }
-
+        return params.get(key)[0];
       }
+    }
+    return null;
+  }
+
+  private void processThriftRequest(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    try {
+      response.setContentType("application/x-thrift");
+      if (customHeaders != null) {
+        for (Map.Entry<String, String> header : customHeaders) {
+          response.addHeader(header.getKey(), header.getValue());
+        }
+      }
+      ServletInputStream in = request.getInputStream();
+      ServletOutputStream out = response.getOutputStream();
+      TTransport transport = new TIOStreamTransport(in, out);
+
+      TProtocol inProtocol = inProtocolFactory.getProtocol(transport);
+      TProtocol outProtocol = outProtocolFactory.getProtocol(transport);
+
+      processor.process(inProtocol, outProtocol);
+      out.flush();
+    } catch (TException te) {
+      throw new ServletException(te);
+    }
+  }
+
+}
 
 
