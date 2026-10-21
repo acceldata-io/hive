@@ -228,6 +228,36 @@ public interface RawStore extends Configurable {
       throws NoSuchObjectException;
 
   /**
+   * Bulk-fetch Database objects for a list of names in a single backend round-trip.
+   *
+   * <p>Intended for authorization filter hooks that would otherwise issue one get_database RPC
+   * per database. The default implementation below loops {@link #getDatabase(String, String)}
+   * (correct but not faster); {@link ObjectStore} overrides this with a single JDO query so a
+   * {@code show databases} on hundreds of thousands of DBs lands in one SQL round-trip.
+   *
+   * <p>Databases that no longer exist (dropped between name listing and this call) are omitted
+   * from the response rather than raising, matching per-DB callers.
+   */
+  default List<Database> getDatabases(String catalogName, List<String> dbNames)
+      throws MetaException {
+    List<Database> ret = new java.util.ArrayList<>();
+    if (dbNames == null || dbNames.isEmpty()) {
+      return ret;
+    }
+    for (String name : dbNames) {
+      try {
+        Database db = getDatabase(catalogName, name);
+        if (db != null) {
+          ret.add(db);
+        }
+      } catch (NoSuchObjectException ignored) {
+        // Omit dropped databases; see javadoc.
+      }
+    }
+    return ret;
+  }
+
+  /**
    * Drop a database.
    * @param catalogName catalog the database is in.
    * @param dbname name of the database.
