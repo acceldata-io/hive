@@ -960,6 +960,64 @@ public class ObjectStore implements RawStore, Configurable {
     }.run(false);
    }
 
+  /**
+   * Bulk-fetch Databases for a list of names in one JDO query, projecting only the fields
+   * the authorization filter hook needs ({@code name}, {@code ownerName}, {@code ownerType}).
+   *
+   * <p>Projection avoids DataNucleus lazy-loading the Map-typed {@code parameters} field,
+   * which otherwise fires a per-DB SELECT when the conversion step touches it — turning the
+   * supposed one-query bulk fetch into 300k+ queries at scale. By asking JDOQL to return
+   * only the three scalar columns, the backend executes a single SELECT and we build the
+   * {@link Database} list without any secondary round-trips.
+   */
+  @Override
+  public List<Database> getDatabases(String catalogName, List<String> dbNames)
+      throws MetaException {
+    List<Database> ret = new ArrayList<>();
+    if (dbNames == null || dbNames.isEmpty()) {
+      return ret;
+    }
+    final String catName = normalizeIdentifier(catalogName);
+    final List<String> normalizedNames = new ArrayList<>(dbNames.size());
+    for (String n : dbNames) {
+      if (n != null) {
+        normalizedNames.add(normalizeIdentifier(n));
+      }
+    }
+    boolean committed = false;
+    Query query = null;
+    try {
+      openTransaction();
+      query = pm.newQuery(MDatabase.class,
+          "catalogName == catname && names.contains(name)");
+      query.declareParameters(
+          "java.lang.String catname, java.util.Collection names");
+      query.declareImports("import java.util.Collection");
+      query.setResult("name, ownerName, ownerType");
+      @SuppressWarnings("unchecked")
+      Collection<Object[]> rows = (Collection<Object[]>) query.execute(catName, normalizedNames);
+      if (rows != null) {
+        for (Object[] row : rows) {
+          Database db = new Database();
+          db.setName((String) row[0]);
+          String owner = (String) row[1];
+          if (owner != null) {
+            db.setOwnerName(owner);
+          }
+          String ownerTypeStr = (String) row[2];
+          if (ownerTypeStr != null) {
+            db.setOwnerType(PrincipalType.valueOf(ownerTypeStr));
+          }
+          ret.add(db);
+        }
+      }
+      committed = commitTransaction();
+    } finally {
+      rollbackAndCleanup(committed, query);
+    }
+    return ret;
+  }
+
   public Database getJDODatabase(String catName, String name) throws NoSuchObjectException {
     MDatabase mdb = null;
     boolean commited = false;
