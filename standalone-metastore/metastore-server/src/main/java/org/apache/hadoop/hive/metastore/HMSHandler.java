@@ -1435,6 +1435,47 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     return db;
   }
 
+  /**
+   * Bulk variant of {@link #get_database_req} for authorization filter hooks that otherwise
+   * issue one get_database RPC per DB. Delegates to {@link RawStore#getDatabases} which runs
+   * one SELECT with a WHERE NAME IN (...) filter, so a {@code show databases} on hundreds of
+   * thousands of DBs lands in one SQL round-trip.
+   *
+   * <p>Semantic choice: this is a catalog LIST operation (callers only consume name/owner),
+   * so we deliberately do NOT fire {@link PreReadDatabaseEvent} per DB or run the per-DB
+   * transformer loop — doing so at this cardinality would cost minutes of per-DB logging
+   * and listener work for information the HS2-side filter hook is going to re-authorize
+   * anyway. This matches the semantics of {@code get_databases} / {@code get_all_databases},
+   * which return names only and never fire per-DB pre-events either.
+   *
+   * <p>Payload shaping is done at the {@link RawStore} layer: {@link ObjectStore#getDatabases}
+   * projects only {@code name}, {@code ownerName}, {@code ownerType} in its JDOQL query so no
+   * secondary lazy-load SQL fires and the Thrift payload stays compact.
+   */
+  @Override
+  public GetDatabaseObjectsResponse get_database_objects_by_name_req(GetDatabaseObjectsRequest request)
+      throws MetaException {
+    List<String> names = request.getDatabaseNames();
+    int size = names == null ? 0 : names.size();
+    startFunction("get_database_objects_by_name_req", ": size=" + size);
+    List<Database> result;
+    Exception ex = null;
+    try {
+      if (size == 0) {
+        return new GetDatabaseObjectsResponse(new ArrayList<Database>());
+      }
+      String catName = request.getCatalogName() != null
+          ? request.getCatalogName() : getDefaultCatalog(conf);
+      result = getMS().getDatabases(catName, names);
+    } catch (Exception e) {
+      ex = e;
+      throw newMetaException(e);
+    } finally {
+      endFunction("get_database_objects_by_name_req", ex == null, ex);
+    }
+    return new GetDatabaseObjectsResponse(result != null ? result : new ArrayList<Database>());
+  }
+
   @Override
   public void alter_database(final String dbName, final Database newDB) throws TException {
     startFunction("alter_database " + dbName);
@@ -6110,15 +6151,16 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
 
     try {
       ret = getMS().getTables(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], pattern);
-      if(ret !=  null && !ret.isEmpty()) {
-        List<Table> tableInfo = new ArrayList<>();
-        tableInfo = getMS().getTableObjectsByName(parsedDbName[CAT_NAME], parsedDbName[DB_NAME], ret);
-        tableInfo = FilterUtils.filterTablesIfEnabled(isServerFilterEnabled, filterHook, tableInfo);// tableInfo object has the owner information of the table which is being passed to FilterUtils.
-        ret = new ArrayList<>();
-        for (Table tbl : tableInfo) {
-          ret.add(tbl.getTableName());
-        }
-      }
+      // HIVE-29378: Filter by name only. HiveMetaStoreAuthorizer (Ranger) and other
+      // MetaStoreFilterHook impls decide from dbName+tableName + user context; the prior
+      // getTableObjectsByName + filterTablesIfEnabled(fullTables) path materialised every
+      // Table object in the DB (unbatched -- it also StackOverflowed DataNucleus in
+      // ExpressionCompiler.compileOrAndExpression at 100k+ tables) and each convertToTable
+      // adds 5-10ms per table. HIVE-28292 rerouted HS2 SHOW TABLES around this call site
+      // but any non-HS2 caller (HCatalog, Impala, older HS2 vs newer HMS) still trips it.
+      // Matches get_all_tables() and get_tables_by_type() which already filter names only.
+      ret = FilterUtils.filterTableNamesIfEnabled(isServerFilterEnabled, filterHook,
+          parsedDbName[CAT_NAME], parsedDbName[DB_NAME], ret);
     } catch (Exception e) {
       ex = e;
       throw newMetaException(e);

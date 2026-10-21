@@ -641,6 +641,40 @@ public interface IMetaStoreClient extends AutoCloseable {
       throws NoSuchObjectException, MetaException, TException;
 
   /**
+   * Bulk-fetch Database objects (with owner info) for a list of database names in one RPC.
+   *
+   * <p>Intended for authorization filter hooks that would otherwise issue one get_database RPC
+   * per database to resolve owner. Implementations should prefer a single bulk Thrift call
+   * when the server supports it; the default fallback below just loops {@link #getDatabase}.
+   *
+   * <p>Databases that no longer exist (dropped between name listing and this call) are
+   * omitted from the response rather than causing an error, matching the lenient behavior
+   * of per-DB callers that catch {@link NoSuchObjectException}.
+   *
+   * @param catalogName catalog name; null uses the default catalog
+   * @param databaseNames the database names to fetch
+   * @return Databases found; may be shorter than {@code databaseNames} if some were dropped
+   */
+  default List<Database> getDatabaseObjectsByName(String catalogName, List<String> databaseNames)
+      throws MetaException, TException {
+    List<Database> result = new java.util.ArrayList<>();
+    if (databaseNames == null || databaseNames.isEmpty()) {
+      return result;
+    }
+    for (String name : databaseNames) {
+      try {
+        Database db = getDatabase(catalogName, name);
+        if (db != null) {
+          result.add(db);
+        }
+      } catch (NoSuchObjectException ignored) {
+        // Omit dropped databases; see javadoc.
+      }
+    }
+    return result;
+  }
+
+  /**
    * Get a table object in the default catalog.
    * @deprecated use getTable(GetTableRequest getTableRequest)
    * @param dbName
