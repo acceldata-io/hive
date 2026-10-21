@@ -11,19 +11,19 @@ package org.apache.hadoop.hive.metastore.api;
 @org.apache.hadoop.classification.InterfaceAudience.Public @org.apache.hadoop.classification.InterfaceStability.Stable public class GetDatabaseObjectsRequest implements org.apache.thrift.TBase<GetDatabaseObjectsRequest, GetDatabaseObjectsRequest._Fields>, java.io.Serializable, Cloneable, Comparable<GetDatabaseObjectsRequest> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("GetDatabaseObjectsRequest");
 
-  private static final org.apache.thrift.protocol.TField CATALOG_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("catalogName", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField PATTERN_FIELD_DESC = new org.apache.thrift.protocol.TField("pattern", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField DATABASE_NAMES_FIELD_DESC = new org.apache.thrift.protocol.TField("databaseNames", org.apache.thrift.protocol.TType.LIST, (short)1);
+  private static final org.apache.thrift.protocol.TField CATALOG_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("catalogName", org.apache.thrift.protocol.TType.STRING, (short)2);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new GetDatabaseObjectsRequestStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new GetDatabaseObjectsRequestTupleSchemeFactory();
 
+  private @org.apache.thrift.annotation.Nullable java.util.List<java.lang.String> databaseNames; // required
   private @org.apache.thrift.annotation.Nullable java.lang.String catalogName; // optional
-  private @org.apache.thrift.annotation.Nullable java.lang.String pattern; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    CATALOG_NAME((short)1, "catalogName"),
-    PATTERN((short)2, "pattern");
+    DATABASE_NAMES((short)1, "databaseNames"),
+    CATALOG_NAME((short)2, "catalogName");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -39,10 +39,10 @@ package org.apache.hadoop.hive.metastore.api;
     @org.apache.thrift.annotation.Nullable
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // CATALOG_NAME
+        case 1: // DATABASE_NAMES
+          return DATABASE_NAMES;
+        case 2: // CATALOG_NAME
           return CATALOG_NAME;
-        case 2: // PATTERN
-          return PATTERN;
         default:
           return null;
       }
@@ -84,13 +84,14 @@ package org.apache.hadoop.hive.metastore.api;
   }
 
   // isset id assignments
-  private static final _Fields optionals[] = {_Fields.CATALOG_NAME,_Fields.PATTERN};
+  private static final _Fields optionals[] = {_Fields.CATALOG_NAME};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.DATABASE_NAMES, new org.apache.thrift.meta_data.FieldMetaData("databaseNames", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     tmpMap.put(_Fields.CATALOG_NAME, new org.apache.thrift.meta_data.FieldMetaData("catalogName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.PATTERN, new org.apache.thrift.meta_data.FieldMetaData("pattern", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(GetDatabaseObjectsRequest.class, metaDataMap);
@@ -99,15 +100,23 @@ package org.apache.hadoop.hive.metastore.api;
   public GetDatabaseObjectsRequest() {
   }
 
+  public GetDatabaseObjectsRequest(
+    java.util.List<java.lang.String> databaseNames)
+  {
+    this();
+    this.databaseNames = databaseNames;
+  }
+
   /**
    * Performs a deep copy on <i>other</i>.
    */
   public GetDatabaseObjectsRequest(GetDatabaseObjectsRequest other) {
+    if (other.isSetDatabaseNames()) {
+      java.util.List<java.lang.String> __this__databaseNames = new java.util.ArrayList<java.lang.String>(other.databaseNames);
+      this.databaseNames = __this__databaseNames;
+    }
     if (other.isSetCatalogName()) {
       this.catalogName = other.catalogName;
-    }
-    if (other.isSetPattern()) {
-      this.pattern = other.pattern;
     }
   }
 
@@ -117,8 +126,48 @@ package org.apache.hadoop.hive.metastore.api;
 
   @Override
   public void clear() {
+    this.databaseNames = null;
     this.catalogName = null;
-    this.pattern = null;
+  }
+
+  public int getDatabaseNamesSize() {
+    return (this.databaseNames == null) ? 0 : this.databaseNames.size();
+  }
+
+  @org.apache.thrift.annotation.Nullable
+  public java.util.Iterator<java.lang.String> getDatabaseNamesIterator() {
+    return (this.databaseNames == null) ? null : this.databaseNames.iterator();
+  }
+
+  public void addToDatabaseNames(java.lang.String elem) {
+    if (this.databaseNames == null) {
+      this.databaseNames = new java.util.ArrayList<java.lang.String>();
+    }
+    this.databaseNames.add(elem);
+  }
+
+  @org.apache.thrift.annotation.Nullable
+  public java.util.List<java.lang.String> getDatabaseNames() {
+    return this.databaseNames;
+  }
+
+  public void setDatabaseNames(@org.apache.thrift.annotation.Nullable java.util.List<java.lang.String> databaseNames) {
+    this.databaseNames = databaseNames;
+  }
+
+  public void unsetDatabaseNames() {
+    this.databaseNames = null;
+  }
+
+  /** Returns true if field databaseNames is set (has been assigned a value) and false otherwise */
+  public boolean isSetDatabaseNames() {
+    return this.databaseNames != null;
+  }
+
+  public void setDatabaseNamesIsSet(boolean value) {
+    if (!value) {
+      this.databaseNames = null;
+    }
   }
 
   @org.apache.thrift.annotation.Nullable
@@ -145,45 +194,21 @@ package org.apache.hadoop.hive.metastore.api;
     }
   }
 
-  @org.apache.thrift.annotation.Nullable
-  public java.lang.String getPattern() {
-    return this.pattern;
-  }
-
-  public void setPattern(@org.apache.thrift.annotation.Nullable java.lang.String pattern) {
-    this.pattern = pattern;
-  }
-
-  public void unsetPattern() {
-    this.pattern = null;
-  }
-
-  /** Returns true if field pattern is set (has been assigned a value) and false otherwise */
-  public boolean isSetPattern() {
-    return this.pattern != null;
-  }
-
-  public void setPatternIsSet(boolean value) {
-    if (!value) {
-      this.pattern = null;
-    }
-  }
-
   public void setFieldValue(_Fields field, @org.apache.thrift.annotation.Nullable java.lang.Object value) {
     switch (field) {
+    case DATABASE_NAMES:
+      if (value == null) {
+        unsetDatabaseNames();
+      } else {
+        setDatabaseNames((java.util.List<java.lang.String>)value);
+      }
+      break;
+
     case CATALOG_NAME:
       if (value == null) {
         unsetCatalogName();
       } else {
         setCatalogName((java.lang.String)value);
-      }
-      break;
-
-    case PATTERN:
-      if (value == null) {
-        unsetPattern();
-      } else {
-        setPattern((java.lang.String)value);
       }
       break;
 
@@ -193,11 +218,11 @@ package org.apache.hadoop.hive.metastore.api;
   @org.apache.thrift.annotation.Nullable
   public java.lang.Object getFieldValue(_Fields field) {
     switch (field) {
+    case DATABASE_NAMES:
+      return getDatabaseNames();
+
     case CATALOG_NAME:
       return getCatalogName();
-
-    case PATTERN:
-      return getPattern();
 
     }
     throw new java.lang.IllegalStateException();
@@ -210,10 +235,10 @@ package org.apache.hadoop.hive.metastore.api;
     }
 
     switch (field) {
+    case DATABASE_NAMES:
+      return isSetDatabaseNames();
     case CATALOG_NAME:
       return isSetCatalogName();
-    case PATTERN:
-      return isSetPattern();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -231,21 +256,21 @@ package org.apache.hadoop.hive.metastore.api;
     if (this == that)
       return true;
 
+    boolean this_present_databaseNames = true && this.isSetDatabaseNames();
+    boolean that_present_databaseNames = true && that.isSetDatabaseNames();
+    if (this_present_databaseNames || that_present_databaseNames) {
+      if (!(this_present_databaseNames && that_present_databaseNames))
+        return false;
+      if (!this.databaseNames.equals(that.databaseNames))
+        return false;
+    }
+
     boolean this_present_catalogName = true && this.isSetCatalogName();
     boolean that_present_catalogName = true && that.isSetCatalogName();
     if (this_present_catalogName || that_present_catalogName) {
       if (!(this_present_catalogName && that_present_catalogName))
         return false;
       if (!this.catalogName.equals(that.catalogName))
-        return false;
-    }
-
-    boolean this_present_pattern = true && this.isSetPattern();
-    boolean that_present_pattern = true && that.isSetPattern();
-    if (this_present_pattern || that_present_pattern) {
-      if (!(this_present_pattern && that_present_pattern))
-        return false;
-      if (!this.pattern.equals(that.pattern))
         return false;
     }
 
@@ -256,13 +281,13 @@ package org.apache.hadoop.hive.metastore.api;
   public int hashCode() {
     int hashCode = 1;
 
+    hashCode = hashCode * 8191 + ((isSetDatabaseNames()) ? 131071 : 524287);
+    if (isSetDatabaseNames())
+      hashCode = hashCode * 8191 + databaseNames.hashCode();
+
     hashCode = hashCode * 8191 + ((isSetCatalogName()) ? 131071 : 524287);
     if (isSetCatalogName())
       hashCode = hashCode * 8191 + catalogName.hashCode();
-
-    hashCode = hashCode * 8191 + ((isSetPattern()) ? 131071 : 524287);
-    if (isSetPattern())
-      hashCode = hashCode * 8191 + pattern.hashCode();
 
     return hashCode;
   }
@@ -275,22 +300,22 @@ package org.apache.hadoop.hive.metastore.api;
 
     int lastComparison = 0;
 
+    lastComparison = java.lang.Boolean.compare(isSetDatabaseNames(), other.isSetDatabaseNames());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDatabaseNames()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.databaseNames, other.databaseNames);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = java.lang.Boolean.compare(isSetCatalogName(), other.isSetCatalogName());
     if (lastComparison != 0) {
       return lastComparison;
     }
     if (isSetCatalogName()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.catalogName, other.catalogName);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = java.lang.Boolean.compare(isSetPattern(), other.isSetPattern());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetPattern()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.pattern, other.pattern);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -316,22 +341,20 @@ package org.apache.hadoop.hive.metastore.api;
     java.lang.StringBuilder sb = new java.lang.StringBuilder("GetDatabaseObjectsRequest(");
     boolean first = true;
 
+    sb.append("databaseNames:");
+    if (this.databaseNames == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.databaseNames);
+    }
+    first = false;
     if (isSetCatalogName()) {
+      if (!first) sb.append(", ");
       sb.append("catalogName:");
       if (this.catalogName == null) {
         sb.append("null");
       } else {
         sb.append(this.catalogName);
-      }
-      first = false;
-    }
-    if (isSetPattern()) {
-      if (!first) sb.append(", ");
-      sb.append("pattern:");
-      if (this.pattern == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.pattern);
       }
       first = false;
     }
@@ -341,6 +364,10 @@ package org.apache.hadoop.hive.metastore.api;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
+    if (!isSetDatabaseNames()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'databaseNames' is unset! Struct:" + toString());
+    }
+
     // check for sub-struct validity
   }
 
@@ -378,18 +405,28 @@ package org.apache.hadoop.hive.metastore.api;
           break;
         }
         switch (schemeField.id) {
-          case 1: // CATALOG_NAME
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.catalogName = iprot.readString();
-              struct.setCatalogNameIsSet(true);
+          case 1: // DATABASE_NAMES
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list1230 = iprot.readListBegin();
+                struct.databaseNames = new java.util.ArrayList<java.lang.String>(_list1230.size);
+                @org.apache.thrift.annotation.Nullable java.lang.String _elem1231;
+                for (int _i1232 = 0; _i1232 < _list1230.size; ++_i1232)
+                {
+                  _elem1231 = iprot.readString();
+                  struct.databaseNames.add(_elem1231);
+                }
+                iprot.readListEnd();
+              }
+              struct.setDatabaseNamesIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // PATTERN
+          case 2: // CATALOG_NAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.pattern = iprot.readString();
-              struct.setPatternIsSet(true);
+              struct.catalogName = iprot.readString();
+              struct.setCatalogNameIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -407,17 +444,22 @@ package org.apache.hadoop.hive.metastore.api;
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
+      if (struct.databaseNames != null) {
+        oprot.writeFieldBegin(DATABASE_NAMES_FIELD_DESC);
+        {
+          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.databaseNames.size()));
+          for (java.lang.String _iter1233 : struct.databaseNames)
+          {
+            oprot.writeString(_iter1233);
+          }
+          oprot.writeListEnd();
+        }
+        oprot.writeFieldEnd();
+      }
       if (struct.catalogName != null) {
         if (struct.isSetCatalogName()) {
           oprot.writeFieldBegin(CATALOG_NAME_FIELD_DESC);
           oprot.writeString(struct.catalogName);
-          oprot.writeFieldEnd();
-        }
-      }
-      if (struct.pattern != null) {
-        if (struct.isSetPattern()) {
-          oprot.writeFieldBegin(PATTERN_FIELD_DESC);
-          oprot.writeString(struct.pattern);
           oprot.writeFieldEnd();
         }
       }
@@ -438,33 +480,41 @@ package org.apache.hadoop.hive.metastore.api;
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, GetDatabaseObjectsRequest struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+      {
+        oprot.writeI32(struct.databaseNames.size());
+        for (java.lang.String _iter1234 : struct.databaseNames)
+        {
+          oprot.writeString(_iter1234);
+        }
+      }
       java.util.BitSet optionals = new java.util.BitSet();
       if (struct.isSetCatalogName()) {
         optionals.set(0);
       }
-      if (struct.isSetPattern()) {
-        optionals.set(1);
-      }
-      oprot.writeBitSet(optionals, 2);
+      oprot.writeBitSet(optionals, 1);
       if (struct.isSetCatalogName()) {
         oprot.writeString(struct.catalogName);
-      }
-      if (struct.isSetPattern()) {
-        oprot.writeString(struct.pattern);
       }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, GetDatabaseObjectsRequest struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-      java.util.BitSet incoming = iprot.readBitSet(2);
+      {
+        org.apache.thrift.protocol.TList _list1235 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
+        struct.databaseNames = new java.util.ArrayList<java.lang.String>(_list1235.size);
+        @org.apache.thrift.annotation.Nullable java.lang.String _elem1236;
+        for (int _i1237 = 0; _i1237 < _list1235.size; ++_i1237)
+        {
+          _elem1236 = iprot.readString();
+          struct.databaseNames.add(_elem1236);
+        }
+      }
+      struct.setDatabaseNamesIsSet(true);
+      java.util.BitSet incoming = iprot.readBitSet(1);
       if (incoming.get(0)) {
         struct.catalogName = iprot.readString();
         struct.setCatalogNameIsSet(true);
-      }
-      if (incoming.get(1)) {
-        struct.pattern = iprot.readString();
-        struct.setPatternIsSet(true);
       }
     }
   }

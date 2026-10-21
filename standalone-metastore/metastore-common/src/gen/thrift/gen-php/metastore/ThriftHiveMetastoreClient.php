@@ -16,7 +16,7 @@ use Thrift\Protocol\TProtocol;
 use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
-class ThriftHiveMetastoreClient extends \FacebookServiceClient implements \metastore\ThriftHiveMetastoreIf
+class ThriftHiveMetastoreClient extends \fb303\FacebookServiceClient implements \metastore\ThriftHiveMetastoreIf
 {
     public function __construct($input, $output = null)
     {
@@ -1041,41 +1041,41 @@ class ThriftHiveMetastoreClient extends \FacebookServiceClient implements \metas
         throw new \Exception("get_all_databases failed: unknown result");
     }
 
-    public function get_databases_req(\metastore\GetDatabaseObjectsRequest $request)
+    public function get_database_objects_by_name_req(\metastore\GetDatabaseObjectsRequest $request)
     {
-        $this->send_get_databases_req($request);
-        return $this->recv_get_databases_req();
+        $this->send_get_database_objects_by_name_req($request);
+        return $this->recv_get_database_objects_by_name_req();
     }
 
-    public function send_get_databases_req(\metastore\GetDatabaseObjectsRequest $request)
+    public function send_get_database_objects_by_name_req(\metastore\GetDatabaseObjectsRequest $request)
     {
-        $args = new \metastore\ThriftHiveMetastore_get_databases_req_args();
+        $args = new \metastore\ThriftHiveMetastore_get_database_objects_by_name_req_args();
         $args->request = $request;
         $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
         if ($bin_accel) {
             thrift_protocol_write_binary(
                 $this->output_,
-                'get_databases_req',
+                'get_database_objects_by_name_req',
                 TMessageType::CALL,
                 $args,
                 $this->seqid_,
                 $this->output_->isStrictWrite()
             );
         } else {
-            $this->output_->writeMessageBegin('get_databases_req', TMessageType::CALL, $this->seqid_);
+            $this->output_->writeMessageBegin('get_database_objects_by_name_req', TMessageType::CALL, $this->seqid_);
             $args->write($this->output_);
             $this->output_->writeMessageEnd();
             $this->output_->getTransport()->flush();
         }
     }
 
-    public function recv_get_databases_req()
+    public function recv_get_database_objects_by_name_req()
     {
         $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
         if ($bin_accel) {
             $result = thrift_protocol_read_binary(
                 $this->input_,
-                '\metastore\ThriftHiveMetastore_get_databases_req_result',
+                '\metastore\ThriftHiveMetastore_get_database_objects_by_name_req_result',
                 $this->input_->isStrictRead()
             );
         } else {
@@ -1090,7 +1090,7 @@ class ThriftHiveMetastoreClient extends \FacebookServiceClient implements \metas
                 $this->input_->readMessageEnd();
                 throw $x;
             }
-            $result = new \metastore\ThriftHiveMetastore_get_databases_req_result();
+            $result = new \metastore\ThriftHiveMetastore_get_database_objects_by_name_req_result();
             $result->read($this->input_);
             $this->input_->readMessageEnd();
         }
@@ -1100,7 +1100,7 @@ class ThriftHiveMetastoreClient extends \FacebookServiceClient implements \metas
         if ($result->o1 !== null) {
             throw $result->o1;
         }
-        throw new \Exception("get_databases_req failed: unknown result");
+        throw new \Exception("get_database_objects_by_name_req failed: unknown result");
     }
 
     public function alter_database($dbname, \metastore\Database $db)

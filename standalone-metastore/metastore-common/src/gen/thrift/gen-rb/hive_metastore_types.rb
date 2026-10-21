@@ -660,7 +660,9 @@ class DropTableRequest; end
 
 class GetDatabaseRequest; end
 
-class AlterDatabaseRequest; end
+class GetDatabaseObjectsRequest; end
+
+class GetDatabaseObjectsResponse; end
 
 class DropDatabaseRequest; end
 
@@ -5982,21 +5984,37 @@ class GetDatabaseRequest
   ::Thrift::Struct.generate_accessors self
 end
 
-class AlterDatabaseRequest
+class GetDatabaseObjectsRequest
   include ::Thrift::Struct, ::Thrift::Struct_Union
-  OLDDBNAME = 1
-  NEWDB = 2
+  DATABASENAMES = 1
+  CATALOGNAME = 2
 
   FIELDS = {
-    OLDDBNAME => {:type => ::Thrift::Types::STRING, :name => 'oldDbName'},
-    NEWDB => {:type => ::Thrift::Types::STRUCT, :name => 'newDb', :class => ::Database}
+    DATABASENAMES => {:type => ::Thrift::Types::LIST, :name => 'databaseNames', :element => {:type => ::Thrift::Types::STRING}},
+    CATALOGNAME => {:type => ::Thrift::Types::STRING, :name => 'catalogName', :optional => true}
   }
 
   def struct_fields; FIELDS; end
 
   def validate
-    raise ::Thrift::ProtocolException.new(::Thrift::ProtocolException::UNKNOWN, 'Required field oldDbName is unset!') unless @oldDbName
-    raise ::Thrift::ProtocolException.new(::Thrift::ProtocolException::UNKNOWN, 'Required field newDb is unset!') unless @newDb
+    raise ::Thrift::ProtocolException.new(::Thrift::ProtocolException::UNKNOWN, 'Required field databaseNames is unset!') unless @databaseNames
+  end
+
+  ::Thrift::Struct.generate_accessors self
+end
+
+class GetDatabaseObjectsResponse
+  include ::Thrift::Struct, ::Thrift::Struct_Union
+  DATABASES = 1
+
+  FIELDS = {
+    DATABASES => {:type => ::Thrift::Types::LIST, :name => 'databases', :element => {:type => ::Thrift::Types::STRUCT, :class => ::Database}}
+  }
+
+  def struct_fields; FIELDS; end
+
+  def validate
+    raise ::Thrift::ProtocolException.new(::Thrift::ProtocolException::UNKNOWN, 'Required field databases is unset!') unless @databases
   end
 
   ::Thrift::Struct.generate_accessors self

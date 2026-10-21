@@ -848,7 +848,9 @@ class DropTableRequest;
 
 class GetDatabaseRequest;
 
-class AlterDatabaseRequest;
+class GetDatabaseObjectsRequest;
+
+class GetDatabaseObjectsResponse;
 
 class DropDatabaseRequest;
 
@@ -14731,37 +14733,45 @@ void swap(GetDatabaseRequest &a, GetDatabaseRequest &b);
 
 std::ostream& operator<<(std::ostream& out, const GetDatabaseRequest& obj);
 
+typedef struct _GetDatabaseObjectsRequest__isset {
+  _GetDatabaseObjectsRequest__isset() : catalogName(false) {}
+  bool catalogName :1;
+} _GetDatabaseObjectsRequest__isset;
 
-class AlterDatabaseRequest : public virtual ::apache::thrift::TBase {
+class GetDatabaseObjectsRequest : public virtual ::apache::thrift::TBase {
  public:
 
-  AlterDatabaseRequest(const AlterDatabaseRequest&);
-  AlterDatabaseRequest& operator=(const AlterDatabaseRequest&);
-  AlterDatabaseRequest() noexcept
-                       : oldDbName() {
+  GetDatabaseObjectsRequest(const GetDatabaseObjectsRequest&);
+  GetDatabaseObjectsRequest& operator=(const GetDatabaseObjectsRequest&);
+  GetDatabaseObjectsRequest() noexcept
+                            : catalogName() {
   }
 
-  virtual ~AlterDatabaseRequest() noexcept;
-  std::string oldDbName;
-  Database newDb;
+  virtual ~GetDatabaseObjectsRequest() noexcept;
+  std::vector<std::string>  databaseNames;
+  std::string catalogName;
 
-  void __set_oldDbName(const std::string& val);
+  _GetDatabaseObjectsRequest__isset __isset;
 
-  void __set_newDb(const Database& val);
+  void __set_databaseNames(const std::vector<std::string> & val);
 
-  bool operator == (const AlterDatabaseRequest & rhs) const
+  void __set_catalogName(const std::string& val);
+
+  bool operator == (const GetDatabaseObjectsRequest & rhs) const
   {
-    if (!(oldDbName == rhs.oldDbName))
+    if (!(databaseNames == rhs.databaseNames))
       return false;
-    if (!(newDb == rhs.newDb))
+    if (__isset.catalogName != rhs.__isset.catalogName)
+      return false;
+    else if (__isset.catalogName && !(catalogName == rhs.catalogName))
       return false;
     return true;
   }
-  bool operator != (const AlterDatabaseRequest &rhs) const {
+  bool operator != (const GetDatabaseObjectsRequest &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const AlterDatabaseRequest & ) const;
+  bool operator < (const GetDatabaseObjectsRequest & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot) override;
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const override;
@@ -14769,9 +14779,45 @@ class AlterDatabaseRequest : public virtual ::apache::thrift::TBase {
   virtual void printTo(std::ostream& out) const;
 };
 
-void swap(AlterDatabaseRequest &a, AlterDatabaseRequest &b);
+void swap(GetDatabaseObjectsRequest &a, GetDatabaseObjectsRequest &b);
 
-std::ostream& operator<<(std::ostream& out, const AlterDatabaseRequest& obj);
+std::ostream& operator<<(std::ostream& out, const GetDatabaseObjectsRequest& obj);
+
+
+class GetDatabaseObjectsResponse : public virtual ::apache::thrift::TBase {
+ public:
+
+  GetDatabaseObjectsResponse(const GetDatabaseObjectsResponse&);
+  GetDatabaseObjectsResponse& operator=(const GetDatabaseObjectsResponse&);
+  GetDatabaseObjectsResponse() noexcept {
+  }
+
+  virtual ~GetDatabaseObjectsResponse() noexcept;
+  std::vector<Database>  databases;
+
+  void __set_databases(const std::vector<Database> & val);
+
+  bool operator == (const GetDatabaseObjectsResponse & rhs) const
+  {
+    if (!(databases == rhs.databases))
+      return false;
+    return true;
+  }
+  bool operator != (const GetDatabaseObjectsResponse &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const GetDatabaseObjectsResponse & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot) override;
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const override;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(GetDatabaseObjectsResponse &a, GetDatabaseObjectsResponse &b);
+
+std::ostream& operator<<(std::ostream& out, const GetDatabaseObjectsResponse& obj);
 
 typedef struct _DropDatabaseRequest__isset {
   _DropDatabaseRequest__isset() : catalogName(false), softDelete(true), txnId(true), deleteManagedDir(true) {}

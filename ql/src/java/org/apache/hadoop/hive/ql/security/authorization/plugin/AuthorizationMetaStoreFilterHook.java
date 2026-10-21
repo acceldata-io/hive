@@ -18,14 +18,20 @@
 package org.apache.hadoop.hive.ql.security.authorization.plugin;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.common.classification.InterfaceAudience.Private;
 import org.apache.hadoop.hive.metastore.DefaultMetaStoreFilterHookImpl;
+import org.apache.hadoop.hive.metastore.IMetaStoreClient;
+import org.apache.hadoop.hive.metastore.api.Database;
 import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.apache.hadoop.hive.metastore.api.PrincipalType;
 import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.hadoop.hive.metastore.api.TableMeta;
+import org.apache.hadoop.hive.ql.metadata.Hive;
 import org.apache.hadoop.hive.ql.security.authorization.plugin.HivePrivilegeObject.HivePrivilegeObjectType;
 import static org.apache.hadoop.hive.ql.security.authorization.plugin.HivePrivilegeObjectUtils.TablePrivilegeLookup;
 import org.apache.hadoop.hive.ql.session.SessionState;
@@ -87,8 +93,39 @@ public class AuthorizationMetaStoreFilterHook extends DefaultMetaStoreFilterHook
 
   @Override
   public List<String> filterDatabases(List<String> dbList) throws MetaException {
-    List<HivePrivilegeObject> listObjs = HivePrivilegeObjectUtils.getHivePrivDbObjects(dbList);
+    // Prefetch owners in one bulk HMS RPC so Ranger's filterListCmdObjects does not fire
+    // get_database per entry (RANGER-5097 consumes HivePrivilegeObject.ownerName first).
+    Map<String, Database> dbByName = prefetchDatabaseOwners(dbList);
+    List<HivePrivilegeObject> listObjs = HivePrivilegeObjectUtils.getHivePrivDbObjects(dbList, dbByName);
     return getDbNames(getFilteredObjects(listObjs));
+  }
+
+  private Map<String, Database> prefetchDatabaseOwners(List<String> dbList) {
+    if (dbList == null || dbList.isEmpty()) {
+      return Collections.emptyMap();
+    }
+    try {
+      IMetaStoreClient msc = Hive.get().getMSC();
+      if (msc == null) {
+        return Collections.emptyMap();
+      }
+      List<Database> dbs = msc.getDatabaseObjectsByName(null, dbList);
+      if (dbs == null || dbs.isEmpty()) {
+        return Collections.emptyMap();
+      }
+      Map<String, Database> ret = new HashMap<>(dbs.size());
+      for (Database d : dbs) {
+        if (d != null && d.getName() != null) {
+          ret.put(d.getName(), d);
+        }
+      }
+      return ret;
+    } catch (Exception e) {
+      // Any transient failure (session not yet set up, HMS reconnect, etc.): return empty,
+      // and the authorizer resolves owner per-DB as before. Correctness preserved.
+      LOG.debug("Bulk database owner prefetch failed; authorizer will resolve per-DB.", e);
+      return Collections.emptyMap();
+    }
   }
 
 
