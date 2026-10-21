@@ -325,14 +325,14 @@ public class FindSchemasByColsResp implements org.apache.thrift.TBase<FindSchema
           case 1: // SCHEMA_VERSIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list1334 = iprot.readListBegin();
-                struct.schemaVersions = new java.util.ArrayList<SchemaVersionDescriptor>(_list1334.size);
-                @org.apache.thrift.annotation.Nullable SchemaVersionDescriptor _elem1335;
-                for (int _i1336 = 0; _i1336 < _list1334.size; ++_i1336)
+                org.apache.thrift.protocol.TList _list1318 = iprot.readListBegin();
+                struct.schemaVersions = new java.util.ArrayList<SchemaVersionDescriptor>(_list1318.size);
+                @org.apache.thrift.annotation.Nullable SchemaVersionDescriptor _elem1319;
+                for (int _i1320 = 0; _i1320 < _list1318.size; ++_i1320)
                 {
-                  _elem1335 = new SchemaVersionDescriptor();
-                  _elem1335.read(iprot);
-                  struct.schemaVersions.add(_elem1335);
+                  _elem1319 = new SchemaVersionDescriptor();
+                  _elem1319.read(iprot);
+                  struct.schemaVersions.add(_elem1319);
                 }
                 iprot.readListEnd();
               }
@@ -358,9 +358,9 @@ public class FindSchemasByColsResp implements org.apache.thrift.TBase<FindSchema
         oprot.writeFieldBegin(SCHEMA_VERSIONS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.schemaVersions.size()));
-          for (SchemaVersionDescriptor _iter1337 : struct.schemaVersions)
+          for (SchemaVersionDescriptor _iter1321 : struct.schemaVersions)
           {
-            _iter1337.write(oprot);
+            _iter1321.write(oprot);
           }
           oprot.writeListEnd();
         }
@@ -391,9 +391,9 @@ public class FindSchemasByColsResp implements org.apache.thrift.TBase<FindSchema
       if (struct.isSetSchemaVersions()) {
         {
           oprot.writeI32(struct.schemaVersions.size());
-          for (SchemaVersionDescriptor _iter1338 : struct.schemaVersions)
+          for (SchemaVersionDescriptor _iter1322 : struct.schemaVersions)
           {
-            _iter1338.write(oprot);
+            _iter1322.write(oprot);
           }
         }
       }
@@ -405,14 +405,14 @@ public class FindSchemasByColsResp implements org.apache.thrift.TBase<FindSchema
       java.util.BitSet incoming = iprot.readBitSet(1);
       if (incoming.get(0)) {
         {
-          org.apache.thrift.protocol.TList _list1339 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-          struct.schemaVersions = new java.util.ArrayList<SchemaVersionDescriptor>(_list1339.size);
-          @org.apache.thrift.annotation.Nullable SchemaVersionDescriptor _elem1340;
-          for (int _i1341 = 0; _i1341 < _list1339.size; ++_i1341)
+          org.apache.thrift.protocol.TList _list1323 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+          struct.schemaVersions = new java.util.ArrayList<SchemaVersionDescriptor>(_list1323.size);
+          @org.apache.thrift.annotation.Nullable SchemaVersionDescriptor _elem1324;
+          for (int _i1325 = 0; _i1325 < _list1323.size; ++_i1325)
           {
-            _elem1340 = new SchemaVersionDescriptor();
-            _elem1340.read(iprot);
-            struct.schemaVersions.add(_elem1340);
+            _elem1324 = new SchemaVersionDescriptor();
+            _elem1324.read(iprot);
+            struct.schemaVersions.add(_elem1324);
           }
         }
         struct.setSchemaVersionsIsSet(true);

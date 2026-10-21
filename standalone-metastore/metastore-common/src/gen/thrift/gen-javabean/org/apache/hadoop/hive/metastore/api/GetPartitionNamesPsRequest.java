@@ -837,13 +837,13 @@ public class GetPartitionNamesPsRequest implements org.apache.thrift.TBase<GetPa
           case 4: // PART_VALUES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list1504 = iprot.readListBegin();
-                struct.partValues = new java.util.ArrayList<java.lang.String>(_list1504.size);
-                @org.apache.thrift.annotation.Nullable java.lang.String _elem1505;
-                for (int _i1506 = 0; _i1506 < _list1504.size; ++_i1506)
+                org.apache.thrift.protocol.TList _list1488 = iprot.readListBegin();
+                struct.partValues = new java.util.ArrayList<java.lang.String>(_list1488.size);
+                @org.apache.thrift.annotation.Nullable java.lang.String _elem1489;
+                for (int _i1490 = 0; _i1490 < _list1488.size; ++_i1490)
                 {
-                  _elem1505 = iprot.readString();
-                  struct.partValues.add(_elem1505);
+                  _elem1489 = iprot.readString();
+                  struct.partValues.add(_elem1489);
                 }
                 iprot.readListEnd();
               }
@@ -911,9 +911,9 @@ public class GetPartitionNamesPsRequest implements org.apache.thrift.TBase<GetPa
           oprot.writeFieldBegin(PART_VALUES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.partValues.size()));
-            for (java.lang.String _iter1507 : struct.partValues)
+            for (java.lang.String _iter1491 : struct.partValues)
             {
-              oprot.writeString(_iter1507);
+              oprot.writeString(_iter1491);
             }
             oprot.writeListEnd();
           }
@@ -979,9 +979,9 @@ public class GetPartitionNamesPsRequest implements org.apache.thrift.TBase<GetPa
       if (struct.isSetPartValues()) {
         {
           oprot.writeI32(struct.partValues.size());
-          for (java.lang.String _iter1508 : struct.partValues)
+          for (java.lang.String _iter1492 : struct.partValues)
           {
-            oprot.writeString(_iter1508);
+            oprot.writeString(_iter1492);
           }
         }
       }
@@ -1010,13 +1010,13 @@ public class GetPartitionNamesPsRequest implements org.apache.thrift.TBase<GetPa
       }
       if (incoming.get(1)) {
         {
-          org.apache.thrift.protocol.TList _list1509 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
-          struct.partValues = new java.util.ArrayList<java.lang.String>(_list1509.size);
-          @org.apache.thrift.annotation.Nullable java.lang.String _elem1510;
-          for (int _i1511 = 0; _i1511 < _list1509.size; ++_i1511)
+          org.apache.thrift.protocol.TList _list1493 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
+          struct.partValues = new java.util.ArrayList<java.lang.String>(_list1493.size);
+          @org.apache.thrift.annotation.Nullable java.lang.String _elem1494;
+          for (int _i1495 = 0; _i1495 < _list1493.size; ++_i1495)
           {
-            _elem1510 = iprot.readString();
-            struct.partValues.add(_elem1510);
+            _elem1494 = iprot.readString();
+            struct.partValues.add(_elem1494);
           }
         }
         struct.setPartValuesIsSet(true);

@@ -1195,13 +1195,13 @@ public class GetPartitionsRequest implements org.apache.thrift.TBase<GetPartitio
           case 6: // GROUP_NAMES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list1456 = iprot.readListBegin();
-                struct.groupNames = new java.util.ArrayList<java.lang.String>(_list1456.size);
-                @org.apache.thrift.annotation.Nullable java.lang.String _elem1457;
-                for (int _i1458 = 0; _i1458 < _list1456.size; ++_i1458)
+                org.apache.thrift.protocol.TList _list1440 = iprot.readListBegin();
+                struct.groupNames = new java.util.ArrayList<java.lang.String>(_list1440.size);
+                @org.apache.thrift.annotation.Nullable java.lang.String _elem1441;
+                for (int _i1442 = 0; _i1442 < _list1440.size; ++_i1442)
                 {
-                  _elem1457 = iprot.readString();
-                  struct.groupNames.add(_elem1457);
+                  _elem1441 = iprot.readString();
+                  struct.groupNames.add(_elem1441);
                 }
                 iprot.readListEnd();
               }
@@ -1231,13 +1231,13 @@ public class GetPartitionsRequest implements org.apache.thrift.TBase<GetPartitio
           case 9: // PROCESSOR_CAPABILITIES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list1459 = iprot.readListBegin();
-                struct.processorCapabilities = new java.util.ArrayList<java.lang.String>(_list1459.size);
-                @org.apache.thrift.annotation.Nullable java.lang.String _elem1460;
-                for (int _i1461 = 0; _i1461 < _list1459.size; ++_i1461)
+                org.apache.thrift.protocol.TList _list1443 = iprot.readListBegin();
+                struct.processorCapabilities = new java.util.ArrayList<java.lang.String>(_list1443.size);
+                @org.apache.thrift.annotation.Nullable java.lang.String _elem1444;
+                for (int _i1445 = 0; _i1445 < _list1443.size; ++_i1445)
                 {
-                  _elem1460 = iprot.readString();
-                  struct.processorCapabilities.add(_elem1460);
+                  _elem1444 = iprot.readString();
+                  struct.processorCapabilities.add(_elem1444);
                 }
                 iprot.readListEnd();
               }
@@ -1309,9 +1309,9 @@ public class GetPartitionsRequest implements org.apache.thrift.TBase<GetPartitio
           oprot.writeFieldBegin(GROUP_NAMES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.groupNames.size()));
-            for (java.lang.String _iter1462 : struct.groupNames)
+            for (java.lang.String _iter1446 : struct.groupNames)
             {
-              oprot.writeString(_iter1462);
+              oprot.writeString(_iter1446);
             }
             oprot.writeListEnd();
           }
@@ -1333,9 +1333,9 @@ public class GetPartitionsRequest implements org.apache.thrift.TBase<GetPartitio
           oprot.writeFieldBegin(PROCESSOR_CAPABILITIES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.processorCapabilities.size()));
-            for (java.lang.String _iter1463 : struct.processorCapabilities)
+            for (java.lang.String _iter1447 : struct.processorCapabilities)
             {
-              oprot.writeString(_iter1463);
+              oprot.writeString(_iter1447);
             }
             oprot.writeListEnd();
           }
@@ -1426,9 +1426,9 @@ public class GetPartitionsRequest implements org.apache.thrift.TBase<GetPartitio
       if (struct.isSetGroupNames()) {
         {
           oprot.writeI32(struct.groupNames.size());
-          for (java.lang.String _iter1464 : struct.groupNames)
+          for (java.lang.String _iter1448 : struct.groupNames)
           {
-            oprot.writeString(_iter1464);
+            oprot.writeString(_iter1448);
           }
         }
       }
@@ -1441,9 +1441,9 @@ public class GetPartitionsRequest implements org.apache.thrift.TBase<GetPartitio
       if (struct.isSetProcessorCapabilities()) {
         {
           oprot.writeI32(struct.processorCapabilities.size());
-          for (java.lang.String _iter1465 : struct.processorCapabilities)
+          for (java.lang.String _iter1449 : struct.processorCapabilities)
           {
-            oprot.writeString(_iter1465);
+            oprot.writeString(_iter1449);
           }
         }
       }
@@ -1481,13 +1481,13 @@ public class GetPartitionsRequest implements org.apache.thrift.TBase<GetPartitio
       }
       if (incoming.get(5)) {
         {
-          org.apache.thrift.protocol.TList _list1466 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
-          struct.groupNames = new java.util.ArrayList<java.lang.String>(_list1466.size);
-          @org.apache.thrift.annotation.Nullable java.lang.String _elem1467;
-          for (int _i1468 = 0; _i1468 < _list1466.size; ++_i1468)
+          org.apache.thrift.protocol.TList _list1450 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
+          struct.groupNames = new java.util.ArrayList<java.lang.String>(_list1450.size);
+          @org.apache.thrift.annotation.Nullable java.lang.String _elem1451;
+          for (int _i1452 = 0; _i1452 < _list1450.size; ++_i1452)
           {
-            _elem1467 = iprot.readString();
-            struct.groupNames.add(_elem1467);
+            _elem1451 = iprot.readString();
+            struct.groupNames.add(_elem1451);
           }
         }
         struct.setGroupNamesIsSet(true);
@@ -1504,13 +1504,13 @@ public class GetPartitionsRequest implements org.apache.thrift.TBase<GetPartitio
       }
       if (incoming.get(8)) {
         {
-          org.apache.thrift.protocol.TList _list1469 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
-          struct.processorCapabilities = new java.util.ArrayList<java.lang.String>(_list1469.size);
-          @org.apache.thrift.annotation.Nullable java.lang.String _elem1470;
-          for (int _i1471 = 0; _i1471 < _list1469.size; ++_i1471)
+          org.apache.thrift.protocol.TList _list1453 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
+          struct.processorCapabilities = new java.util.ArrayList<java.lang.String>(_list1453.size);
+          @org.apache.thrift.annotation.Nullable java.lang.String _elem1454;
+          for (int _i1455 = 0; _i1455 < _list1453.size; ++_i1455)
           {
-            _elem1470 = iprot.readString();
-            struct.processorCapabilities.add(_elem1470);
+            _elem1454 = iprot.readString();
+            struct.processorCapabilities.add(_elem1454);
           }
         }
         struct.setProcessorCapabilitiesIsSet(true);

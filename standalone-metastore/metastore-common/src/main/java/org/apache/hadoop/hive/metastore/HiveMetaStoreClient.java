@@ -2605,6 +2605,17 @@ public class HiveMetaStoreClient implements IMetaStoreClient, AutoCloseable {
   }
 
   @Override
+  public List<Database> getDatabaseObjectsByName(String catalogName, List<String> databaseNames)
+      throws MetaException, TException {
+    if (databaseNames == null || databaseNames.isEmpty()) {
+      return java.util.Collections.emptyList();
+    }
+    GetDatabaseObjectsRequest request = new GetDatabaseObjectsRequest(databaseNames);
+    request.setCatalogName(catalogName != null ? catalogName : getDefaultCatalog(conf));
+    return client.get_database_objects_by_name_req(request).getDatabases();
+  }
+
+  @Override
   public Partition getPartition(String db_name, String tbl_name, List<String> part_vals)
       throws TException {
     return getPartition(getDefaultCatalog(conf), db_name, tbl_name, part_vals);

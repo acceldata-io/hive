@@ -1206,14 +1206,14 @@ public class CreateTableRequest implements org.apache.thrift.TBase<CreateTableRe
           case 3: // PRIMARY_KEYS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list1342 = iprot.readListBegin();
-                struct.primaryKeys = new java.util.ArrayList<SQLPrimaryKey>(_list1342.size);
-                @org.apache.thrift.annotation.Nullable SQLPrimaryKey _elem1343;
-                for (int _i1344 = 0; _i1344 < _list1342.size; ++_i1344)
+                org.apache.thrift.protocol.TList _list1326 = iprot.readListBegin();
+                struct.primaryKeys = new java.util.ArrayList<SQLPrimaryKey>(_list1326.size);
+                @org.apache.thrift.annotation.Nullable SQLPrimaryKey _elem1327;
+                for (int _i1328 = 0; _i1328 < _list1326.size; ++_i1328)
                 {
-                  _elem1343 = new SQLPrimaryKey();
-                  _elem1343.read(iprot);
-                  struct.primaryKeys.add(_elem1343);
+                  _elem1327 = new SQLPrimaryKey();
+                  _elem1327.read(iprot);
+                  struct.primaryKeys.add(_elem1327);
                 }
                 iprot.readListEnd();
               }
@@ -1225,14 +1225,14 @@ public class CreateTableRequest implements org.apache.thrift.TBase<CreateTableRe
           case 4: // FOREIGN_KEYS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list1345 = iprot.readListBegin();
-                struct.foreignKeys = new java.util.ArrayList<SQLForeignKey>(_list1345.size);
-                @org.apache.thrift.annotation.Nullable SQLForeignKey _elem1346;
-                for (int _i1347 = 0; _i1347 < _list1345.size; ++_i1347)
+                org.apache.thrift.protocol.TList _list1329 = iprot.readListBegin();
+                struct.foreignKeys = new java.util.ArrayList<SQLForeignKey>(_list1329.size);
+                @org.apache.thrift.annotation.Nullable SQLForeignKey _elem1330;
+                for (int _i1331 = 0; _i1331 < _list1329.size; ++_i1331)
                 {
-                  _elem1346 = new SQLForeignKey();
-                  _elem1346.read(iprot);
-                  struct.foreignKeys.add(_elem1346);
+                  _elem1330 = new SQLForeignKey();
+                  _elem1330.read(iprot);
+                  struct.foreignKeys.add(_elem1330);
                 }
                 iprot.readListEnd();
               }
@@ -1244,14 +1244,14 @@ public class CreateTableRequest implements org.apache.thrift.TBase<CreateTableRe
           case 5: // UNIQUE_CONSTRAINTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list1348 = iprot.readListBegin();
-                struct.uniqueConstraints = new java.util.ArrayList<SQLUniqueConstraint>(_list1348.size);
-                @org.apache.thrift.annotation.Nullable SQLUniqueConstraint _elem1349;
-                for (int _i1350 = 0; _i1350 < _list1348.size; ++_i1350)
+                org.apache.thrift.protocol.TList _list1332 = iprot.readListBegin();
+                struct.uniqueConstraints = new java.util.ArrayList<SQLUniqueConstraint>(_list1332.size);
+                @org.apache.thrift.annotation.Nullable SQLUniqueConstraint _elem1333;
+                for (int _i1334 = 0; _i1334 < _list1332.size; ++_i1334)
                 {
-                  _elem1349 = new SQLUniqueConstraint();
-                  _elem1349.read(iprot);
-                  struct.uniqueConstraints.add(_elem1349);
+                  _elem1333 = new SQLUniqueConstraint();
+                  _elem1333.read(iprot);
+                  struct.uniqueConstraints.add(_elem1333);
                 }
                 iprot.readListEnd();
               }
@@ -1263,14 +1263,14 @@ public class CreateTableRequest implements org.apache.thrift.TBase<CreateTableRe
           case 6: // NOT_NULL_CONSTRAINTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list1351 = iprot.readListBegin();
-                struct.notNullConstraints = new java.util.ArrayList<SQLNotNullConstraint>(_list1351.size);
-                @org.apache.thrift.annotation.Nullable SQLNotNullConstraint _elem1352;
-                for (int _i1353 = 0; _i1353 < _list1351.size; ++_i1353)
+                org.apache.thrift.protocol.TList _list1335 = iprot.readListBegin();
+                struct.notNullConstraints = new java.util.ArrayList<SQLNotNullConstraint>(_list1335.size);
+                @org.apache.thrift.annotation.Nullable SQLNotNullConstraint _elem1336;
+                for (int _i1337 = 0; _i1337 < _list1335.size; ++_i1337)
                 {
-                  _elem1352 = new SQLNotNullConstraint();
-                  _elem1352.read(iprot);
-                  struct.notNullConstraints.add(_elem1352);
+                  _elem1336 = new SQLNotNullConstraint();
+                  _elem1336.read(iprot);
+                  struct.notNullConstraints.add(_elem1336);
                 }
                 iprot.readListEnd();
               }
@@ -1282,14 +1282,14 @@ public class CreateTableRequest implements org.apache.thrift.TBase<CreateTableRe
           case 7: // DEFAULT_CONSTRAINTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list1354 = iprot.readListBegin();
-                struct.defaultConstraints = new java.util.ArrayList<SQLDefaultConstraint>(_list1354.size);
-                @org.apache.thrift.annotation.Nullable SQLDefaultConstraint _elem1355;
-                for (int _i1356 = 0; _i1356 < _list1354.size; ++_i1356)
+                org.apache.thrift.protocol.TList _list1338 = iprot.readListBegin();
+                struct.defaultConstraints = new java.util.ArrayList<SQLDefaultConstraint>(_list1338.size);
+                @org.apache.thrift.annotation.Nullable SQLDefaultConstraint _elem1339;
+                for (int _i1340 = 0; _i1340 < _list1338.size; ++_i1340)
                 {
-                  _elem1355 = new SQLDefaultConstraint();
-                  _elem1355.read(iprot);
-                  struct.defaultConstraints.add(_elem1355);
+                  _elem1339 = new SQLDefaultConstraint();
+                  _elem1339.read(iprot);
+                  struct.defaultConstraints.add(_elem1339);
                 }
                 iprot.readListEnd();
               }
@@ -1301,14 +1301,14 @@ public class CreateTableRequest implements org.apache.thrift.TBase<CreateTableRe
           case 8: // CHECK_CONSTRAINTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list1357 = iprot.readListBegin();
-                struct.checkConstraints = new java.util.ArrayList<SQLCheckConstraint>(_list1357.size);
-                @org.apache.thrift.annotation.Nullable SQLCheckConstraint _elem1358;
-                for (int _i1359 = 0; _i1359 < _list1357.size; ++_i1359)
+                org.apache.thrift.protocol.TList _list1341 = iprot.readListBegin();
+                struct.checkConstraints = new java.util.ArrayList<SQLCheckConstraint>(_list1341.size);
+                @org.apache.thrift.annotation.Nullable SQLCheckConstraint _elem1342;
+                for (int _i1343 = 0; _i1343 < _list1341.size; ++_i1343)
                 {
-                  _elem1358 = new SQLCheckConstraint();
-                  _elem1358.read(iprot);
-                  struct.checkConstraints.add(_elem1358);
+                  _elem1342 = new SQLCheckConstraint();
+                  _elem1342.read(iprot);
+                  struct.checkConstraints.add(_elem1342);
                 }
                 iprot.readListEnd();
               }
@@ -1320,13 +1320,13 @@ public class CreateTableRequest implements org.apache.thrift.TBase<CreateTableRe
           case 9: // PROCESSOR_CAPABILITIES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list1360 = iprot.readListBegin();
-                struct.processorCapabilities = new java.util.ArrayList<java.lang.String>(_list1360.size);
-                @org.apache.thrift.annotation.Nullable java.lang.String _elem1361;
-                for (int _i1362 = 0; _i1362 < _list1360.size; ++_i1362)
+                org.apache.thrift.protocol.TList _list1344 = iprot.readListBegin();
+                struct.processorCapabilities = new java.util.ArrayList<java.lang.String>(_list1344.size);
+                @org.apache.thrift.annotation.Nullable java.lang.String _elem1345;
+                for (int _i1346 = 0; _i1346 < _list1344.size; ++_i1346)
                 {
-                  _elem1361 = iprot.readString();
-                  struct.processorCapabilities.add(_elem1361);
+                  _elem1345 = iprot.readString();
+                  struct.processorCapabilities.add(_elem1345);
                 }
                 iprot.readListEnd();
               }
@@ -1373,9 +1373,9 @@ public class CreateTableRequest implements org.apache.thrift.TBase<CreateTableRe
           oprot.writeFieldBegin(PRIMARY_KEYS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.primaryKeys.size()));
-            for (SQLPrimaryKey _iter1363 : struct.primaryKeys)
+            for (SQLPrimaryKey _iter1347 : struct.primaryKeys)
             {
-              _iter1363.write(oprot);
+              _iter1347.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1387,9 +1387,9 @@ public class CreateTableRequest implements org.apache.thrift.TBase<CreateTableRe
           oprot.writeFieldBegin(FOREIGN_KEYS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.foreignKeys.size()));
-            for (SQLForeignKey _iter1364 : struct.foreignKeys)
+            for (SQLForeignKey _iter1348 : struct.foreignKeys)
             {
-              _iter1364.write(oprot);
+              _iter1348.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1401,9 +1401,9 @@ public class CreateTableRequest implements org.apache.thrift.TBase<CreateTableRe
           oprot.writeFieldBegin(UNIQUE_CONSTRAINTS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.uniqueConstraints.size()));
-            for (SQLUniqueConstraint _iter1365 : struct.uniqueConstraints)
+            for (SQLUniqueConstraint _iter1349 : struct.uniqueConstraints)
             {
-              _iter1365.write(oprot);
+              _iter1349.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1415,9 +1415,9 @@ public class CreateTableRequest implements org.apache.thrift.TBase<CreateTableRe
           oprot.writeFieldBegin(NOT_NULL_CONSTRAINTS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.notNullConstraints.size()));
-            for (SQLNotNullConstraint _iter1366 : struct.notNullConstraints)
+            for (SQLNotNullConstraint _iter1350 : struct.notNullConstraints)
             {
-              _iter1366.write(oprot);
+              _iter1350.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1429,9 +1429,9 @@ public class CreateTableRequest implements org.apache.thrift.TBase<CreateTableRe
           oprot.writeFieldBegin(DEFAULT_CONSTRAINTS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.defaultConstraints.size()));
-            for (SQLDefaultConstraint _iter1367 : struct.defaultConstraints)
+            for (SQLDefaultConstraint _iter1351 : struct.defaultConstraints)
             {
-              _iter1367.write(oprot);
+              _iter1351.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1443,9 +1443,9 @@ public class CreateTableRequest implements org.apache.thrift.TBase<CreateTableRe
           oprot.writeFieldBegin(CHECK_CONSTRAINTS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.checkConstraints.size()));
-            for (SQLCheckConstraint _iter1368 : struct.checkConstraints)
+            for (SQLCheckConstraint _iter1352 : struct.checkConstraints)
             {
-              _iter1368.write(oprot);
+              _iter1352.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1457,9 +1457,9 @@ public class CreateTableRequest implements org.apache.thrift.TBase<CreateTableRe
           oprot.writeFieldBegin(PROCESSOR_CAPABILITIES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.processorCapabilities.size()));
-            for (java.lang.String _iter1369 : struct.processorCapabilities)
+            for (java.lang.String _iter1353 : struct.processorCapabilities)
             {
-              oprot.writeString(_iter1369);
+              oprot.writeString(_iter1353);
             }
             oprot.writeListEnd();
           }
@@ -1526,63 +1526,63 @@ public class CreateTableRequest implements org.apache.thrift.TBase<CreateTableRe
       if (struct.isSetPrimaryKeys()) {
         {
           oprot.writeI32(struct.primaryKeys.size());
-          for (SQLPrimaryKey _iter1370 : struct.primaryKeys)
+          for (SQLPrimaryKey _iter1354 : struct.primaryKeys)
           {
-            _iter1370.write(oprot);
+            _iter1354.write(oprot);
           }
         }
       }
       if (struct.isSetForeignKeys()) {
         {
           oprot.writeI32(struct.foreignKeys.size());
-          for (SQLForeignKey _iter1371 : struct.foreignKeys)
+          for (SQLForeignKey _iter1355 : struct.foreignKeys)
           {
-            _iter1371.write(oprot);
+            _iter1355.write(oprot);
           }
         }
       }
       if (struct.isSetUniqueConstraints()) {
         {
           oprot.writeI32(struct.uniqueConstraints.size());
-          for (SQLUniqueConstraint _iter1372 : struct.uniqueConstraints)
+          for (SQLUniqueConstraint _iter1356 : struct.uniqueConstraints)
           {
-            _iter1372.write(oprot);
+            _iter1356.write(oprot);
           }
         }
       }
       if (struct.isSetNotNullConstraints()) {
         {
           oprot.writeI32(struct.notNullConstraints.size());
-          for (SQLNotNullConstraint _iter1373 : struct.notNullConstraints)
+          for (SQLNotNullConstraint _iter1357 : struct.notNullConstraints)
           {
-            _iter1373.write(oprot);
+            _iter1357.write(oprot);
           }
         }
       }
       if (struct.isSetDefaultConstraints()) {
         {
           oprot.writeI32(struct.defaultConstraints.size());
-          for (SQLDefaultConstraint _iter1374 : struct.defaultConstraints)
+          for (SQLDefaultConstraint _iter1358 : struct.defaultConstraints)
           {
-            _iter1374.write(oprot);
+            _iter1358.write(oprot);
           }
         }
       }
       if (struct.isSetCheckConstraints()) {
         {
           oprot.writeI32(struct.checkConstraints.size());
-          for (SQLCheckConstraint _iter1375 : struct.checkConstraints)
+          for (SQLCheckConstraint _iter1359 : struct.checkConstraints)
           {
-            _iter1375.write(oprot);
+            _iter1359.write(oprot);
           }
         }
       }
       if (struct.isSetProcessorCapabilities()) {
         {
           oprot.writeI32(struct.processorCapabilities.size());
-          for (java.lang.String _iter1376 : struct.processorCapabilities)
+          for (java.lang.String _iter1360 : struct.processorCapabilities)
           {
-            oprot.writeString(_iter1376);
+            oprot.writeString(_iter1360);
           }
         }
       }
@@ -1605,97 +1605,97 @@ public class CreateTableRequest implements org.apache.thrift.TBase<CreateTableRe
       }
       if (incoming.get(1)) {
         {
-          org.apache.thrift.protocol.TList _list1377 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-          struct.primaryKeys = new java.util.ArrayList<SQLPrimaryKey>(_list1377.size);
-          @org.apache.thrift.annotation.Nullable SQLPrimaryKey _elem1378;
-          for (int _i1379 = 0; _i1379 < _list1377.size; ++_i1379)
+          org.apache.thrift.protocol.TList _list1361 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+          struct.primaryKeys = new java.util.ArrayList<SQLPrimaryKey>(_list1361.size);
+          @org.apache.thrift.annotation.Nullable SQLPrimaryKey _elem1362;
+          for (int _i1363 = 0; _i1363 < _list1361.size; ++_i1363)
           {
-            _elem1378 = new SQLPrimaryKey();
-            _elem1378.read(iprot);
-            struct.primaryKeys.add(_elem1378);
+            _elem1362 = new SQLPrimaryKey();
+            _elem1362.read(iprot);
+            struct.primaryKeys.add(_elem1362);
           }
         }
         struct.setPrimaryKeysIsSet(true);
       }
       if (incoming.get(2)) {
         {
-          org.apache.thrift.protocol.TList _list1380 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-          struct.foreignKeys = new java.util.ArrayList<SQLForeignKey>(_list1380.size);
-          @org.apache.thrift.annotation.Nullable SQLForeignKey _elem1381;
-          for (int _i1382 = 0; _i1382 < _list1380.size; ++_i1382)
+          org.apache.thrift.protocol.TList _list1364 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+          struct.foreignKeys = new java.util.ArrayList<SQLForeignKey>(_list1364.size);
+          @org.apache.thrift.annotation.Nullable SQLForeignKey _elem1365;
+          for (int _i1366 = 0; _i1366 < _list1364.size; ++_i1366)
           {
-            _elem1381 = new SQLForeignKey();
-            _elem1381.read(iprot);
-            struct.foreignKeys.add(_elem1381);
+            _elem1365 = new SQLForeignKey();
+            _elem1365.read(iprot);
+            struct.foreignKeys.add(_elem1365);
           }
         }
         struct.setForeignKeysIsSet(true);
       }
       if (incoming.get(3)) {
         {
-          org.apache.thrift.protocol.TList _list1383 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-          struct.uniqueConstraints = new java.util.ArrayList<SQLUniqueConstraint>(_list1383.size);
-          @org.apache.thrift.annotation.Nullable SQLUniqueConstraint _elem1384;
-          for (int _i1385 = 0; _i1385 < _list1383.size; ++_i1385)
+          org.apache.thrift.protocol.TList _list1367 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+          struct.uniqueConstraints = new java.util.ArrayList<SQLUniqueConstraint>(_list1367.size);
+          @org.apache.thrift.annotation.Nullable SQLUniqueConstraint _elem1368;
+          for (int _i1369 = 0; _i1369 < _list1367.size; ++_i1369)
           {
-            _elem1384 = new SQLUniqueConstraint();
-            _elem1384.read(iprot);
-            struct.uniqueConstraints.add(_elem1384);
+            _elem1368 = new SQLUniqueConstraint();
+            _elem1368.read(iprot);
+            struct.uniqueConstraints.add(_elem1368);
           }
         }
         struct.setUniqueConstraintsIsSet(true);
       }
       if (incoming.get(4)) {
         {
-          org.apache.thrift.protocol.TList _list1386 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-          struct.notNullConstraints = new java.util.ArrayList<SQLNotNullConstraint>(_list1386.size);
-          @org.apache.thrift.annotation.Nullable SQLNotNullConstraint _elem1387;
-          for (int _i1388 = 0; _i1388 < _list1386.size; ++_i1388)
+          org.apache.thrift.protocol.TList _list1370 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+          struct.notNullConstraints = new java.util.ArrayList<SQLNotNullConstraint>(_list1370.size);
+          @org.apache.thrift.annotation.Nullable SQLNotNullConstraint _elem1371;
+          for (int _i1372 = 0; _i1372 < _list1370.size; ++_i1372)
           {
-            _elem1387 = new SQLNotNullConstraint();
-            _elem1387.read(iprot);
-            struct.notNullConstraints.add(_elem1387);
+            _elem1371 = new SQLNotNullConstraint();
+            _elem1371.read(iprot);
+            struct.notNullConstraints.add(_elem1371);
           }
         }
         struct.setNotNullConstraintsIsSet(true);
       }
       if (incoming.get(5)) {
         {
-          org.apache.thrift.protocol.TList _list1389 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-          struct.defaultConstraints = new java.util.ArrayList<SQLDefaultConstraint>(_list1389.size);
-          @org.apache.thrift.annotation.Nullable SQLDefaultConstraint _elem1390;
-          for (int _i1391 = 0; _i1391 < _list1389.size; ++_i1391)
+          org.apache.thrift.protocol.TList _list1373 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+          struct.defaultConstraints = new java.util.ArrayList<SQLDefaultConstraint>(_list1373.size);
+          @org.apache.thrift.annotation.Nullable SQLDefaultConstraint _elem1374;
+          for (int _i1375 = 0; _i1375 < _list1373.size; ++_i1375)
           {
-            _elem1390 = new SQLDefaultConstraint();
-            _elem1390.read(iprot);
-            struct.defaultConstraints.add(_elem1390);
+            _elem1374 = new SQLDefaultConstraint();
+            _elem1374.read(iprot);
+            struct.defaultConstraints.add(_elem1374);
           }
         }
         struct.setDefaultConstraintsIsSet(true);
       }
       if (incoming.get(6)) {
         {
-          org.apache.thrift.protocol.TList _list1392 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-          struct.checkConstraints = new java.util.ArrayList<SQLCheckConstraint>(_list1392.size);
-          @org.apache.thrift.annotation.Nullable SQLCheckConstraint _elem1393;
-          for (int _i1394 = 0; _i1394 < _list1392.size; ++_i1394)
+          org.apache.thrift.protocol.TList _list1376 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+          struct.checkConstraints = new java.util.ArrayList<SQLCheckConstraint>(_list1376.size);
+          @org.apache.thrift.annotation.Nullable SQLCheckConstraint _elem1377;
+          for (int _i1378 = 0; _i1378 < _list1376.size; ++_i1378)
           {
-            _elem1393 = new SQLCheckConstraint();
-            _elem1393.read(iprot);
-            struct.checkConstraints.add(_elem1393);
+            _elem1377 = new SQLCheckConstraint();
+            _elem1377.read(iprot);
+            struct.checkConstraints.add(_elem1377);
           }
         }
         struct.setCheckConstraintsIsSet(true);
       }
       if (incoming.get(7)) {
         {
-          org.apache.thrift.protocol.TList _list1395 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
-          struct.processorCapabilities = new java.util.ArrayList<java.lang.String>(_list1395.size);
-          @org.apache.thrift.annotation.Nullable java.lang.String _elem1396;
-          for (int _i1397 = 0; _i1397 < _list1395.size; ++_i1397)
+          org.apache.thrift.protocol.TList _list1379 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
+          struct.processorCapabilities = new java.util.ArrayList<java.lang.String>(_list1379.size);
+          @org.apache.thrift.annotation.Nullable java.lang.String _elem1380;
+          for (int _i1381 = 0; _i1381 < _list1379.size; ++_i1381)
           {
-            _elem1396 = iprot.readString();
-            struct.processorCapabilities.add(_elem1396);
+            _elem1380 = iprot.readString();
+            struct.processorCapabilities.add(_elem1380);
           }
         }
         struct.setProcessorCapabilitiesIsSet(true);

@@ -1028,14 +1028,14 @@ public class AlterPartitionsRequest implements org.apache.thrift.TBase<AlterPart
           case 4: // PARTITIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list1408 = iprot.readListBegin();
-                struct.partitions = new java.util.ArrayList<Partition>(_list1408.size);
-                @org.apache.thrift.annotation.Nullable Partition _elem1409;
-                for (int _i1410 = 0; _i1410 < _list1408.size; ++_i1410)
+                org.apache.thrift.protocol.TList _list1392 = iprot.readListBegin();
+                struct.partitions = new java.util.ArrayList<Partition>(_list1392.size);
+                @org.apache.thrift.annotation.Nullable Partition _elem1393;
+                for (int _i1394 = 0; _i1394 < _list1392.size; ++_i1394)
                 {
-                  _elem1409 = new Partition();
-                  _elem1409.read(iprot);
-                  struct.partitions.add(_elem1409);
+                  _elem1393 = new Partition();
+                  _elem1393.read(iprot);
+                  struct.partitions.add(_elem1393);
                 }
                 iprot.readListEnd();
               }
@@ -1080,14 +1080,14 @@ public class AlterPartitionsRequest implements org.apache.thrift.TBase<AlterPart
           case 9: // PARTITION_COL_SCHEMA
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list1411 = iprot.readListBegin();
-                struct.partitionColSchema = new java.util.ArrayList<FieldSchema>(_list1411.size);
-                @org.apache.thrift.annotation.Nullable FieldSchema _elem1412;
-                for (int _i1413 = 0; _i1413 < _list1411.size; ++_i1413)
+                org.apache.thrift.protocol.TList _list1395 = iprot.readListBegin();
+                struct.partitionColSchema = new java.util.ArrayList<FieldSchema>(_list1395.size);
+                @org.apache.thrift.annotation.Nullable FieldSchema _elem1396;
+                for (int _i1397 = 0; _i1397 < _list1395.size; ++_i1397)
                 {
-                  _elem1412 = new FieldSchema();
-                  _elem1412.read(iprot);
-                  struct.partitionColSchema.add(_elem1412);
+                  _elem1396 = new FieldSchema();
+                  _elem1396.read(iprot);
+                  struct.partitionColSchema.add(_elem1396);
                 }
                 iprot.readListEnd();
               }
@@ -1130,9 +1130,9 @@ public class AlterPartitionsRequest implements org.apache.thrift.TBase<AlterPart
         oprot.writeFieldBegin(PARTITIONS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.partitions.size()));
-          for (Partition _iter1414 : struct.partitions)
+          for (Partition _iter1398 : struct.partitions)
           {
-            _iter1414.write(oprot);
+            _iter1398.write(oprot);
           }
           oprot.writeListEnd();
         }
@@ -1167,9 +1167,9 @@ public class AlterPartitionsRequest implements org.apache.thrift.TBase<AlterPart
           oprot.writeFieldBegin(PARTITION_COL_SCHEMA_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.partitionColSchema.size()));
-            for (FieldSchema _iter1415 : struct.partitionColSchema)
+            for (FieldSchema _iter1399 : struct.partitionColSchema)
             {
-              _iter1415.write(oprot);
+              _iter1399.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1197,9 +1197,9 @@ public class AlterPartitionsRequest implements org.apache.thrift.TBase<AlterPart
       oprot.writeString(struct.tableName);
       {
         oprot.writeI32(struct.partitions.size());
-        for (Partition _iter1416 : struct.partitions)
+        for (Partition _iter1400 : struct.partitions)
         {
-          _iter1416.write(oprot);
+          _iter1400.write(oprot);
         }
       }
       java.util.BitSet optionals = new java.util.BitSet();
@@ -1240,9 +1240,9 @@ public class AlterPartitionsRequest implements org.apache.thrift.TBase<AlterPart
       if (struct.isSetPartitionColSchema()) {
         {
           oprot.writeI32(struct.partitionColSchema.size());
-          for (FieldSchema _iter1417 : struct.partitionColSchema)
+          for (FieldSchema _iter1401 : struct.partitionColSchema)
           {
-            _iter1417.write(oprot);
+            _iter1401.write(oprot);
           }
         }
       }
@@ -1256,14 +1256,14 @@ public class AlterPartitionsRequest implements org.apache.thrift.TBase<AlterPart
       struct.tableName = iprot.readString();
       struct.setTableNameIsSet(true);
       {
-        org.apache.thrift.protocol.TList _list1418 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-        struct.partitions = new java.util.ArrayList<Partition>(_list1418.size);
-        @org.apache.thrift.annotation.Nullable Partition _elem1419;
-        for (int _i1420 = 0; _i1420 < _list1418.size; ++_i1420)
+        org.apache.thrift.protocol.TList _list1402 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+        struct.partitions = new java.util.ArrayList<Partition>(_list1402.size);
+        @org.apache.thrift.annotation.Nullable Partition _elem1403;
+        for (int _i1404 = 0; _i1404 < _list1402.size; ++_i1404)
         {
-          _elem1419 = new Partition();
-          _elem1419.read(iprot);
-          struct.partitions.add(_elem1419);
+          _elem1403 = new Partition();
+          _elem1403.read(iprot);
+          struct.partitions.add(_elem1403);
         }
       }
       struct.setPartitionsIsSet(true);
@@ -1291,14 +1291,14 @@ public class AlterPartitionsRequest implements org.apache.thrift.TBase<AlterPart
       }
       if (incoming.get(5)) {
         {
-          org.apache.thrift.protocol.TList _list1421 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-          struct.partitionColSchema = new java.util.ArrayList<FieldSchema>(_list1421.size);
-          @org.apache.thrift.annotation.Nullable FieldSchema _elem1422;
-          for (int _i1423 = 0; _i1423 < _list1421.size; ++_i1423)
+          org.apache.thrift.protocol.TList _list1405 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+          struct.partitionColSchema = new java.util.ArrayList<FieldSchema>(_list1405.size);
+          @org.apache.thrift.annotation.Nullable FieldSchema _elem1406;
+          for (int _i1407 = 0; _i1407 < _list1405.size; ++_i1407)
           {
-            _elem1422 = new FieldSchema();
-            _elem1422.read(iprot);
-            struct.partitionColSchema.add(_elem1422);
+            _elem1406 = new FieldSchema();
+            _elem1406.read(iprot);
+            struct.partitionColSchema.add(_elem1406);
           }
         }
         struct.setPartitionColSchemaIsSet(true);

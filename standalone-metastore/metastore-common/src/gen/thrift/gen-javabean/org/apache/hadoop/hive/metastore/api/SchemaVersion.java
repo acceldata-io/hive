@@ -1088,14 +1088,14 @@ public class SchemaVersion implements org.apache.thrift.TBase<SchemaVersion, Sch
           case 4: // COLS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list1326 = iprot.readListBegin();
-                struct.cols = new java.util.ArrayList<FieldSchema>(_list1326.size);
-                @org.apache.thrift.annotation.Nullable FieldSchema _elem1327;
-                for (int _i1328 = 0; _i1328 < _list1326.size; ++_i1328)
+                org.apache.thrift.protocol.TList _list1310 = iprot.readListBegin();
+                struct.cols = new java.util.ArrayList<FieldSchema>(_list1310.size);
+                @org.apache.thrift.annotation.Nullable FieldSchema _elem1311;
+                for (int _i1312 = 0; _i1312 < _list1310.size; ++_i1312)
                 {
-                  _elem1327 = new FieldSchema();
-                  _elem1327.read(iprot);
-                  struct.cols.add(_elem1327);
+                  _elem1311 = new FieldSchema();
+                  _elem1311.read(iprot);
+                  struct.cols.add(_elem1311);
                 }
                 iprot.readListEnd();
               }
@@ -1181,9 +1181,9 @@ public class SchemaVersion implements org.apache.thrift.TBase<SchemaVersion, Sch
         oprot.writeFieldBegin(COLS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.cols.size()));
-          for (FieldSchema _iter1329 : struct.cols)
+          for (FieldSchema _iter1313 : struct.cols)
           {
-            _iter1329.write(oprot);
+            _iter1313.write(oprot);
           }
           oprot.writeListEnd();
         }
@@ -1292,9 +1292,9 @@ public class SchemaVersion implements org.apache.thrift.TBase<SchemaVersion, Sch
       if (struct.isSetCols()) {
         {
           oprot.writeI32(struct.cols.size());
-          for (FieldSchema _iter1330 : struct.cols)
+          for (FieldSchema _iter1314 : struct.cols)
           {
-            _iter1330.write(oprot);
+            _iter1314.write(oprot);
           }
         }
       }
@@ -1337,14 +1337,14 @@ public class SchemaVersion implements org.apache.thrift.TBase<SchemaVersion, Sch
       }
       if (incoming.get(3)) {
         {
-          org.apache.thrift.protocol.TList _list1331 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-          struct.cols = new java.util.ArrayList<FieldSchema>(_list1331.size);
-          @org.apache.thrift.annotation.Nullable FieldSchema _elem1332;
-          for (int _i1333 = 0; _i1333 < _list1331.size; ++_i1333)
+          org.apache.thrift.protocol.TList _list1315 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+          struct.cols = new java.util.ArrayList<FieldSchema>(_list1315.size);
+          @org.apache.thrift.annotation.Nullable FieldSchema _elem1316;
+          for (int _i1317 = 0; _i1317 < _list1315.size; ++_i1317)
           {
-            _elem1332 = new FieldSchema();
-            _elem1332.read(iprot);
-            struct.cols.add(_elem1332);
+            _elem1316 = new FieldSchema();
+            _elem1316.read(iprot);
+            struct.cols.add(_elem1316);
           }
         }
         struct.setColsIsSet(true);

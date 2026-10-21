@@ -764,13 +764,13 @@ public class GetPartitionRequest implements org.apache.thrift.TBase<GetPartition
           case 4: // PART_VALS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list1488 = iprot.readListBegin();
-                struct.partVals = new java.util.ArrayList<java.lang.String>(_list1488.size);
-                @org.apache.thrift.annotation.Nullable java.lang.String _elem1489;
-                for (int _i1490 = 0; _i1490 < _list1488.size; ++_i1490)
+                org.apache.thrift.protocol.TList _list1472 = iprot.readListBegin();
+                struct.partVals = new java.util.ArrayList<java.lang.String>(_list1472.size);
+                @org.apache.thrift.annotation.Nullable java.lang.String _elem1473;
+                for (int _i1474 = 0; _i1474 < _list1472.size; ++_i1474)
                 {
-                  _elem1489 = iprot.readString();
-                  struct.partVals.add(_elem1489);
+                  _elem1473 = iprot.readString();
+                  struct.partVals.add(_elem1473);
                 }
                 iprot.readListEnd();
               }
@@ -829,9 +829,9 @@ public class GetPartitionRequest implements org.apache.thrift.TBase<GetPartition
         oprot.writeFieldBegin(PART_VALS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.partVals.size()));
-          for (java.lang.String _iter1491 : struct.partVals)
+          for (java.lang.String _iter1475 : struct.partVals)
           {
-            oprot.writeString(_iter1491);
+            oprot.writeString(_iter1475);
           }
           oprot.writeListEnd();
         }
@@ -870,9 +870,9 @@ public class GetPartitionRequest implements org.apache.thrift.TBase<GetPartition
       oprot.writeString(struct.tblName);
       {
         oprot.writeI32(struct.partVals.size());
-        for (java.lang.String _iter1492 : struct.partVals)
+        for (java.lang.String _iter1476 : struct.partVals)
         {
-          oprot.writeString(_iter1492);
+          oprot.writeString(_iter1476);
         }
       }
       java.util.BitSet optionals = new java.util.BitSet();
@@ -905,13 +905,13 @@ public class GetPartitionRequest implements org.apache.thrift.TBase<GetPartition
       struct.tblName = iprot.readString();
       struct.setTblNameIsSet(true);
       {
-        org.apache.thrift.protocol.TList _list1493 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
-        struct.partVals = new java.util.ArrayList<java.lang.String>(_list1493.size);
-        @org.apache.thrift.annotation.Nullable java.lang.String _elem1494;
-        for (int _i1495 = 0; _i1495 < _list1493.size; ++_i1495)
+        org.apache.thrift.protocol.TList _list1477 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRING);
+        struct.partVals = new java.util.ArrayList<java.lang.String>(_list1477.size);
+        @org.apache.thrift.annotation.Nullable java.lang.String _elem1478;
+        for (int _i1479 = 0; _i1479 < _list1477.size; ++_i1479)
         {
-          _elem1494 = iprot.readString();
-          struct.partVals.add(_elem1494);
+          _elem1478 = iprot.readString();
+          struct.partVals.add(_elem1478);
         }
       }
       struct.setPartValsIsSet(true);

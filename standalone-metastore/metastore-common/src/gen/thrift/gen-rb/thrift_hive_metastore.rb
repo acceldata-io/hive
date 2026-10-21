@@ -9,7 +9,7 @@ require 'facebook_service'
 require 'hive_metastore_types'
 
 module ThriftHiveMetastore
-  class Client < ::FacebookService::Client 
+  class Client < ::Facebook::FB303::FacebookService::Client 
     include ::Thrift::Client
 
     def abort_Compactions(rqst)
@@ -259,20 +259,20 @@ module ThriftHiveMetastore
       raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'get_all_databases failed: unknown result')
     end
 
-    def get_databases_req(request)
-      send_get_databases_req(request)
-      return recv_get_databases_req()
+    def get_database_objects_by_name_req(request)
+      send_get_database_objects_by_name_req(request)
+      return recv_get_database_objects_by_name_req()
     end
 
-    def send_get_databases_req(request)
-      send_message('get_databases_req', Get_databases_req_args, :request => request)
+    def send_get_database_objects_by_name_req(request)
+      send_message('get_database_objects_by_name_req', Get_database_objects_by_name_req_args, :request => request)
     end
 
-    def recv_get_databases_req()
-      result = receive_message(Get_databases_req_result)
+    def recv_get_database_objects_by_name_req()
+      result = receive_message(Get_database_objects_by_name_req_result)
       return result.success unless result.success.nil?
       raise result.o1 unless result.o1.nil?
-      raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'get_databases_req failed: unknown result')
+      raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'get_database_objects_by_name_req failed: unknown result')
     end
 
     def alter_database(dbname, db)
@@ -4631,7 +4631,7 @@ module ThriftHiveMetastore
 
   end
 
-  class Processor < ::FacebookService::Processor 
+  class Processor < ::Facebook::FB303::FacebookService::Processor 
     include ::Thrift::Processor
 
     def process_abort_Compactions(seqid, iprot, oprot)
@@ -4825,15 +4825,15 @@ module ThriftHiveMetastore
       write_result(result, oprot, 'get_all_databases', seqid)
     end
 
-    def process_get_databases_req(seqid, iprot, oprot)
-      args = read_args(iprot, Get_databases_req_args)
-      result = Get_databases_req_result.new()
+    def process_get_database_objects_by_name_req(seqid, iprot, oprot)
+      args = read_args(iprot, Get_database_objects_by_name_req_args)
+      result = Get_database_objects_by_name_req_result.new()
       begin
-        result.success = @handler.get_databases_req(args.request)
+        result.success = @handler.get_database_objects_by_name_req(args.request)
       rescue ::MetaException => o1
         result.o1 = o1
       end
-      write_result(result, oprot, 'get_databases_req', seqid)
+      write_result(result, oprot, 'get_database_objects_by_name_req', seqid)
     end
 
     def process_alter_database(seqid, iprot, oprot)
@@ -8621,7 +8621,7 @@ module ThriftHiveMetastore
     ::Thrift::Struct.generate_accessors self
   end
 
-  class Get_databases_req_args
+  class Get_database_objects_by_name_req_args
     include ::Thrift::Struct, ::Thrift::Struct_Union
     REQUEST = 1
 
@@ -8637,7 +8637,7 @@ module ThriftHiveMetastore
     ::Thrift::Struct.generate_accessors self
   end
 
-  class Get_databases_req_result
+  class Get_database_objects_by_name_req_result
     include ::Thrift::Struct, ::Thrift::Struct_Union
     SUCCESS = 0
     O1 = 1

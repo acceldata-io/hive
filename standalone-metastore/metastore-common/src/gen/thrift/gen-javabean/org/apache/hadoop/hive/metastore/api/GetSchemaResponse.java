@@ -329,14 +329,14 @@ public class GetSchemaResponse implements org.apache.thrift.TBase<GetSchemaRespo
           case 1: // FIELDS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list1480 = iprot.readListBegin();
-                struct.fields = new java.util.ArrayList<FieldSchema>(_list1480.size);
-                @org.apache.thrift.annotation.Nullable FieldSchema _elem1481;
-                for (int _i1482 = 0; _i1482 < _list1480.size; ++_i1482)
+                org.apache.thrift.protocol.TList _list1464 = iprot.readListBegin();
+                struct.fields = new java.util.ArrayList<FieldSchema>(_list1464.size);
+                @org.apache.thrift.annotation.Nullable FieldSchema _elem1465;
+                for (int _i1466 = 0; _i1466 < _list1464.size; ++_i1466)
                 {
-                  _elem1481 = new FieldSchema();
-                  _elem1481.read(iprot);
-                  struct.fields.add(_elem1481);
+                  _elem1465 = new FieldSchema();
+                  _elem1465.read(iprot);
+                  struct.fields.add(_elem1465);
                 }
                 iprot.readListEnd();
               }
@@ -362,9 +362,9 @@ public class GetSchemaResponse implements org.apache.thrift.TBase<GetSchemaRespo
         oprot.writeFieldBegin(FIELDS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.fields.size()));
-          for (FieldSchema _iter1483 : struct.fields)
+          for (FieldSchema _iter1467 : struct.fields)
           {
-            _iter1483.write(oprot);
+            _iter1467.write(oprot);
           }
           oprot.writeListEnd();
         }
@@ -389,9 +389,9 @@ public class GetSchemaResponse implements org.apache.thrift.TBase<GetSchemaRespo
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       {
         oprot.writeI32(struct.fields.size());
-        for (FieldSchema _iter1484 : struct.fields)
+        for (FieldSchema _iter1468 : struct.fields)
         {
-          _iter1484.write(oprot);
+          _iter1468.write(oprot);
         }
       }
     }
@@ -400,14 +400,14 @@ public class GetSchemaResponse implements org.apache.thrift.TBase<GetSchemaRespo
     public void read(org.apache.thrift.protocol.TProtocol prot, GetSchemaResponse struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       {
-        org.apache.thrift.protocol.TList _list1485 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-        struct.fields = new java.util.ArrayList<FieldSchema>(_list1485.size);
-        @org.apache.thrift.annotation.Nullable FieldSchema _elem1486;
-        for (int _i1487 = 0; _i1487 < _list1485.size; ++_i1487)
+        org.apache.thrift.protocol.TList _list1469 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+        struct.fields = new java.util.ArrayList<FieldSchema>(_list1469.size);
+        @org.apache.thrift.annotation.Nullable FieldSchema _elem1470;
+        for (int _i1471 = 0; _i1471 < _list1469.size; ++_i1471)
         {
-          _elem1486 = new FieldSchema();
-          _elem1486.read(iprot);
-          struct.fields.add(_elem1486);
+          _elem1470 = new FieldSchema();
+          _elem1470.read(iprot);
+          struct.fields.add(_elem1470);
         }
       }
       struct.setFieldsIsSet(true);
