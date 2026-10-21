@@ -19,7 +19,7 @@ use Thrift\Exception\TApplicationException;
 /**
  * This interface is live.
  */
-interface ThriftHiveMetastoreIf extends \FacebookServiceIf
+interface ThriftHiveMetastoreIf extends \fb303\FacebookServiceIf
 {
     /**
      * @param \metastore\AbortCompactionRequest $rqst
@@ -119,6 +119,12 @@ interface ThriftHiveMetastoreIf extends \FacebookServiceIf
      * @throws \metastore\MetaException
      */
     public function get_all_databases();
+    /**
+     * @param \metastore\GetDatabaseObjectsRequest $request
+     * @return \metastore\GetDatabaseObjectsResponse
+     * @throws \metastore\MetaException
+     */
+    public function get_database_objects_by_name_req(\metastore\GetDatabaseObjectsRequest $request);
     /**
      * @param string $dbname
      * @param \metastore\Database $db
