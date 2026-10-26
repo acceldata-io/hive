@@ -660,6 +660,10 @@ class DropTableRequest; end
 
 class GetDatabaseRequest; end
 
+class GetDatabaseObjectsByNameRequest; end
+
+class GetDatabaseObjectsByNameResponse; end
+
 class AlterDatabaseRequest; end
 
 class DropDatabaseRequest; end
@@ -5323,7 +5327,7 @@ class InsertEventRequestData
 
   FIELDS = {
     REPLACE => {:type => ::Thrift::Types::BOOL, :name => 'replace', :optional => true},
-    FILESADDED => {:type => ::Thrift::Types::LIST, :name => 'filesAdded', :element => {:type => ::Thrift::Types::STRING}},
+    FILESADDED => {:type => ::Thrift::Types::LIST, :name => 'filesAdded', :element => {:type => ::Thrift::Types::STRING}, :optional => true},
     FILESADDEDCHECKSUM => {:type => ::Thrift::Types::LIST, :name => 'filesAddedChecksum', :element => {:type => ::Thrift::Types::STRING}, :optional => true},
     SUBDIRECTORYLIST => {:type => ::Thrift::Types::LIST, :name => 'subDirectoryList', :element => {:type => ::Thrift::Types::STRING}, :optional => true},
     PARTITIONVAL => {:type => ::Thrift::Types::LIST, :name => 'partitionVal', :element => {:type => ::Thrift::Types::STRING}, :optional => true}
@@ -5332,7 +5336,6 @@ class InsertEventRequestData
   def struct_fields; FIELDS; end
 
   def validate
-    raise ::Thrift::ProtocolException.new(::Thrift::ProtocolException::UNKNOWN, 'Required field filesAdded is unset!') unless @filesAdded
   end
 
   ::Thrift::Struct.generate_accessors self
@@ -5977,6 +5980,42 @@ class GetDatabaseRequest
   def struct_fields; FIELDS; end
 
   def validate
+  end
+
+  ::Thrift::Struct.generate_accessors self
+end
+
+class GetDatabaseObjectsByNameRequest
+  include ::Thrift::Struct, ::Thrift::Struct_Union
+  DATABASENAMES = 1
+  CATALOGNAME = 2
+
+  FIELDS = {
+    DATABASENAMES => {:type => ::Thrift::Types::LIST, :name => 'databaseNames', :element => {:type => ::Thrift::Types::STRING}},
+    CATALOGNAME => {:type => ::Thrift::Types::STRING, :name => 'catalogName', :optional => true}
+  }
+
+  def struct_fields; FIELDS; end
+
+  def validate
+    raise ::Thrift::ProtocolException.new(::Thrift::ProtocolException::UNKNOWN, 'Required field databaseNames is unset!') unless @databaseNames
+  end
+
+  ::Thrift::Struct.generate_accessors self
+end
+
+class GetDatabaseObjectsByNameResponse
+  include ::Thrift::Struct, ::Thrift::Struct_Union
+  DATABASES = 1
+
+  FIELDS = {
+    DATABASES => {:type => ::Thrift::Types::LIST, :name => 'databases', :element => {:type => ::Thrift::Types::STRUCT, :class => ::Database}}
+  }
+
+  def struct_fields; FIELDS; end
+
+  def validate
+    raise ::Thrift::ProtocolException.new(::Thrift::ProtocolException::UNKNOWN, 'Required field databases is unset!') unless @databases
   end
 
   ::Thrift::Struct.generate_accessors self

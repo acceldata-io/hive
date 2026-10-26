@@ -105,6 +105,11 @@ class ThriftHiveMetastoreHandler : virtual public ThriftHiveMetastoreIf {
     printf("get_databases_req\n");
   }
 
+  void get_database_objects_by_name_req(GetDatabaseObjectsByNameResponse& _return, const GetDatabaseObjectsByNameRequest& request) {
+    // Your implementation goes here
+    printf("get_database_objects_by_name_req\n");
+  }
+
   void alter_database(const std::string& dbname, const Database& db) {
     // Your implementation goes here
     printf("alter_database\n");
