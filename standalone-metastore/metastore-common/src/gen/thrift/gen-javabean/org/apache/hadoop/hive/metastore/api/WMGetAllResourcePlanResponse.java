@@ -321,14 +321,14 @@ package org.apache.hadoop.hive.metastore.api;
           case 1: // RESOURCE_PLANS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list1278 = iprot.readListBegin();
-                struct.resourcePlans = new java.util.ArrayList<WMResourcePlan>(_list1278.size);
-                @org.apache.thrift.annotation.Nullable WMResourcePlan _elem1279;
-                for (int _i1280 = 0; _i1280 < _list1278.size; ++_i1280)
+                org.apache.thrift.protocol.TList _list1318 = iprot.readListBegin();
+                struct.resourcePlans = new java.util.ArrayList<WMResourcePlan>(_list1318.size);
+                @org.apache.thrift.annotation.Nullable WMResourcePlan _elem1319;
+                for (int _i1320 = 0; _i1320 < _list1318.size; ++_i1320)
                 {
-                  _elem1279 = new WMResourcePlan();
-                  _elem1279.read(iprot);
-                  struct.resourcePlans.add(_elem1279);
+                  _elem1319 = new WMResourcePlan();
+                  _elem1319.read(iprot);
+                  struct.resourcePlans.add(_elem1319);
                 }
                 iprot.readListEnd();
               }
@@ -355,9 +355,9 @@ package org.apache.hadoop.hive.metastore.api;
           oprot.writeFieldBegin(RESOURCE_PLANS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.resourcePlans.size()));
-            for (WMResourcePlan _iter1281 : struct.resourcePlans)
+            for (WMResourcePlan _iter1321 : struct.resourcePlans)
             {
-              _iter1281.write(oprot);
+              _iter1321.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -389,9 +389,9 @@ package org.apache.hadoop.hive.metastore.api;
       if (struct.isSetResourcePlans()) {
         {
           oprot.writeI32(struct.resourcePlans.size());
-          for (WMResourcePlan _iter1282 : struct.resourcePlans)
+          for (WMResourcePlan _iter1322 : struct.resourcePlans)
           {
-            _iter1282.write(oprot);
+            _iter1322.write(oprot);
           }
         }
       }
@@ -403,14 +403,14 @@ package org.apache.hadoop.hive.metastore.api;
       java.util.BitSet incoming = iprot.readBitSet(1);
       if (incoming.get(0)) {
         {
-          org.apache.thrift.protocol.TList _list1283 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-          struct.resourcePlans = new java.util.ArrayList<WMResourcePlan>(_list1283.size);
-          @org.apache.thrift.annotation.Nullable WMResourcePlan _elem1284;
-          for (int _i1285 = 0; _i1285 < _list1283.size; ++_i1285)
+          org.apache.thrift.protocol.TList _list1323 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+          struct.resourcePlans = new java.util.ArrayList<WMResourcePlan>(_list1323.size);
+          @org.apache.thrift.annotation.Nullable WMResourcePlan _elem1324;
+          for (int _i1325 = 0; _i1325 < _list1323.size; ++_i1325)
           {
-            _elem1284 = new WMResourcePlan();
-            _elem1284.read(iprot);
-            struct.resourcePlans.add(_elem1284);
+            _elem1324 = new WMResourcePlan();
+            _elem1324.read(iprot);
+            struct.resourcePlans.add(_elem1324);
           }
         }
         struct.setResourcePlansIsSet(true);

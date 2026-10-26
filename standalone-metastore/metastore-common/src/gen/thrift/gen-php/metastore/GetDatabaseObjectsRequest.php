@@ -22,38 +22,34 @@ class GetDatabaseObjectsRequest
 
     static public $_TSPEC = array(
         1 => array(
-            'var' => 'databaseNames',
-            'isRequired' => true,
-            'type' => TType::LST,
-            'etype' => TType::STRING,
-            'elem' => array(
-                'type' => TType::STRING,
-                ),
+            'var' => 'catalogName',
+            'isRequired' => false,
+            'type' => TType::STRING,
         ),
         2 => array(
-            'var' => 'catalogName',
+            'var' => 'pattern',
             'isRequired' => false,
             'type' => TType::STRING,
         ),
     );
 
     /**
-     * @var string[]
-     */
-    public $databaseNames = null;
-    /**
      * @var string
      */
     public $catalogName = null;
+    /**
+     * @var string
+     */
+    public $pattern = null;
 
     public function __construct($vals = null)
     {
         if (is_array($vals)) {
-            if (isset($vals['databaseNames'])) {
-                $this->databaseNames = $vals['databaseNames'];
-            }
             if (isset($vals['catalogName'])) {
                 $this->catalogName = $vals['catalogName'];
+            }
+            if (isset($vals['pattern'])) {
+                $this->pattern = $vals['pattern'];
             }
         }
     }
@@ -78,24 +74,15 @@ class GetDatabaseObjectsRequest
             }
             switch ($fid) {
                 case 1:
-                    if ($ftype == TType::LST) {
-                        $this->databaseNames = array();
-                        $_size1085 = 0;
-                        $_etype1088 = 0;
-                        $xfer += $input->readListBegin($_etype1088, $_size1085);
-                        for ($_i1089 = 0; $_i1089 < $_size1085; ++$_i1089) {
-                            $elem1090 = null;
-                            $xfer += $input->readString($elem1090);
-                            $this->databaseNames []= $elem1090;
-                        }
-                        $xfer += $input->readListEnd();
+                    if ($ftype == TType::STRING) {
+                        $xfer += $input->readString($this->catalogName);
                     } else {
                         $xfer += $input->skip($ftype);
                     }
                     break;
                 case 2:
                     if ($ftype == TType::STRING) {
-                        $xfer += $input->readString($this->catalogName);
+                        $xfer += $input->readString($this->pattern);
                     } else {
                         $xfer += $input->skip($ftype);
                     }
@@ -114,21 +101,14 @@ class GetDatabaseObjectsRequest
     {
         $xfer = 0;
         $xfer += $output->writeStructBegin('GetDatabaseObjectsRequest');
-        if ($this->databaseNames !== null) {
-            if (!is_array($this->databaseNames)) {
-                throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
-            }
-            $xfer += $output->writeFieldBegin('databaseNames', TType::LST, 1);
-            $output->writeListBegin(TType::STRING, count($this->databaseNames));
-            foreach ($this->databaseNames as $iter1091) {
-                $xfer += $output->writeString($iter1091);
-            }
-            $output->writeListEnd();
+        if ($this->catalogName !== null) {
+            $xfer += $output->writeFieldBegin('catalogName', TType::STRING, 1);
+            $xfer += $output->writeString($this->catalogName);
             $xfer += $output->writeFieldEnd();
         }
-        if ($this->catalogName !== null) {
-            $xfer += $output->writeFieldBegin('catalogName', TType::STRING, 2);
-            $xfer += $output->writeString($this->catalogName);
+        if ($this->pattern !== null) {
+            $xfer += $output->writeFieldBegin('pattern', TType::STRING, 2);
+            $xfer += $output->writeString($this->pattern);
             $xfer += $output->writeFieldEnd();
         }
         $xfer += $output->writeFieldStop();

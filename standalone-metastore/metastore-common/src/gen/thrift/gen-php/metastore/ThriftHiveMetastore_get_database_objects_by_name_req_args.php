@@ -25,12 +25,12 @@ class ThriftHiveMetastore_get_database_objects_by_name_req_args
             'var' => 'request',
             'isRequired' => false,
             'type' => TType::STRUCT,
-            'class' => '\metastore\GetDatabaseObjectsRequest',
+            'class' => '\metastore\GetDatabaseObjectsByNameRequest',
         ),
     );
 
     /**
-     * @var \metastore\GetDatabaseObjectsRequest
+     * @var \metastore\GetDatabaseObjectsByNameRequest
      */
     public $request = null;
 
@@ -64,7 +64,7 @@ class ThriftHiveMetastore_get_database_objects_by_name_req_args
             switch ($fid) {
                 case 1:
                     if ($ftype == TType::STRUCT) {
-                        $this->request = new \metastore\GetDatabaseObjectsRequest();
+                        $this->request = new \metastore\GetDatabaseObjectsByNameRequest();
                         $xfer += $this->request->read($input);
                     } else {
                         $xfer += $input->skip($ftype);
