@@ -2610,7 +2610,7 @@ public class HiveMetaStoreClient implements IMetaStoreClient, AutoCloseable {
     if (databaseNames == null || databaseNames.isEmpty()) {
       return java.util.Collections.emptyList();
     }
-    GetDatabaseObjectsRequest request = new GetDatabaseObjectsRequest(databaseNames);
+    GetDatabaseObjectsByNameRequest request = new GetDatabaseObjectsByNameRequest(databaseNames);
     request.setCatalogName(catalogName != null ? catalogName : getDefaultCatalog(conf));
     return client.get_database_objects_by_name_req(request).getDatabases();
   }
