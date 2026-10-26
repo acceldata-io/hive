@@ -20,9 +20,12 @@ package org.apache.hadoop.hive.ql.security.authorization.plugin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.hadoop.classification.InterfaceStability.Evolving;
 import org.apache.hadoop.hive.common.classification.InterfaceAudience.LimitedPrivate;
+import org.apache.hadoop.hive.metastore.api.Database;
+import org.apache.hadoop.hive.metastore.api.PrincipalType;
 import org.apache.hadoop.hive.ql.security.authorization.plugin.HivePrivilegeObject.HivePrivilegeObjectType;
 
 /**
@@ -38,12 +41,33 @@ public class HivePrivilegeObjectUtils {
    * @return
    */
   public static List<HivePrivilegeObject> getHivePrivDbObjects(List<String> dbList) {
+    return getHivePrivDbObjects(dbList, null);
+  }
+
+  /**
+   * Convert list of dbnames into list of HivePrivilegeObject, stamping each with its owner
+   * from {@code dbByName} when available. The resulting HivePrivilegeObject.ownerName/ownerType
+   * are consumed by Ranger's RANGER-5097 code path, avoiding a per-DB getDatabase RPC inside
+   * {@code setOwnerUser}. Entries missing from the map are built owner-less and fall through
+   * to the authorizer's existing per-DB resolution.
+   */
+  public static List<HivePrivilegeObject> getHivePrivDbObjects(List<String> dbList,
+      Map<String, Database> dbByName) {
     List<HivePrivilegeObject> objs = new ArrayList<HivePrivilegeObject>();
     for (String dbname : dbList) {
-      objs.add(new HivePrivilegeObject(HivePrivilegeObjectType.DATABASE, dbname, dbname));
+      Database db = (dbByName != null) ? dbByName.get(dbname) : null;
+      String ownerName = (db != null) ? db.getOwnerName() : null;
+      PrincipalType ownerType = (db != null) ? db.getOwnerType() : null;
+      if (ownerName == null) {
+        // Preserve the long-standing 3-arg constructor behavior when owner is unavailable.
+        objs.add(new HivePrivilegeObject(HivePrivilegeObjectType.DATABASE, dbname, dbname));
+      } else {
+        objs.add(new HivePrivilegeObject(HivePrivilegeObjectType.DATABASE, dbname, dbname,
+            null, null, HivePrivilegeObject.HivePrivObjectActionType.OTHER, null, null,
+            ownerName, ownerType));
+      }
     }
     return objs;
-
   }
 
   /**

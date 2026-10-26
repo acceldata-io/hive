@@ -1771,6 +1771,20 @@ struct GetDatabaseRequest {
  4: optional string processorIdentifier
 }
 
+// Bulk owner prefetch for AuthorizationMetaStoreFilterHook.filterDatabases.
+// Server-side loops get_database_core, firing PreReadDatabaseEvent per entry — one
+// Thrift RPC replaces N per-DB round-trips. See HiveMetaStoreClient.getDatabaseObjectsByName.
+// Named with the "ByName" suffix to avoid collision with GetDatabaseObjectsRequest/Response
+// (pattern-based get_databases_req, OCR-2508).
+struct GetDatabaseObjectsByNameRequest {
+ 1: required list<string> databaseNames,
+ 2: optional string catalogName
+}
+
+struct GetDatabaseObjectsByNameResponse {
+ 1: required list<Database> databases
+}
+
 struct DropDatabaseRequest {
   1: required string name,
   2: optional string catalogName,
@@ -2578,6 +2592,7 @@ service ThriftHiveMetastore extends fb303.FacebookService
   list<string> get_databases(1:string pattern) throws(1:MetaException o1)
   list<string> get_all_databases() throws(1:MetaException o1)
   GetDatabaseObjectsResponse get_databases_req (1:GetDatabaseObjectsRequest request) throws(1:MetaException o1)
+  GetDatabaseObjectsByNameResponse get_database_objects_by_name_req(1:GetDatabaseObjectsByNameRequest request) throws(1:MetaException o1)
   void alter_database(1:string dbname, 2:Database db) throws(1:MetaException o1, 2:NoSuchObjectException o2)
 
   void create_dataconnector(1:DataConnector connector) throws(1:AlreadyExistsException o1, 2:InvalidObjectException o2, 3:MetaException o3)
