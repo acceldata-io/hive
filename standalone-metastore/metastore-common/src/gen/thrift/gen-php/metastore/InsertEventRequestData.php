@@ -28,7 +28,7 @@ class InsertEventRequestData
         ),
         2 => array(
             'var' => 'filesAdded',
-            'isRequired' => true,
+            'isRequired' => false,
             'type' => TType::LST,
             'etype' => TType::STRING,
             'elem' => array(

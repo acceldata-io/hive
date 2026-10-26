@@ -656,9 +656,9 @@ class ExtendedTableInfo; end
 
 class GetDatabaseRequest; end
 
-class GetDatabaseObjectsRequest; end
+class GetDatabaseObjectsByNameRequest; end
 
-class GetDatabaseObjectsResponse; end
+class GetDatabaseObjectsByNameResponse; end
 
 class DropDatabaseRequest; end
 
@@ -5283,7 +5283,7 @@ class InsertEventRequestData
 
   FIELDS = {
     REPLACE => {:type => ::Thrift::Types::BOOL, :name => 'replace', :optional => true},
-    FILESADDED => {:type => ::Thrift::Types::LIST, :name => 'filesAdded', :element => {:type => ::Thrift::Types::STRING}},
+    FILESADDED => {:type => ::Thrift::Types::LIST, :name => 'filesAdded', :element => {:type => ::Thrift::Types::STRING}, :optional => true},
     FILESADDEDCHECKSUM => {:type => ::Thrift::Types::LIST, :name => 'filesAddedChecksum', :element => {:type => ::Thrift::Types::STRING}, :optional => true},
     SUBDIRECTORYLIST => {:type => ::Thrift::Types::LIST, :name => 'subDirectoryList', :element => {:type => ::Thrift::Types::STRING}, :optional => true},
     PARTITIONVAL => {:type => ::Thrift::Types::LIST, :name => 'partitionVal', :element => {:type => ::Thrift::Types::STRING}, :optional => true}
@@ -5292,7 +5292,6 @@ class InsertEventRequestData
   def struct_fields; FIELDS; end
 
   def validate
-    raise ::Thrift::ProtocolException.new(::Thrift::ProtocolException::UNKNOWN, 'Required field filesAdded is unset!') unless @filesAdded
   end
 
   ::Thrift::Struct.generate_accessors self
@@ -5914,7 +5913,7 @@ class GetDatabaseRequest
   ::Thrift::Struct.generate_accessors self
 end
 
-class GetDatabaseObjectsRequest
+class GetDatabaseObjectsByNameRequest
   include ::Thrift::Struct, ::Thrift::Struct_Union
   DATABASENAMES = 1
   CATALOGNAME = 2
@@ -5933,7 +5932,7 @@ class GetDatabaseObjectsRequest
   ::Thrift::Struct.generate_accessors self
 end
 
-class GetDatabaseObjectsResponse
+class GetDatabaseObjectsByNameResponse
   include ::Thrift::Struct, ::Thrift::Struct_Union
   DATABASES = 1
 

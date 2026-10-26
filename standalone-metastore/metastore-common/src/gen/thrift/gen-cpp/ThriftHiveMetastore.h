@@ -41,7 +41,8 @@ class ThriftHiveMetastoreIf : virtual public  ::facebook::fb303::FacebookService
   virtual void drop_database_req(const DropDatabaseRequest& req) = 0;
   virtual void get_databases(std::vector<std::string> & _return, const std::string& pattern) = 0;
   virtual void get_all_databases(std::vector<std::string> & _return) = 0;
-  virtual void get_database_objects_by_name_req(GetDatabaseObjectsResponse& _return, const GetDatabaseObjectsRequest& request) = 0;
+  virtual void get_databases_req(GetDatabaseObjectsResponse& _return, const GetDatabaseObjectsRequest& request) = 0;
+  virtual void get_database_objects_by_name_req(GetDatabaseObjectsByNameResponse& _return, const GetDatabaseObjectsByNameRequest& request) = 0;
   virtual void alter_database(const std::string& dbname, const Database& db) = 0;
   virtual void create_dataconnector(const DataConnector& connector) = 0;
   virtual void get_dataconnector_req(DataConnector& _return, const GetDataConnectorRequest& request) = 0;
@@ -379,7 +380,10 @@ class ThriftHiveMetastoreNull : virtual public ThriftHiveMetastoreIf , virtual p
   void get_all_databases(std::vector<std::string> & /* _return */) override {
     return;
   }
-  void get_database_objects_by_name_req(GetDatabaseObjectsResponse& /* _return */, const GetDatabaseObjectsRequest& /* request */) override {
+  void get_databases_req(GetDatabaseObjectsResponse& /* _return */, const GetDatabaseObjectsRequest& /* request */) override {
+    return;
+  }
+  void get_database_objects_by_name_req(GetDatabaseObjectsByNameResponse& /* _return */, const GetDatabaseObjectsByNameRequest& /* request */) override {
     return;
   }
   void alter_database(const std::string& /* dbname */, const Database& /* db */) override {
@@ -2948,6 +2952,118 @@ class ThriftHiveMetastore_get_all_databases_presult {
 
 };
 
+typedef struct _ThriftHiveMetastore_get_databases_req_args__isset {
+  _ThriftHiveMetastore_get_databases_req_args__isset() : request(false) {}
+  bool request :1;
+} _ThriftHiveMetastore_get_databases_req_args__isset;
+
+class ThriftHiveMetastore_get_databases_req_args {
+ public:
+
+  ThriftHiveMetastore_get_databases_req_args(const ThriftHiveMetastore_get_databases_req_args&);
+  ThriftHiveMetastore_get_databases_req_args& operator=(const ThriftHiveMetastore_get_databases_req_args&);
+  ThriftHiveMetastore_get_databases_req_args() noexcept {
+  }
+
+  virtual ~ThriftHiveMetastore_get_databases_req_args() noexcept;
+  GetDatabaseObjectsRequest request;
+
+  _ThriftHiveMetastore_get_databases_req_args__isset __isset;
+
+  void __set_request(const GetDatabaseObjectsRequest& val);
+
+  bool operator == (const ThriftHiveMetastore_get_databases_req_args & rhs) const
+  {
+    if (!(request == rhs.request))
+      return false;
+    return true;
+  }
+  bool operator != (const ThriftHiveMetastore_get_databases_req_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ThriftHiveMetastore_get_databases_req_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class ThriftHiveMetastore_get_databases_req_pargs {
+ public:
+
+
+  virtual ~ThriftHiveMetastore_get_databases_req_pargs() noexcept;
+  const GetDatabaseObjectsRequest* request;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _ThriftHiveMetastore_get_databases_req_result__isset {
+  _ThriftHiveMetastore_get_databases_req_result__isset() : success(false), o1(false) {}
+  bool success :1;
+  bool o1 :1;
+} _ThriftHiveMetastore_get_databases_req_result__isset;
+
+class ThriftHiveMetastore_get_databases_req_result {
+ public:
+
+  ThriftHiveMetastore_get_databases_req_result(const ThriftHiveMetastore_get_databases_req_result&);
+  ThriftHiveMetastore_get_databases_req_result& operator=(const ThriftHiveMetastore_get_databases_req_result&);
+  ThriftHiveMetastore_get_databases_req_result() noexcept {
+  }
+
+  virtual ~ThriftHiveMetastore_get_databases_req_result() noexcept;
+  GetDatabaseObjectsResponse success;
+  MetaException o1;
+
+  _ThriftHiveMetastore_get_databases_req_result__isset __isset;
+
+  void __set_success(const GetDatabaseObjectsResponse& val);
+
+  void __set_o1(const MetaException& val);
+
+  bool operator == (const ThriftHiveMetastore_get_databases_req_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(o1 == rhs.o1))
+      return false;
+    return true;
+  }
+  bool operator != (const ThriftHiveMetastore_get_databases_req_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ThriftHiveMetastore_get_databases_req_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _ThriftHiveMetastore_get_databases_req_presult__isset {
+  _ThriftHiveMetastore_get_databases_req_presult__isset() : success(false), o1(false) {}
+  bool success :1;
+  bool o1 :1;
+} _ThriftHiveMetastore_get_databases_req_presult__isset;
+
+class ThriftHiveMetastore_get_databases_req_presult {
+ public:
+
+
+  virtual ~ThriftHiveMetastore_get_databases_req_presult() noexcept;
+  GetDatabaseObjectsResponse* success;
+  MetaException o1;
+
+  _ThriftHiveMetastore_get_databases_req_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 typedef struct _ThriftHiveMetastore_get_database_objects_by_name_req_args__isset {
   _ThriftHiveMetastore_get_database_objects_by_name_req_args__isset() : request(false) {}
   bool request :1;
@@ -2962,11 +3078,11 @@ class ThriftHiveMetastore_get_database_objects_by_name_req_args {
   }
 
   virtual ~ThriftHiveMetastore_get_database_objects_by_name_req_args() noexcept;
-  GetDatabaseObjectsRequest request;
+  GetDatabaseObjectsByNameRequest request;
 
   _ThriftHiveMetastore_get_database_objects_by_name_req_args__isset __isset;
 
-  void __set_request(const GetDatabaseObjectsRequest& val);
+  void __set_request(const GetDatabaseObjectsByNameRequest& val);
 
   bool operator == (const ThriftHiveMetastore_get_database_objects_by_name_req_args & rhs) const
   {
@@ -2991,7 +3107,7 @@ class ThriftHiveMetastore_get_database_objects_by_name_req_pargs {
 
 
   virtual ~ThriftHiveMetastore_get_database_objects_by_name_req_pargs() noexcept;
-  const GetDatabaseObjectsRequest* request;
+  const GetDatabaseObjectsByNameRequest* request;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -3012,12 +3128,12 @@ class ThriftHiveMetastore_get_database_objects_by_name_req_result {
   }
 
   virtual ~ThriftHiveMetastore_get_database_objects_by_name_req_result() noexcept;
-  GetDatabaseObjectsResponse success;
+  GetDatabaseObjectsByNameResponse success;
   MetaException o1;
 
   _ThriftHiveMetastore_get_database_objects_by_name_req_result__isset __isset;
 
-  void __set_success(const GetDatabaseObjectsResponse& val);
+  void __set_success(const GetDatabaseObjectsByNameResponse& val);
 
   void __set_o1(const MetaException& val);
 
@@ -3051,7 +3167,7 @@ class ThriftHiveMetastore_get_database_objects_by_name_req_presult {
 
 
   virtual ~ThriftHiveMetastore_get_database_objects_by_name_req_presult() noexcept;
-  GetDatabaseObjectsResponse* success;
+  GetDatabaseObjectsByNameResponse* success;
   MetaException o1;
 
   _ThriftHiveMetastore_get_database_objects_by_name_req_presult__isset __isset;
@@ -35139,9 +35255,12 @@ class ThriftHiveMetastoreClient : virtual public ThriftHiveMetastoreIf, public  
   void get_all_databases(std::vector<std::string> & _return) override;
   void send_get_all_databases();
   void recv_get_all_databases(std::vector<std::string> & _return);
-  void get_database_objects_by_name_req(GetDatabaseObjectsResponse& _return, const GetDatabaseObjectsRequest& request) override;
-  void send_get_database_objects_by_name_req(const GetDatabaseObjectsRequest& request);
-  void recv_get_database_objects_by_name_req(GetDatabaseObjectsResponse& _return);
+  void get_databases_req(GetDatabaseObjectsResponse& _return, const GetDatabaseObjectsRequest& request) override;
+  void send_get_databases_req(const GetDatabaseObjectsRequest& request);
+  void recv_get_databases_req(GetDatabaseObjectsResponse& _return);
+  void get_database_objects_by_name_req(GetDatabaseObjectsByNameResponse& _return, const GetDatabaseObjectsByNameRequest& request) override;
+  void send_get_database_objects_by_name_req(const GetDatabaseObjectsByNameRequest& request);
+  void recv_get_database_objects_by_name_req(GetDatabaseObjectsByNameResponse& _return);
   void alter_database(const std::string& dbname, const Database& db) override;
   void send_alter_database(const std::string& dbname, const Database& db);
   void recv_alter_database();
@@ -35956,6 +36075,7 @@ class ThriftHiveMetastoreProcessor : public  ::facebook::fb303::FacebookServiceP
   void process_drop_database_req(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_databases(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_all_databases(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_databases_req(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_database_objects_by_name_req(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_alter_database(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_create_dataconnector(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -36239,6 +36359,7 @@ class ThriftHiveMetastoreProcessor : public  ::facebook::fb303::FacebookServiceP
     processMap_["drop_database_req"] = &ThriftHiveMetastoreProcessor::process_drop_database_req;
     processMap_["get_databases"] = &ThriftHiveMetastoreProcessor::process_get_databases;
     processMap_["get_all_databases"] = &ThriftHiveMetastoreProcessor::process_get_all_databases;
+    processMap_["get_databases_req"] = &ThriftHiveMetastoreProcessor::process_get_databases_req;
     processMap_["get_database_objects_by_name_req"] = &ThriftHiveMetastoreProcessor::process_get_database_objects_by_name_req;
     processMap_["alter_database"] = &ThriftHiveMetastoreProcessor::process_alter_database;
     processMap_["create_dataconnector"] = &ThriftHiveMetastoreProcessor::process_create_dataconnector;
@@ -36679,7 +36800,17 @@ class ThriftHiveMetastoreMultiface : virtual public ThriftHiveMetastoreIf, publi
     return;
   }
 
-  void get_database_objects_by_name_req(GetDatabaseObjectsResponse& _return, const GetDatabaseObjectsRequest& request) override {
+  void get_databases_req(GetDatabaseObjectsResponse& _return, const GetDatabaseObjectsRequest& request) override {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->get_databases_req(_return, request);
+    }
+    ifaces_[i]->get_databases_req(_return, request);
+    return;
+  }
+
+  void get_database_objects_by_name_req(GetDatabaseObjectsByNameResponse& _return, const GetDatabaseObjectsByNameRequest& request) override {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -39278,9 +39409,12 @@ class ThriftHiveMetastoreConcurrentClient : virtual public ThriftHiveMetastoreIf
   void get_all_databases(std::vector<std::string> & _return) override;
   int32_t send_get_all_databases();
   void recv_get_all_databases(std::vector<std::string> & _return, const int32_t seqid);
-  void get_database_objects_by_name_req(GetDatabaseObjectsResponse& _return, const GetDatabaseObjectsRequest& request) override;
-  int32_t send_get_database_objects_by_name_req(const GetDatabaseObjectsRequest& request);
-  void recv_get_database_objects_by_name_req(GetDatabaseObjectsResponse& _return, const int32_t seqid);
+  void get_databases_req(GetDatabaseObjectsResponse& _return, const GetDatabaseObjectsRequest& request) override;
+  int32_t send_get_databases_req(const GetDatabaseObjectsRequest& request);
+  void recv_get_databases_req(GetDatabaseObjectsResponse& _return, const int32_t seqid);
+  void get_database_objects_by_name_req(GetDatabaseObjectsByNameResponse& _return, const GetDatabaseObjectsByNameRequest& request) override;
+  int32_t send_get_database_objects_by_name_req(const GetDatabaseObjectsByNameRequest& request);
+  void recv_get_database_objects_by_name_req(GetDatabaseObjectsByNameResponse& _return, const int32_t seqid);
   void alter_database(const std::string& dbname, const Database& db) override;
   int32_t send_alter_database(const std::string& dbname, const Database& db);
   void recv_alter_database(const int32_t seqid);

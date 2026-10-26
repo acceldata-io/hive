@@ -844,9 +844,9 @@ class ExtendedTableInfo;
 
 class GetDatabaseRequest;
 
-class GetDatabaseObjectsRequest;
+class GetDatabaseObjectsByNameRequest;
 
-class GetDatabaseObjectsResponse;
+class GetDatabaseObjectsByNameResponse;
 
 class DropDatabaseRequest;
 
@@ -12919,8 +12919,9 @@ void swap(NotificationEventsCountResponse &a, NotificationEventsCountResponse &b
 std::ostream& operator<<(std::ostream& out, const NotificationEventsCountResponse& obj);
 
 typedef struct _InsertEventRequestData__isset {
-  _InsertEventRequestData__isset() : replace(false), filesAddedChecksum(false), subDirectoryList(false), partitionVal(false) {}
+  _InsertEventRequestData__isset() : replace(false), filesAdded(false), filesAddedChecksum(false), subDirectoryList(false), partitionVal(false) {}
   bool replace :1;
+  bool filesAdded :1;
   bool filesAddedChecksum :1;
   bool subDirectoryList :1;
   bool partitionVal :1;
@@ -12960,7 +12961,9 @@ class InsertEventRequestData : public virtual ::apache::thrift::TBase {
       return false;
     else if (__isset.replace && !(replace == rhs.replace))
       return false;
-    if (!(filesAdded == rhs.filesAdded))
+    if (__isset.filesAdded != rhs.__isset.filesAdded)
+      return false;
+    else if (__isset.filesAdded && !(filesAdded == rhs.filesAdded))
       return false;
     if (__isset.filesAddedChecksum != rhs.__isset.filesAddedChecksum)
       return false;
@@ -14541,31 +14544,31 @@ void swap(GetDatabaseRequest &a, GetDatabaseRequest &b);
 
 std::ostream& operator<<(std::ostream& out, const GetDatabaseRequest& obj);
 
-typedef struct _GetDatabaseObjectsRequest__isset {
-  _GetDatabaseObjectsRequest__isset() : catalogName(false) {}
+typedef struct _GetDatabaseObjectsByNameRequest__isset {
+  _GetDatabaseObjectsByNameRequest__isset() : catalogName(false) {}
   bool catalogName :1;
-} _GetDatabaseObjectsRequest__isset;
+} _GetDatabaseObjectsByNameRequest__isset;
 
-class GetDatabaseObjectsRequest : public virtual ::apache::thrift::TBase {
+class GetDatabaseObjectsByNameRequest : public virtual ::apache::thrift::TBase {
  public:
 
-  GetDatabaseObjectsRequest(const GetDatabaseObjectsRequest&);
-  GetDatabaseObjectsRequest& operator=(const GetDatabaseObjectsRequest&);
-  GetDatabaseObjectsRequest() noexcept
-                            : catalogName() {
+  GetDatabaseObjectsByNameRequest(const GetDatabaseObjectsByNameRequest&);
+  GetDatabaseObjectsByNameRequest& operator=(const GetDatabaseObjectsByNameRequest&);
+  GetDatabaseObjectsByNameRequest() noexcept
+                                  : catalogName() {
   }
 
-  virtual ~GetDatabaseObjectsRequest() noexcept;
+  virtual ~GetDatabaseObjectsByNameRequest() noexcept;
   std::vector<std::string>  databaseNames;
   std::string catalogName;
 
-  _GetDatabaseObjectsRequest__isset __isset;
+  _GetDatabaseObjectsByNameRequest__isset __isset;
 
   void __set_databaseNames(const std::vector<std::string> & val);
 
   void __set_catalogName(const std::string& val);
 
-  bool operator == (const GetDatabaseObjectsRequest & rhs) const
+  bool operator == (const GetDatabaseObjectsByNameRequest & rhs) const
   {
     if (!(databaseNames == rhs.databaseNames))
       return false;
@@ -14575,11 +14578,11 @@ class GetDatabaseObjectsRequest : public virtual ::apache::thrift::TBase {
       return false;
     return true;
   }
-  bool operator != (const GetDatabaseObjectsRequest &rhs) const {
+  bool operator != (const GetDatabaseObjectsByNameRequest &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const GetDatabaseObjectsRequest & ) const;
+  bool operator < (const GetDatabaseObjectsByNameRequest & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot) override;
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const override;
@@ -14587,35 +14590,35 @@ class GetDatabaseObjectsRequest : public virtual ::apache::thrift::TBase {
   virtual void printTo(std::ostream& out) const;
 };
 
-void swap(GetDatabaseObjectsRequest &a, GetDatabaseObjectsRequest &b);
+void swap(GetDatabaseObjectsByNameRequest &a, GetDatabaseObjectsByNameRequest &b);
 
-std::ostream& operator<<(std::ostream& out, const GetDatabaseObjectsRequest& obj);
+std::ostream& operator<<(std::ostream& out, const GetDatabaseObjectsByNameRequest& obj);
 
 
-class GetDatabaseObjectsResponse : public virtual ::apache::thrift::TBase {
+class GetDatabaseObjectsByNameResponse : public virtual ::apache::thrift::TBase {
  public:
 
-  GetDatabaseObjectsResponse(const GetDatabaseObjectsResponse&);
-  GetDatabaseObjectsResponse& operator=(const GetDatabaseObjectsResponse&);
-  GetDatabaseObjectsResponse() noexcept {
+  GetDatabaseObjectsByNameResponse(const GetDatabaseObjectsByNameResponse&);
+  GetDatabaseObjectsByNameResponse& operator=(const GetDatabaseObjectsByNameResponse&);
+  GetDatabaseObjectsByNameResponse() noexcept {
   }
 
-  virtual ~GetDatabaseObjectsResponse() noexcept;
+  virtual ~GetDatabaseObjectsByNameResponse() noexcept;
   std::vector<Database>  databases;
 
   void __set_databases(const std::vector<Database> & val);
 
-  bool operator == (const GetDatabaseObjectsResponse & rhs) const
+  bool operator == (const GetDatabaseObjectsByNameResponse & rhs) const
   {
     if (!(databases == rhs.databases))
       return false;
     return true;
   }
-  bool operator != (const GetDatabaseObjectsResponse &rhs) const {
+  bool operator != (const GetDatabaseObjectsByNameResponse &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const GetDatabaseObjectsResponse & ) const;
+  bool operator < (const GetDatabaseObjectsByNameResponse & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot) override;
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const override;
@@ -14623,9 +14626,9 @@ class GetDatabaseObjectsResponse : public virtual ::apache::thrift::TBase {
   virtual void printTo(std::ostream& out) const;
 };
 
-void swap(GetDatabaseObjectsResponse &a, GetDatabaseObjectsResponse &b);
+void swap(GetDatabaseObjectsByNameResponse &a, GetDatabaseObjectsByNameResponse &b);
 
-std::ostream& operator<<(std::ostream& out, const GetDatabaseObjectsResponse& obj);
+std::ostream& operator<<(std::ostream& out, const GetDatabaseObjectsByNameResponse& obj);
 
 typedef struct _DropDatabaseRequest__isset {
   _DropDatabaseRequest__isset() : catalogName(false), softDelete(true), txnId(true), deleteManagedDir(true) {}
