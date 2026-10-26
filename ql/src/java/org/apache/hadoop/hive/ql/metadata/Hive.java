@@ -146,6 +146,7 @@ import org.apache.hadoop.hive.shims.ShimLoader;
 import org.apache.hadoop.mapred.InputFormat;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.hadoop.util.StringUtils;
+import org.apache.hive.common.util.ReflectionUtil;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -171,6 +172,7 @@ public class Hive {
   static final private Logger LOG = LoggerFactory.getLogger("hive.ql.metadata.Hive");
 
   private HiveConf conf = null;
+  private String metaStoreClientFactoryClassName;
   private IMetaStoreClient metaStoreClient;
   private SynchronizedMetaStoreClient syncMetaStoreClient;
   private UserGroupInformation owner;
@@ -391,6 +393,7 @@ public class Hive {
    */
   private Hive(HiveConf c, boolean doRegisterAllFns) throws HiveException {
     conf = c;
+    metaStoreClientFactoryClassName = conf.getVar(HiveConf.ConfVars.IMETASTORE_CLIENT_FACTORY_CLASS);
     if (doRegisterAllFns) {
       registerAllFunctionsOnce();
     }
@@ -3567,8 +3570,7 @@ private void constructOneLBLocationMap(FileStatus fSta,
   }
 
   /**
-   * Creates a metastore client. Currently it creates only JDBC based client as
-   * File based store support is removed
+   * Creates a metastore client using a factory specified via HiveConf.
    *
    * @returns a Meta Store Client
    * @throws HiveMetaException
@@ -3576,37 +3578,41 @@ private void constructOneLBLocationMap(FileStatus fSta,
    */
   private IMetaStoreClient createMetaStoreClient(boolean allowEmbedded) throws MetaException {
 
+    HiveMetaStoreClientFactory factory;
+    try {
+      // IMetaStoreClient is not Configurable so pass "null" for Configuration
+      factory = (HiveMetaStoreClientFactory) ReflectionUtil.newInstance(
+          conf.getClassByName(metaStoreClientFactoryClassName), null);
+    } catch (Exception e) {
+      String errorMessage = "Unable to instantiate a metastore client factory "
+          + metaStoreClientFactoryClassName + ": " + e;
+      LOG.error(errorMessage, e);
+      throw new MetaException(errorMessage);
+    }
+
     HiveMetaHookLoader hookLoader = new HiveMetaHookLoader() {
-        @Override
-        public HiveMetaHook getHook(
-          org.apache.hadoop.hive.metastore.api.Table tbl)
+      @Override
+      public HiveMetaHook getHook(org.apache.hadoop.hive.metastore.api.Table tbl)
           throws MetaException {
 
-          try {
-            if (tbl == null) {
-              return null;
-            }
-            HiveStorageHandler storageHandler =
-              HiveUtils.getStorageHandler(conf,
-                tbl.getParameters().get(META_TABLE_STORAGE));
-            if (storageHandler == null) {
-              return null;
-            }
-            return storageHandler.getMetaHook();
-          } catch (HiveException ex) {
-            LOG.error(StringUtils.stringifyException(ex));
-            throw new MetaException(
-              "Failed to load storage handler:  " + ex.getMessage());
+        try {
+          if (tbl == null) {
+            return null;
           }
+          HiveStorageHandler storageHandler = HiveUtils.getStorageHandler(conf, tbl.getParameters()
+              .get(META_TABLE_STORAGE));
+          if (storageHandler == null) {
+            return null;
+          }
+          return storageHandler.getMetaHook();
+        } catch (HiveException ex) {
+          LOG.error(StringUtils.stringifyException(ex));
+          throw new MetaException("Failed to load storage handler:  " + ex.getMessage());
         }
-      };
+      }
+    };
 
-    if (conf.getBoolVar(ConfVars.METASTORE_FASTPATH)) {
-      return new SessionHiveMetaStoreClient(conf, hookLoader, allowEmbedded);
-    } else {
-      return RetryingMetaStoreClient.getProxy(conf, hookLoader, metaCallTimeMap,
-          SessionHiveMetaStoreClient.class.getName(), allowEmbedded);
-    }
+    return factory.createMetaStoreClient(conf, hookLoader, allowEmbedded, metaCallTimeMap);
   }
 
   public static class SchemaException extends MetaException {
