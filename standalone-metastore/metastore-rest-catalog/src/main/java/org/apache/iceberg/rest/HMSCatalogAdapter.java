@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import org.apache.iceberg.BaseTable;
 import org.apache.iceberg.BaseTransaction;
 import org.apache.iceberg.Table;
@@ -224,7 +225,7 @@ public class HMSCatalogAdapter implements RESTClient {
 
   private ConfigResponse config() {
     final List<Endpoint> endpoints = Arrays.stream(Route.values())
-        .map(r -> Endpoint.create(r.method.name(), r.resourcePath)).toList();
+        .map(r -> Endpoint.create(r.method.name(), r.resourcePath)).collect(Collectors.toList());
     return castResponse(ConfigResponse.class, ConfigResponse.builder().withEndpoints(endpoints).build());
   }
 
