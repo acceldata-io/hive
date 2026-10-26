@@ -1508,7 +1508,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
    * secondary lazy-load SQL fires and the Thrift payload stays compact.
    */
   @Override
-  public GetDatabaseObjectsResponse get_database_objects_by_name_req(GetDatabaseObjectsRequest request)
+  public GetDatabaseObjectsByNameResponse get_database_objects_by_name_req(GetDatabaseObjectsByNameRequest request)
       throws MetaException {
     List<String> names = request.getDatabaseNames();
     int size = names == null ? 0 : names.size();
@@ -1517,7 +1517,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     Exception ex = null;
     try {
       if (size == 0) {
-        return new GetDatabaseObjectsResponse(new ArrayList<Database>());
+        return new GetDatabaseObjectsByNameResponse(new ArrayList<Database>());
       }
       String catName = request.getCatalogName() != null
           ? request.getCatalogName() : getDefaultCatalog(conf);
@@ -1528,7 +1528,7 @@ public class HMSHandler extends FacebookBase implements IHMSHandler {
     } finally {
       endFunction("get_database_objects_by_name_req", ex == null, ex);
     }
-    return new GetDatabaseObjectsResponse(result != null ? result : new ArrayList<Database>());
+    return new GetDatabaseObjectsByNameResponse(result != null ? result : new ArrayList<Database>());
   }
 
   @Override
