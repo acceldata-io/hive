@@ -126,6 +126,13 @@ package org.apache.hadoop.hive.metastore.api;
   public InsertEventRequestData() {
   }
 
+  public InsertEventRequestData(
+    java.util.List<java.lang.String> filesAdded)
+  {
+    this();
+    this.filesAdded = filesAdded;
+  }
+
   /**
    * Performs a deep copy on <i>other</i>.
    */
