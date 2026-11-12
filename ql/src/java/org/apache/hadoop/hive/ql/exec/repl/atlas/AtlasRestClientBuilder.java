@@ -21,7 +21,7 @@ package org.apache.hadoop.hive.ql.exec.repl.atlas;
 import org.apache.atlas.ApplicationProperties;
 import org.apache.atlas.AtlasClientV2;
 import org.apache.atlas.AtlasException;
-import org.apache.commons.configuration.ConfigurationConverter;
+import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.ErrorMsg;
 import org.apache.hadoop.hive.ql.exec.repl.util.ReplUtils;
@@ -30,7 +30,6 @@ import org.apache.hadoop.security.UserGroupInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -90,16 +89,16 @@ public class AtlasRestClientBuilder {
 
   private void initializeAtlasApplicationProperties(HiveConf conf) throws SemanticException {
     try {
-      Properties props = new Properties();
-      props.setProperty(ATLAS_PROPERTY_CONNECT_TIMEOUT_IN_MS, String.valueOf(
+      PropertiesConfiguration atlasConf = new PropertiesConfiguration();
+      atlasConf.setProperty(ATLAS_PROPERTY_CONNECT_TIMEOUT_IN_MS, String.valueOf(
               conf.getTimeVar(HiveConf.ConfVars.REPL_EXTERNAL_CLIENT_CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)));
-      props.setProperty(ATLAS_PROPERTY_READ_TIMEOUT_IN_MS, String.valueOf(
+      atlasConf.setProperty(ATLAS_PROPERTY_READ_TIMEOUT_IN_MS, String.valueOf(
               conf.getTimeVar(HiveConf.ConfVars.REPL_ATLAS_CLIENT_READ_TIMEOUT, TimeUnit.MILLISECONDS)));
-      props.setProperty(ATLAS_PROPERTY_CLIENT_HA_RETRIES_KEY, "1");
-      props.setProperty(ATLAS_PROPERTY_CLIENT_HA_SLEEP_INTERVAL_MS_KEY, "0");
-      props.setProperty(ATLAS_PROPERTY_REST_ADDRESS, incomingUrl);
-      props.setProperty(ATLAS_PROPERTY_AUTH_KERBEROS, "true");
-      ApplicationProperties.set(ConfigurationConverter.getConfiguration(props));
+      atlasConf.setProperty(ATLAS_PROPERTY_CLIENT_HA_RETRIES_KEY, "1");
+      atlasConf.setProperty(ATLAS_PROPERTY_CLIENT_HA_SLEEP_INTERVAL_MS_KEY, "0");
+      atlasConf.setProperty(ATLAS_PROPERTY_REST_ADDRESS, incomingUrl);
+      atlasConf.setProperty(ATLAS_PROPERTY_AUTH_KERBEROS, "true");
+      ApplicationProperties.set(atlasConf);
     } catch (AtlasException e) {
       throw new SemanticException(ErrorMsg.REPL_INVALID_INTERNAL_CONFIG_FOR_SERVICE.format(e.getMessage(),
         ReplUtils.REPL_ATLAS_SERVICE), e);
