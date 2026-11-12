@@ -19,14 +19,13 @@
 package org.apache.hadoop.hive.ql.exec.repl;
 
 import javax.ws.rs.core.Response;
-import com.sun.jersey.api.client.ClientResponse;
 import org.apache.atlas.AtlasBaseClient;
 import org.apache.atlas.AtlasClientV2;
 import org.apache.atlas.AtlasServiceException;
 import org.apache.atlas.model.impexp.AtlasExportRequest;
 import org.apache.atlas.model.impexp.AtlasServer;
 import org.apache.atlas.model.instance.AtlasObjectId;
-import org.apache.commons.configuration.ConfigurationConverter;
+import org.apache.commons.configuration2.ConfigurationConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
