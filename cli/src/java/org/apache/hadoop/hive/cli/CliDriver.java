@@ -293,7 +293,9 @@ public class CliDriver {
           console.printError("Failed with exception " + e.getClass().getName() + ":" + e.getMessage(),
               "\n" + org.apache.hadoop.util.StringUtils.stringifyException(e));
           throw new CommandProcessorException(1);
-        } finally {
+        } catch (RuntimeException e) {
+          throw new CommandProcessorException(1);
+        }  finally {
           qp.close();
           ShimLoader.getHadoopShims()
               .setHadoopSessionContext(String.format(USER_ID, ss.getSessionId(), ss.getUserName()));
@@ -395,7 +397,10 @@ public class CliDriver {
 
           // First, kill any running MR jobs
           HadoopJobExecHelper.killRunningJobs();
-          TezJobExecHelper.killRunningJobs();
+          if ("tez".equalsIgnoreCase(HiveConf.getVar(conf,
+                  HiveConf.ConfVars.HIVE_EXECUTION_ENGINE))) {
+            TezJobExecHelper.killRunningJobs();
+          }
           HiveInterruptUtils.interrupt();
         }
       });

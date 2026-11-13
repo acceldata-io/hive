@@ -3086,14 +3086,23 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
             && condn.getToken().getType() == HiveParser.DOT) {
           // get the semijoin rhs table name and field name
           fields1 = new ArrayList<String>();
-          int rhssize = rightAliases.size();
-          parseJoinCondPopulateAlias(joinTree, (ASTNode) condn.getChild(0),
-              leftAliases, rightAliases, null, aliasToOpInfo);
-          String rhsAlias = null;
+          List<String> scopedLeftAliases = new ArrayList<>();
+          List<String> scopedRightAliases = new ArrayList<>();
 
-          if (rightAliases.size() > rhssize) { // the new table is rhs table
-            rhsAlias = rightAliases.get(rightAliases.size() - 1);
-          }
+          parseJoinCondPopulateAlias(joinTree, (ASTNode) condn.getChild(0),
+              scopedLeftAliases, scopedRightAliases, null, aliasToOpInfo);
+
+          String rhsAlias = scopedRightAliases.isEmpty() ? null : scopedRightAliases.get(0);
+          scopedLeftAliases.forEach(alias -> {
+            if (!leftAliases.contains(alias)) {
+              leftAliases.add(alias);
+            }
+          });
+          scopedRightAliases.forEach(alias -> {
+            if (!rightAliases.contains(alias)) {
+              rightAliases.add(alias);
+            }
+          });
 
           parseJoinCondPopulateAlias(joinTree, (ASTNode) condn.getChild(1),
               leftAliases, rightAliases, fields1, aliasToOpInfo);
@@ -13746,7 +13755,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
   public void validate() throws SemanticException {
     boolean wasAcidChecked = false;
     // Validate inputs and outputs have right protectmode to execute the query
-    for (ReadEntity readEntity : getInputs()) {
+    for (ReadEntity readEntity : getAllInputs()) {
       ReadEntity.Type type = readEntity.getType();
 
       if (type != ReadEntity.Type.TABLE &&
@@ -13771,7 +13780,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
       }
     }
 
-    for (WriteEntity writeEntity : getOutputs()) {
+    for (WriteEntity writeEntity : getAllOutputs()) {
       WriteEntity.Type type = writeEntity.getType();
 
       if (type == WriteEntity.Type.PARTITION || type == WriteEntity.Type.DUMMYPARTITION) {
@@ -15876,7 +15885,11 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
     String queryString = getQueryStringForCache(astNode);
     if (queryString != null) {
       ValidTxnWriteIdList writeIdList = getQueryValidTxnWriteIdList();
-      lookupInfo = new QueryResultsCache.LookupInfo(queryString, () -> writeIdList);
+      Set<Long> involvedTables = tablesFromReadEntities(inputs).stream()
+          .map(Table::getTTable)
+          .map(org.apache.hadoop.hive.metastore.api.Table::getId)
+          .collect(Collectors.toSet());
+      lookupInfo = new QueryResultsCache.LookupInfo(queryString, () -> writeIdList, involvedTables);
     }
     return lookupInfo;
   }
