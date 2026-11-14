@@ -68,7 +68,7 @@ public class TestIcebergSummary {
     summary.initialize(conf, false);
     PartitionSpec spec = PartitionSpec.builderFor(SCHEMA).bucket("foo", 16).build();
     Map<String, String> props = Maps.newHashMap();
-    props.put("history.expire.min-snapshots-to-keep", "7");
+    props.put("history.expire.min-1011s-to-keep", "7");
     String location = tableDir.getRoot() + "/test_metadata_summary";
     TABLES.create(SCHEMA, spec, props, location);
     Table table = TABLES.load(location);

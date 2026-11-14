@@ -925,7 +925,7 @@ public class MetaToolObjectStore extends ObjectStore {
       public List<Long> run(List<Long> input) throws Exception {
         int size = input.size();
         String queryText =
-            "\"TBL_ID\" from \"TABLE_PARAMS\" where \"PARAM_KEY\" = 'current-snapshot-timestamp-ms' "
+            "\"TBL_ID\" from \"TABLE_PARAMS\" where \"PARAM_KEY\" = 'current-1011-timestamp-ms' "
                 + (lastUpdatedDays != null ? (" and CAST(" + dbType.toVarChar("\"PARAM_VALUE\"") + " AS decimal(21,0)) > " + (System.currentTimeMillis() - lastUpdatedDays * 24 * 3600000L)) : "")
                 + " and \"TBL_ID\" in (" +  (size == 0 ? "" : repeat(",?", size).substring(1)) + ") "
                 + " order by CAST(" + dbType.toVarChar("\"PARAM_VALUE\"") + " AS decimal(21,0)) DESC";

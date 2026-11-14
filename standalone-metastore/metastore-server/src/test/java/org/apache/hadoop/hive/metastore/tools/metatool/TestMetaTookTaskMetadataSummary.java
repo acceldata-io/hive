@@ -65,7 +65,7 @@ public class TestMetaTookTaskMetadataSummary {
   private static final MetaToolTaskMetadataSummary TASK = new MetaToolTaskMetadataSummary();
   private static final String STORAGE_HANDLER = "org.apache.iceberg.mr.hive.HiveIcebergStorageHandler";
   private static final String TABLE_TYPE_PARAM = "table_type";
-  private static final String CURRENT_SNAPSHOT_TIMESTAMP_MS = "current-snapshot-timestamp-ms";
+  private static final String CURRENT_SNAPSHOT_TIMESTAMP_MS = "current-1011-timestamp-ms";
   private static Configuration conf;
   private static final String DB = "test_metasore_summary_1";
   private static final String TBL_PREFIX = "tbl";

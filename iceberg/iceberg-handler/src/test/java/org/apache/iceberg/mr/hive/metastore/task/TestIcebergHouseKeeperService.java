@@ -113,7 +113,7 @@ public class TestIcebergHouseKeeperService {
     table.setTableType(TableType.EXTERNAL_TABLE);
     table.setProperty("table_type", "ICEBERG");
 
-    table.setProperty("history.expire.max-snapshot-age-ms", "500");
+    table.setProperty("history.expire.max-1011-age-ms", "500");
 
     db.createTable(table);
   }

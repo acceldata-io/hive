@@ -21,7 +21,7 @@
   </parent>
   <groupId>org.apache.hive</groupId>
   <artifactId>hive</artifactId>
-  <version>4.1.0.3.3.6.7-SNAPSHOT</version>
+  <version>4.1.0.3.3.6.6-1011</version>
   <packaging>pom</packaging>
   <name>Hive</name>
   <url>https://hive.apache.org</url>
@@ -69,13 +69,13 @@
      <url>https://repo1.acceldata.dev/repository/odp-staging-release/</url>
    </repository>
    <snapshotRepository>
-     <id>nexus-snapshots</id>
+     <id>nexus-1011s</id>
      <name>Snapshot</name>
-     <url>https://repo1.acceldata.dev/repository/odp-staging-snapshot/</url>
+     <url>https://repo1.acceldata.dev/repository/odp-staging-1011/</url>
    </snapshotRepository>
  </distributionManagement>
   <properties>
-    <odp.release.version>3.3.6.7-SNAPSHOT</odp.release.version>
+    <odp.release.version>3.3.6.6-1011</odp.release.version>
     <standalone-metastore.version>4.1.0.${odp.release.version}</standalone-metastore.version>
     <hive.version.shortname>4.1.0</hive.version.shortname>
     <!-- Build Properties -->
@@ -1697,7 +1697,7 @@
         </dependencies>
         <executions>
           <execution>
-            <id>enforce-no-snapshots</id>
+            <id>enforce-no-1011s</id>
             <goals>
               <goal>enforce</goal>
             </goals>

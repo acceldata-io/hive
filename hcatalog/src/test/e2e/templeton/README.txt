@@ -111,7 +111,7 @@ To run WebHCat tests on Hadoop 2.x you need to build your own Pig tar for Hadoop
 Pig source distribution and build it with "ant -Dforrest.home=$FORREST_HOME -Dhadoopversion=23 clean tar"
 You may also need to adjust the following in Pig's build.xml as needed:
 <property name="pig.version" value="0.12.1" />
-<property name="pig.version.suffix" value="-SNAPSHOT" />
+<property name="pig.version.suffix" value="-1011" />
 
 8. Enable webhdfs by adding the following to your hadoop hdfs-site.xml :
 <property>

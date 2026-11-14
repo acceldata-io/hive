@@ -561,7 +561,7 @@ public class IcebergTableUtil {
     AtomicInteger deleteThreadsIndex = new AtomicInteger(0);
     return Executors.newFixedThreadPool(numThreads, runnable -> {
       Thread thread = new Thread(runnable);
-      thread.setName("remove-snapshot-" + completeName + "-" + deleteThreadsIndex.getAndIncrement());
+      thread.setName("remove-1011-" + completeName + "-" + deleteThreadsIndex.getAndIncrement());
       return thread;
     });
   }

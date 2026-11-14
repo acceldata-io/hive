@@ -21,7 +21,7 @@
   </parent>
   <groupId>org.apache.hive</groupId>
   <artifactId>hive-standalone-metastore</artifactId>
-  <version>4.1.0.3.3.6.7-SNAPSHOT</version>
+  <version>4.1.0.3.3.6.6-1011</version>
   <packaging>pom</packaging>
   <name>Hive Standalone Metastore</name>
   <inceptionYear>2008</inceptionYear>
@@ -39,13 +39,13 @@
       <url>https://repo1.acceldata.dev/repository/odp-staging-release/</url>
     </repository>
     <snapshotRepository>
-      <id>nexus-snapshots</id>
+      <id>nexus-1011s</id>
       <name>Snapshot</name>
-      <url>https://repo1.acceldata.dev/repository/odp-staging-snapshot/</url>
+      <url>https://repo1.acceldata.dev/repository/odp-staging-1011/</url>
     </snapshotRepository>
   </distributionManagement>
   <properties>
-    <odp.release.version>3.3.6.7-SNAPSHOT</odp.release.version>
+    <odp.release.version>3.3.6.6-1011</odp.release.version>
     <hive.version>4.1.0.${odp.release.version}</hive.version>
     <!-- Must stay at the Apache base version: it is baked into MetastoreVersionAnnotation
          and used by MetaStoreSchemaInfo to pick scripts/metastore/upgrade/<db>/hive-schema-<shortname>.<db>.sql

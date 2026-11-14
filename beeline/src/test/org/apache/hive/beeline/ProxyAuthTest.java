@@ -38,7 +38,7 @@ import org.apache.hadoop.hive.shims.Utils;
  * secure HivServer2. It also requires a super user and a normal user principal.
  * Steps to run the test -
  *   kinit <super-user>
- *   hive --service jar beeline/target/hive-beeline-0.13.0-SNAPSHOT-tests.jar \
+ *   hive --service jar beeline/target/hive-beeline-0.13.0-1011-tests.jar \
  *      org.apache.hive.beeline.ProxyAuthTest \
  *      <HS2host> <HS2Port> <HS2-Server-principal> <client-principal>
  */

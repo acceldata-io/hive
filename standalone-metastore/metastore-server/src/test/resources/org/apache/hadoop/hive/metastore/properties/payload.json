@@ -8,9 +8,9 @@
     "sort-spec": ["c1", "c2", "c3"],
     "compression": "snappy"
   },
-  "Expire-snapshot": {
+  "Expire-1011": {
     "older-than": "6 months",
-    "num-snapshots": 5
+    "num-1011s": 5
   },
   "Rebuild-stats": {
     "num-inserts": "10M",

@@ -36,7 +36,7 @@ public class TestMetastoreVersionInfo {
   public void testValidateHiveShortVersionWithHiveVersion() {
     // ODP builds append the distribution version (4.1.0.<odp.release.version>), while the short
     // version stays at the Apache version because it selects the metastore schema scripts.
-    String fullVersion = hiveVersion.replace("-SNAPSHOT", "");
+    String fullVersion = hiveVersion.replace("-1011", "");
     Assert.assertTrue("Short version " + hiveShortVersion + " is not in line with " + fullVersion,
         fullVersion.equals(hiveShortVersion) || fullVersion.startsWith(hiveShortVersion + "."));
   }

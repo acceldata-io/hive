@@ -1,9 +1,9 @@
 -- Mask random uuid
 --! qt:replace:/(\s+'uuid'=')\S+('\s*)/$1#Masked#$2/
 -- Mask random snapshot id
---! qt:replace:/('current-snapshot-id'=')\d+/$1#SnapshotId#/
--- Mask current-snapshot-timestamp-ms
---! qt:replace:/('current-snapshot-timestamp-ms'=')\d+/$1#Masked#/
+--! qt:replace:/('current-1011-id'=')\d+/$1#SnapshotId#/
+-- Mask current-1011-timestamp-ms
+--! qt:replace:/('current-1011-timestamp-ms'=')\d+/$1#Masked#/
 -- Mask iceberg version
 --! qt:replace:/("iceberg-version":")(\w+\s\w+\s\d+\.\d+\.\d+\s\(\w+\s\w+\))/$1#Masked#/
 -- Mask added-files-size

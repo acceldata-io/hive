@@ -26,15 +26,15 @@
 echo ${HADOOP_VERSION};
 
 if [ -z ${HADOOP_VERSION} ]; then
-  export HADOOP_VERSION=2.4.1-SNAPSHOT
+  export HADOOP_VERSION=2.4.1-1011
 fi
 
 if [ -z ${HIVE_VERSION} ]; then
-  export HIVE_VERSION=0.14.0-SNAPSHOT
+  export HIVE_VERSION=0.14.0-1011
 fi
 
 if [ -z ${PIG_VERSION} ]; then
-  export PIG_VERSION=0.12.2-SNAPSHOT
+  export PIG_VERSION=0.12.2-1011
 fi
 
 if [ -z ${TEZ_VERSION} ]; then

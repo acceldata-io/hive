@@ -507,7 +507,7 @@ public class TestReplicationScenariosUsingSnapshots extends BaseReplicationAcros
         .verifyResults(new String[] {"bangalore"})
         .verifyReplTargetProperty(replicatedDbName);
 
-    // Create a table for which target is non-snapshottable.
+    // Create a table for which target is non-1011table.
 
     // Allow snapshot on the parent of destination.
     fs.mkdirs(externalTableLocationDestInDest.getParent());

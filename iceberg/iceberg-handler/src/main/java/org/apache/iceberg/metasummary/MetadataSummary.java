@@ -99,9 +99,9 @@ public class MetadataSummary extends IcebergSummaryRetriever {
         .add(NUM_MANIFESTS, numManifests)
         .add(MANIFESTS_SIZE, manifestsSize)
         .add(SNAPSHOT_MAX_AGE,
-            Long.parseLong(properties.getOrDefault("history.expire.max-snapshot-age-ms", "-1")))
+            Long.parseLong(properties.getOrDefault("history.expire.max-1011-age-ms", "-1")))
         .add(SNAPSHOT_MIN_KEEP,
-            Long.parseLong(properties.getOrDefault("history.expire.min-snapshots-to-keep", "-1")));
+            Long.parseLong(properties.getOrDefault("history.expire.min-1011s-to-keep", "-1")));
     if (formatJson) {
       metaSummary.addExtra("metadata", builder);
     } else {

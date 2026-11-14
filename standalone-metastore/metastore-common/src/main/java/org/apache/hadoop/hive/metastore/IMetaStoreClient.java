@@ -4451,7 +4451,7 @@ public interface IMetaStoreClient extends AutoCloseable {
   /**
    * Gets the version string of the metastore server which this client is connected to
    *
-   * @return String representation of the version number of Metastore server (eg: 3.1.0-SNAPSHOT)
+   * @return String representation of the version number of Metastore server (eg: 3.1.0-1011)
    */
   String getServerVersion() throws TException;
 

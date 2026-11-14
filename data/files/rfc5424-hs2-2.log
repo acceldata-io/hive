@@ -19,14 +19,14 @@ log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more in
 + '[' 0 == 0 ']'
 + ls -l .
 total 52800
--rw-r--r-- 1 hive hive 42092027 Mar 22 01:06 hive-exec-3.1.0-SNAPSHOT.jar
--rw-r--r-- 1 hive hive 11970900 Mar 22 01:06 hive-standalone-metastore-3.1.0-SNAPSHOT.jar
+-rw-r--r-- 1 hive hive 42092027 Mar 22 01:06 hive-exec-3.1.0-1011.jar
+-rw-r--r-- 1 hive hive 11970900 Mar 22 01:06 hive-standalone-metastore-3.1.0-1011.jar
 + '[' -d ./lib ']'
 + cd /custom-jars
 + find . -type f -iname '*.tar.gz' -print0 -execdir tar xf '{}' ';' -delete
 + find . -name '*.jar' -exec md5sum '{}' ';'
-29adaafae170426713fc75a63508c224  ./hive-exec-3.1.0-SNAPSHOT.jar
-b04082bd54ec9726876b2100ef856d86  ./hive-standalone-metastore-3.1.0-SNAPSHOT.jar
+29adaafae170426713fc75a63508c224  ./hive-exec-3.1.0-1011.jar
+b04082bd54ec9726876b2100ef856d86  ./hive-standalone-metastore-3.1.0-1011.jar
 + . /fluentd-utils.sh
 ++ set -x
 ++ FLUENTD_CONF=/var/tmp/fluentd.conf
