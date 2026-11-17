@@ -7,7 +7,7 @@
 package org.apache.hive.service.rpc.thrift;
 
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
-public class TCLIServiceConstants {
+@org.apache.hadoop.hive.common.classification.InterfaceAudience.Public @org.apache.hadoop.hive.common.classification.InterfaceStability.Stable public class TCLIServiceConstants {
 
   public static final java.util.Set<TTypeId> PRIMITIVE_TYPES = java.util.EnumSet.noneOf(TTypeId.class);
   static {
