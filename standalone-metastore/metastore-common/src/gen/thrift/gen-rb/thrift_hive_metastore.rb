@@ -308,6 +308,24 @@ module ThriftHiveMetastore
       raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'get_databases_req failed: unknown result')
     end
 
+    def get_database_objects_by_name_req(request)
+      send_get_database_objects_by_name_req(request)
+      return recv_get_database_objects_by_name_req()
+    end
+
+    def send_get_database_objects_by_name_req(request)
+      send_message('get_database_objects_by_name_req', Get_database_objects_by_name_req_args, :request => request)
+    end
+
+    def recv_get_database_objects_by_name_req()
+      fname, mtype, rseqid = receive_message_begin()
+      validate_message_begin(fname, mtype, rseqid, 'get_database_objects_by_name_req')
+      result = receive_message(Get_database_objects_by_name_req_result)
+      return result.success unless result.success.nil?
+      raise result.o1 unless result.o1.nil?
+      raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'get_database_objects_by_name_req failed: unknown result')
+    end
+
     def alter_database(dbname, db)
       send_alter_database(dbname, db)
       recv_alter_database()
@@ -5395,6 +5413,17 @@ module ThriftHiveMetastore
       write_result(result, oprot, 'get_databases_req', seqid)
     end
 
+    def process_get_database_objects_by_name_req(seqid, iprot, oprot)
+      args = read_args(iprot, Get_database_objects_by_name_req_args)
+      result = Get_database_objects_by_name_req_result.new()
+      begin
+        result.success = @handler.get_database_objects_by_name_req(args.request)
+      rescue ::MetaException => o1
+        result.o1 = o1
+      end
+      write_result(result, oprot, 'get_database_objects_by_name_req', seqid)
+    end
+
     def process_alter_database(seqid, iprot, oprot)
       args = read_args(iprot, Alter_database_args)
       result = Alter_database_result.new()
@@ -9203,6 +9232,40 @@ module ThriftHiveMetastore
 
     FIELDS = {
       SUCCESS_FIELD_ID => {:type => ::Thrift::Types::STRUCT, :name => 'success', :class => ::GetDatabaseObjectsResponse},
+      O1_FIELD_ID => {:type => ::Thrift::Types::STRUCT, :name => 'o1', :class => ::MetaException}
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+    ::Thrift::Struct.generate_accessors self
+  end
+
+  class Get_database_objects_by_name_req_args
+    include ::Thrift::Struct, ::Thrift::Struct_Union
+    REQUEST_FIELD_ID = 1
+
+    FIELDS = {
+      REQUEST_FIELD_ID => {:type => ::Thrift::Types::STRUCT, :name => 'request', :class => ::GetDatabaseObjectsByNameRequest}
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+    ::Thrift::Struct.generate_accessors self
+  end
+
+  class Get_database_objects_by_name_req_result
+    include ::Thrift::Struct, ::Thrift::Struct_Union
+    SUCCESS_FIELD_ID = 0
+    O1_FIELD_ID = 1
+
+    FIELDS = {
+      SUCCESS_FIELD_ID => {:type => ::Thrift::Types::STRUCT, :name => 'success', :class => ::GetDatabaseObjectsByNameResponse},
       O1_FIELD_ID => {:type => ::Thrift::Types::STRUCT, :name => 'o1', :class => ::MetaException}
     }
 

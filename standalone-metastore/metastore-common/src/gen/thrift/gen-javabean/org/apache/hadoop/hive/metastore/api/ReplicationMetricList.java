@@ -342,14 +342,14 @@ public class ReplicationMetricList implements org.apache.thrift.TBase<Replicatio
             case 1: // REPLICATION_METRIC_LIST
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list1552 = iprot.readListBegin();
-                  struct.replicationMetricList = new java.util.ArrayList<ReplicationMetrics>(_list1552.size);
-                  @org.apache.thrift.annotation.Nullable ReplicationMetrics _elem1553;
-                  for (int _i1554 = 0; _i1554 < _list1552.size; ++_i1554)
+                  org.apache.thrift.protocol.TList _list1568 = iprot.readListBegin();
+                  struct.replicationMetricList = new java.util.ArrayList<ReplicationMetrics>(_list1568.size);
+                  @org.apache.thrift.annotation.Nullable ReplicationMetrics _elem1569;
+                  for (int _i1570 = 0; _i1570 < _list1568.size; ++_i1570)
                   {
-                    _elem1553 = new ReplicationMetrics();
-                    _elem1553.read(iprot);
-                    struct.replicationMetricList.add(_elem1553);
+                    _elem1569 = new ReplicationMetrics();
+                    _elem1569.read(iprot);
+                    struct.replicationMetricList.add(_elem1569);
                   }
                   iprot.readListEnd();
                 }
@@ -379,9 +379,9 @@ public class ReplicationMetricList implements org.apache.thrift.TBase<Replicatio
         oprot.writeFieldBegin(REPLICATION_METRIC_LIST_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.replicationMetricList.size()));
-          for (ReplicationMetrics _iter1555 : struct.replicationMetricList)
+          for (ReplicationMetrics _iter1571 : struct.replicationMetricList)
           {
-            _iter1555.write(oprot);
+            _iter1571.write(oprot);
           }
           oprot.writeListEnd();
         }
@@ -407,9 +407,9 @@ public class ReplicationMetricList implements org.apache.thrift.TBase<Replicatio
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       {
         oprot.writeI32(struct.replicationMetricList.size());
-        for (ReplicationMetrics _iter1556 : struct.replicationMetricList)
+        for (ReplicationMetrics _iter1572 : struct.replicationMetricList)
         {
-          _iter1556.write(oprot);
+          _iter1572.write(oprot);
         }
       }
     }
@@ -420,14 +420,14 @@ public class ReplicationMetricList implements org.apache.thrift.TBase<Replicatio
       try {
         org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         {
-          org.apache.thrift.protocol.TList _list1557 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
-          struct.replicationMetricList = new java.util.ArrayList<ReplicationMetrics>(_list1557.size);
-          @org.apache.thrift.annotation.Nullable ReplicationMetrics _elem1558;
-          for (int _i1559 = 0; _i1559 < _list1557.size; ++_i1559)
+          org.apache.thrift.protocol.TList _list1573 = iprot.readListBegin(org.apache.thrift.protocol.TType.STRUCT);
+          struct.replicationMetricList = new java.util.ArrayList<ReplicationMetrics>(_list1573.size);
+          @org.apache.thrift.annotation.Nullable ReplicationMetrics _elem1574;
+          for (int _i1575 = 0; _i1575 < _list1573.size; ++_i1575)
           {
-            _elem1558 = new ReplicationMetrics();
-            _elem1558.read(iprot);
-            struct.replicationMetricList.add(_elem1558);
+            _elem1574 = new ReplicationMetrics();
+            _elem1574.read(iprot);
+            struct.replicationMetricList.add(_elem1574);
           }
         }
         struct.setReplicationMetricListIsSet(true);

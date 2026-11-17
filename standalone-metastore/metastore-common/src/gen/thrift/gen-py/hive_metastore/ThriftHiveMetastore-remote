@@ -40,6 +40,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('   get_databases(string pattern)')
     print('   get_all_databases()')
     print('  GetDatabaseObjectsResponse get_databases_req(GetDatabaseObjectsRequest request)')
+    print('  GetDatabaseObjectsByNameResponse get_database_objects_by_name_req(GetDatabaseObjectsByNameRequest request)')
     print('  void alter_database(string dbname, Database db)')
     print('  void create_dataconnector(DataConnector connector)')
     print('  DataConnector get_dataconnector_req(GetDataConnectorRequest request)')
@@ -490,6 +491,12 @@ elif cmd == 'get_databases_req':
         print('get_databases_req requires 1 args')
         sys.exit(1)
     pp.pprint(client.get_databases_req(eval(args[0]),))
+
+elif cmd == 'get_database_objects_by_name_req':
+    if len(args) != 1:
+        print('get_database_objects_by_name_req requires 1 args')
+        sys.exit(1)
+    pp.pprint(client.get_database_objects_by_name_req(eval(args[0]),))
 
 elif cmd == 'alter_database':
     if len(args) != 2:

@@ -656,6 +656,10 @@ class ExtendedTableInfo; end
 
 class GetDatabaseRequest; end
 
+class GetDatabaseObjectsByNameRequest; end
+
+class GetDatabaseObjectsByNameResponse; end
+
 class DropDatabaseRequest; end
 
 class GetFunctionsRequest; end
@@ -5904,6 +5908,42 @@ class GetDatabaseRequest
   def struct_fields; FIELDS; end
 
   def validate
+  end
+
+  ::Thrift::Struct.generate_accessors self
+end
+
+class GetDatabaseObjectsByNameRequest
+  include ::Thrift::Struct, ::Thrift::Struct_Union
+  DATABASENAMES_FIELD_ID = 1
+  CATALOGNAME_FIELD_ID = 2
+
+  FIELDS = {
+    DATABASENAMES_FIELD_ID => {:type => ::Thrift::Types::LIST, :name => 'databaseNames', :element => {:type => ::Thrift::Types::STRING}},
+    CATALOGNAME_FIELD_ID => {:type => ::Thrift::Types::STRING, :name => 'catalogName', :optional => true}
+  }
+
+  def struct_fields; FIELDS; end
+
+  def validate
+    raise ::Thrift::ProtocolException.new(::Thrift::ProtocolException::INVALID_DATA, 'Required field databaseNames is unset!') unless @databaseNames
+  end
+
+  ::Thrift::Struct.generate_accessors self
+end
+
+class GetDatabaseObjectsByNameResponse
+  include ::Thrift::Struct, ::Thrift::Struct_Union
+  DATABASES_FIELD_ID = 1
+
+  FIELDS = {
+    DATABASES_FIELD_ID => {:type => ::Thrift::Types::LIST, :name => 'databases', :element => {:type => ::Thrift::Types::STRUCT, :class => ::Database}}
+  }
+
+  def struct_fields; FIELDS; end
+
+  def validate
+    raise ::Thrift::ProtocolException.new(::Thrift::ProtocolException::INVALID_DATA, 'Required field databases is unset!') unless @databases
   end
 
   ::Thrift::Struct.generate_accessors self

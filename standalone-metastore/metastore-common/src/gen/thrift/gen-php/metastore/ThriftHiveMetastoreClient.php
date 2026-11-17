@@ -1045,6 +1045,68 @@ class ThriftHiveMetastoreClient extends \FacebookServiceClient implements \metas
         throw new \Exception("get_databases_req failed: unknown result");
     }
 
+    public function get_database_objects_by_name_req(?GetDatabaseObjectsByNameRequest $request): ?GetDatabaseObjectsByNameResponse
+    {
+        $this->send_get_database_objects_by_name_req($request);
+        return $this->recv_get_database_objects_by_name_req();
+    }
+
+    public function send_get_database_objects_by_name_req(?GetDatabaseObjectsByNameRequest $request): void
+    {
+        $args = new \metastore\ThriftHiveMetastore_get_database_objects_by_name_req_args();
+        $args->request = $request;
+        $bin_accel = ($this->output instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+        if ($bin_accel) {
+            thrift_protocol_write_binary(
+                $this->output,
+                'get_database_objects_by_name_req',
+                TMessageType::CALL,
+                $args,
+                $this->seqid,
+                $this->output->isStrictWrite()
+            );
+        } else {
+            $this->output->writeMessageBegin('get_database_objects_by_name_req', TMessageType::CALL, $this->seqid);
+            $args->write($this->output);
+            $this->output->writeMessageEnd();
+            $this->output->getTransport()->flush();
+        }
+    }
+
+    public function recv_get_database_objects_by_name_req(): ?GetDatabaseObjectsByNameResponse
+    {
+        $bin_accel = ($this->input instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+        if ($bin_accel) {
+            $result = thrift_protocol_read_binary(
+                $this->input,
+                '\metastore\ThriftHiveMetastore_get_database_objects_by_name_req_result',
+                $this->input->isStrictRead()
+            );
+        } else {
+            $rseqid = 0;
+            $fname = null;
+            $mtype = 0;
+
+            $this->input->readMessageBegin($fname, $mtype, $rseqid);
+            if ($mtype == TMessageType::EXCEPTION) {
+                $x = new TApplicationException();
+                $x->read($this->input);
+                $this->input->readMessageEnd();
+                throw $x;
+            }
+            $result = new \metastore\ThriftHiveMetastore_get_database_objects_by_name_req_result();
+            $result->read($this->input);
+            $this->input->readMessageEnd();
+        }
+        if ($result->success !== null) {
+            return $result->success;
+        }
+        if ($result->o1 !== null) {
+            throw $result->o1;
+        }
+        throw new \Exception("get_database_objects_by_name_req failed: unknown result");
+    }
+
     public function alter_database(?string $dbname, ?Database $db): void
     {
         $this->send_alter_database($dbname, $db);

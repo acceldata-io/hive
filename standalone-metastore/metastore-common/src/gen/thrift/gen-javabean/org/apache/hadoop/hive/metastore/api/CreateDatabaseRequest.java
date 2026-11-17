@@ -1264,15 +1264,15 @@ public class CreateDatabaseRequest implements org.apache.thrift.TBase<CreateData
             case 4: // PARAMETERS
               if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
                 {
-                  org.apache.thrift.protocol.TMap _map1398 = iprot.readMapBegin();
-                  struct.parameters = new java.util.HashMap<java.lang.String,java.lang.String>(2*_map1398.size);
-                  @org.apache.thrift.annotation.Nullable java.lang.String _key1399;
-                  @org.apache.thrift.annotation.Nullable java.lang.String _val1400;
-                  for (int _i1401 = 0; _i1401 < _map1398.size; ++_i1401)
+                  org.apache.thrift.protocol.TMap _map1414 = iprot.readMapBegin();
+                  struct.parameters = new java.util.HashMap<java.lang.String,java.lang.String>(2*_map1414.size);
+                  @org.apache.thrift.annotation.Nullable java.lang.String _key1415;
+                  @org.apache.thrift.annotation.Nullable java.lang.String _val1416;
+                  for (int _i1417 = 0; _i1417 < _map1414.size; ++_i1417)
                   {
-                    _key1399 = iprot.readString();
-                    _val1400 = iprot.readString();
-                    struct.parameters.put(_key1399, _val1400);
+                    _key1415 = iprot.readString();
+                    _val1416 = iprot.readString();
+                    struct.parameters.put(_key1415, _val1416);
                   }
                   iprot.readMapEnd();
                 }
@@ -1387,10 +1387,10 @@ public class CreateDatabaseRequest implements org.apache.thrift.TBase<CreateData
           oprot.writeFieldBegin(PARAMETERS_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, struct.parameters.size()));
-            for (java.util.Map.Entry<java.lang.String, java.lang.String> _iter1402 : struct.parameters.entrySet())
+            for (java.util.Map.Entry<java.lang.String, java.lang.String> _iter1418 : struct.parameters.entrySet())
             {
-              oprot.writeString(_iter1402.getKey());
-              oprot.writeString(_iter1402.getValue());
+              oprot.writeString(_iter1418.getKey());
+              oprot.writeString(_iter1418.getValue());
             }
             oprot.writeMapEnd();
           }
@@ -1514,10 +1514,10 @@ public class CreateDatabaseRequest implements org.apache.thrift.TBase<CreateData
       if (struct.isSetParameters()) {
         {
           oprot.writeI32(struct.parameters.size());
-          for (java.util.Map.Entry<java.lang.String, java.lang.String> _iter1403 : struct.parameters.entrySet())
+          for (java.util.Map.Entry<java.lang.String, java.lang.String> _iter1419 : struct.parameters.entrySet())
           {
-            oprot.writeString(_iter1403.getKey());
-            oprot.writeString(_iter1403.getValue());
+            oprot.writeString(_iter1419.getKey());
+            oprot.writeString(_iter1419.getValue());
           }
         }
       }
@@ -1565,15 +1565,15 @@ public class CreateDatabaseRequest implements org.apache.thrift.TBase<CreateData
         }
         if (incoming.get(2)) {
           {
-            org.apache.thrift.protocol.TMap _map1404 = iprot.readMapBegin(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING); 
-            struct.parameters = new java.util.HashMap<java.lang.String,java.lang.String>(2*_map1404.size);
-            @org.apache.thrift.annotation.Nullable java.lang.String _key1405;
-            @org.apache.thrift.annotation.Nullable java.lang.String _val1406;
-            for (int _i1407 = 0; _i1407 < _map1404.size; ++_i1407)
+            org.apache.thrift.protocol.TMap _map1420 = iprot.readMapBegin(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING); 
+            struct.parameters = new java.util.HashMap<java.lang.String,java.lang.String>(2*_map1420.size);
+            @org.apache.thrift.annotation.Nullable java.lang.String _key1421;
+            @org.apache.thrift.annotation.Nullable java.lang.String _val1422;
+            for (int _i1423 = 0; _i1423 < _map1420.size; ++_i1423)
             {
-              _key1405 = iprot.readString();
-              _val1406 = iprot.readString();
-              struct.parameters.put(_key1405, _val1406);
+              _key1421 = iprot.readString();
+              _val1422 = iprot.readString();
+              struct.parameters.put(_key1421, _val1422);
             }
           }
           struct.setParametersIsSet(true);

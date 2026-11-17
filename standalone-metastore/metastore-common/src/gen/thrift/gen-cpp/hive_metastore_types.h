@@ -844,6 +844,10 @@ class ExtendedTableInfo;
 
 class GetDatabaseRequest;
 
+class GetDatabaseObjectsByNameRequest;
+
+class GetDatabaseObjectsByNameResponse;
+
 class DropDatabaseRequest;
 
 class GetFunctionsRequest;
@@ -10575,6 +10579,75 @@ class GetDatabaseRequest : public virtual ::apache::thrift::TBase {
 void swap(GetDatabaseRequest &a, GetDatabaseRequest &b) noexcept;
 
 std::ostream& operator<<(std::ostream& out, const GetDatabaseRequest& obj);
+
+typedef struct _GetDatabaseObjectsByNameRequest__isset {
+  _GetDatabaseObjectsByNameRequest__isset() : catalogName(false) {}
+  bool catalogName :1;
+} _GetDatabaseObjectsByNameRequest__isset;
+
+class GetDatabaseObjectsByNameRequest : public virtual ::apache::thrift::TBase {
+ public:
+
+  GetDatabaseObjectsByNameRequest(const GetDatabaseObjectsByNameRequest&);
+  GetDatabaseObjectsByNameRequest& operator=(const GetDatabaseObjectsByNameRequest&);
+  GetDatabaseObjectsByNameRequest() noexcept;
+
+  virtual ~GetDatabaseObjectsByNameRequest() noexcept;
+  std::vector<std::string>  databaseNames;
+  std::string catalogName;
+
+  _GetDatabaseObjectsByNameRequest__isset __isset;
+
+  void __set_databaseNames(const std::vector<std::string> & val);
+
+  void __set_catalogName(const std::string& val);
+
+  bool operator == (const GetDatabaseObjectsByNameRequest & rhs) const;
+  bool operator != (const GetDatabaseObjectsByNameRequest &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const GetDatabaseObjectsByNameRequest & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot) override;
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const override;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(GetDatabaseObjectsByNameRequest &a, GetDatabaseObjectsByNameRequest &b) noexcept;
+
+std::ostream& operator<<(std::ostream& out, const GetDatabaseObjectsByNameRequest& obj);
+
+
+class GetDatabaseObjectsByNameResponse : public virtual ::apache::thrift::TBase {
+ public:
+
+  GetDatabaseObjectsByNameResponse(const GetDatabaseObjectsByNameResponse&);
+  GetDatabaseObjectsByNameResponse& operator=(const GetDatabaseObjectsByNameResponse&);
+  GetDatabaseObjectsByNameResponse() noexcept;
+
+  virtual ~GetDatabaseObjectsByNameResponse() noexcept;
+  std::vector<Database>  databases;
+
+  void __set_databases(const std::vector<Database> & val);
+
+  bool operator == (const GetDatabaseObjectsByNameResponse & rhs) const;
+  bool operator != (const GetDatabaseObjectsByNameResponse &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const GetDatabaseObjectsByNameResponse & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot) override;
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const override;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(GetDatabaseObjectsByNameResponse &a, GetDatabaseObjectsByNameResponse &b) noexcept;
+
+std::ostream& operator<<(std::ostream& out, const GetDatabaseObjectsByNameResponse& obj);
 
 typedef struct _DropDatabaseRequest__isset {
   _DropDatabaseRequest__isset() : catalogName(false), softDelete(true), txnId(true), deleteManagedDir(true) {}
