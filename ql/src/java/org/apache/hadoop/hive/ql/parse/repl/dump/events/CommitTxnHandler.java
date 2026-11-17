@@ -23,9 +23,11 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.metastore.ReplChangeManager;
 import org.apache.hadoop.hive.metastore.api.GetAllWriteEventInfoRequest;
+import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.apache.hadoop.hive.metastore.api.NotificationEvent;
 import org.apache.hadoop.hive.metastore.api.WriteEventInfo;
 import org.apache.hadoop.hive.metastore.messaging.CommitTxnMessage;
+import org.apache.hadoop.hive.metastore.messaging.json.JSONMessageEncoder;
 import org.apache.hadoop.hive.metastore.messaging.MessageBuilder;
 import org.apache.hadoop.hive.metastore.utils.StringUtils;
 import org.apache.hadoop.hive.ql.exec.repl.util.ReplUtils;
@@ -60,7 +62,7 @@ class CommitTxnHandler extends AbstractEventHandler<CommitTxnMessage> {
 
   private void writeDumpFiles(Table qlMdTable, Partition ptn, Iterable<String> files, Context withinContext,
                               Path dataPath)
-          throws IOException, LoginException, HiveFatalException, SemanticException {
+          throws IOException, LoginException, MetaException, HiveFatalException, SemanticException {
     boolean copyAtLoad = withinContext.hiveConf.getBoolVar(HiveConf.ConfVars.REPL_RUN_DATA_COPY_TASKS_ON_TARGET);
     if (copyAtLoad) {
       // encoded filename/checksum of files, write into _files
@@ -74,7 +76,7 @@ class CommitTxnHandler extends AbstractEventHandler<CommitTxnMessage> {
 
   private void createDumpFile(Context withinContext, org.apache.hadoop.hive.ql.metadata.Table qlMdTable,
                   List<Partition> qlPtns, List<List<String>> fileListArray)
-          throws IOException, SemanticException, LoginException, HiveFatalException {
+          throws IOException, SemanticException, LoginException, MetaException, HiveFatalException {
     if (fileListArray == null || fileListArray.isEmpty()) {
       return;
     }
@@ -90,7 +92,7 @@ class CommitTxnHandler extends AbstractEventHandler<CommitTxnMessage> {
 
     if ((null == qlPtns) || qlPtns.isEmpty()) {
       Path dataPath = new Path(withinContext.eventRoot, EximUtil.DATA_PATH_NAME);
-      writeDumpFiles(qlMdTable, null, fileListArray.getFirst(), withinContext, dataPath);
+      writeDumpFiles(qlMdTable, null, fileListArray.get(0), withinContext, dataPath);
     } else {
       for (int idx = 0; idx < qlPtns.size(); idx++) {
         Path dataPath = new Path(withinContext.eventRoot, EximUtil.DATA_PATH_NAME + File.separator
@@ -102,7 +104,7 @@ class CommitTxnHandler extends AbstractEventHandler<CommitTxnMessage> {
 
   private void createDumpFileForTable(Context withinContext, org.apache.hadoop.hive.ql.metadata.Table qlMdTable,
                     List<Partition> qlPtns, List<List<String>> fileListArray)
-          throws IOException, SemanticException, LoginException, HiveFatalException {
+          throws IOException, SemanticException, LoginException, MetaException, HiveFatalException {
     Path newPath = HiveUtils.getDumpPath(withinContext.eventRoot, qlMdTable.getDbName(), qlMdTable.getTableName());
     Context context = new Context(withinContext);
     context.setEventRoot(newPath);
@@ -221,11 +223,11 @@ class CommitTxnHandler extends AbstractEventHandler<CommitTxnMessage> {
       if (numEntry != 0) {
         eventMessage.addWriteEventInfo(writeEventInfoList);
         payload = jsonMessageEncoder.getSerializer().serialize(eventMessage);
-          LOG.debug("payload for commit txn event : {}", eventMessageAsJSON);
+        LOG.debug("payload for commit txn event : " + eventMessageAsJSON);
       }
 
       org.apache.hadoop.hive.ql.metadata.Table qlMdTablePrev = null;
-      org.apache.hadoop.hive.ql.metadata.Table qlMdTable;
+      org.apache.hadoop.hive.ql.metadata.Table qlMdTable = null;
       List<Partition> qlPtns = new ArrayList<>();
       List<List<String>> filesTobeAdded = new ArrayList<>();
 

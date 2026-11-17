@@ -17,14 +17,20 @@
  */
 package org.apache.hadoop.hive.ql.parse.repl.dump.events;
 
+import com.google.common.collect.Collections2;
+import org.apache.hadoop.hive.metastore.api.GetAllWriteEventInfoRequest;
 import org.apache.hadoop.hive.metastore.api.NotificationEvent;
+import org.apache.hadoop.hive.metastore.api.WriteEventInfo;
 import org.apache.hadoop.hive.metastore.messaging.AbortTxnMessage;
+import org.apache.hadoop.hive.metastore.messaging.json.JSONAbortTxnMessage;
 import org.apache.hadoop.hive.metastore.utils.StringUtils;
 import org.apache.hadoop.hive.ql.exec.repl.util.ReplUtils;
 import org.apache.hadoop.hive.ql.parse.repl.DumpType;
 import org.apache.hadoop.hive.ql.parse.repl.load.DumpMetaData;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 class AbortTxnHandler extends AbstractEventHandler<AbortTxnMessage> {
 
@@ -49,7 +55,7 @@ class AbortTxnHandler extends AbstractEventHandler<AbortTxnMessage> {
       List<String> dbsUpdated = eventMessage.getDbsUpdated()
                                               .stream()
                                               .map(StringUtils::normalizeIdentifier)
-                                              .toList();
+                                              .collect(Collectors.toList());
       if ((writeIds == null || writeIds.isEmpty() || !dbsUpdated.contains(contextDbName))) {
         LOG.info("Filter out #{} ABORT_TXN message : {}", fromEventId(), eventMessageAsJSON);
         return;
