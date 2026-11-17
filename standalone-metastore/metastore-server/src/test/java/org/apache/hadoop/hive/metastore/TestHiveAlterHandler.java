@@ -27,6 +27,7 @@ import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.apache.hadoop.hive.metastore.utils.MetaStoreUtils.getDefaultCatalog;
 
@@ -55,13 +56,14 @@ public class TestHiveAlterHandler {
     newTable.setSd(newSd);
 
     RawStore msdb = Mockito.mock(RawStore.class);
-    Mockito.doThrow(new RuntimeException("shouldn't be called")).when(msdb).deleteTableColumnStatistics(
-        Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyList(), Mockito.anyString());
+    Mockito.doThrow(new RuntimeException("shouldn't be called")).when(msdb).updateTableColumnStatistics(
+        Mockito.any(), Mockito.eq(null), Mockito.anyLong());
     HiveAlterHandler handler = new HiveAlterHandler();
     handler.setConf(conf);
     Deadline.registerIfNot(100_000);
     Deadline.startTimer("updateTableColumnStats");
-    handler.deleteTableColumnStats(msdb, oldTable, newTable);
+    List<ColumnStatistics> colstats = handler.deleteTableColumnStats(msdb, oldTable, newTable, handler.getColumnStats(msdb, oldTable));
+    handler.updateTableColumnStats(msdb, newTable, null, colstats);
   }
 
   @Test
@@ -88,9 +90,17 @@ public class TestHiveAlterHandler {
     handler.setConf(conf);
     Deadline.registerIfNot(100_000);
     Deadline.startTimer("updateTableColumnStats");
-    handler.deleteTableColumnStats(msdb, oldTable, newTable);
-    Mockito.verify(msdb, Mockito.times(1)).deleteTableColumnStatistics(
-        getDefaultCatalog(conf), oldTable.getDbName(), oldTable.getTableName(), Arrays.asList("col4"), null);
+    try {
+      List<ColumnStatistics> colstats = handler.deleteTableColumnStats(msdb, oldTable, newTable, handler.getColumnStats(msdb, oldTable));
+      handler.updateTableColumnStats(msdb, newTable, null, colstats);
+    } catch (Throwable t) {
+      System.err.println(t);
+      t.printStackTrace(System.err);
+      throw t;
+    }
+    Mockito.verify(msdb, Mockito.times(1)).getTableColumnStatistics(
+        getDefaultCatalog(conf), oldTable.getDbName(), oldTable.getTableName(), Arrays.asList("col1", "col2", "col3", "col4")
+    );
   }
 
   @Test
@@ -113,13 +123,14 @@ public class TestHiveAlterHandler {
     newTable.setSd(newSd);
 
     RawStore msdb = Mockito.mock(RawStore.class);
-    Mockito.doThrow(new RuntimeException("shouldn't be called")).when(msdb).deleteTableColumnStatistics(
-        Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyList(), Mockito.anyString());
+    Mockito.doThrow(new RuntimeException("shouldn't be called")).when(msdb).updateTableColumnStatistics(
+        Mockito.any(), Mockito.eq(null), Mockito.anyLong());
     HiveAlterHandler handler = new HiveAlterHandler();
     handler.setConf(conf);
     Deadline.registerIfNot(100_000);
     Deadline.startTimer("updateTableColumnStats");
-    handler.deleteTableColumnStats(msdb, oldTable, newTable);
+    List<ColumnStatistics> colstats = handler.deleteTableColumnStats(msdb, oldTable, newTable, handler.getColumnStats(msdb, oldTable));
+    handler.updateTableColumnStats(msdb, newTable, null, colstats);
   }
 
 }
