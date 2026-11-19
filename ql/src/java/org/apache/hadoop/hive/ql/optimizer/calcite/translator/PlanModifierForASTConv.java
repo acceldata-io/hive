@@ -263,7 +263,8 @@ public class PlanModifierForASTConv {
 
     @Override
     public RelNode visit(final RelNode rel) {
-      if (rel instanceof DruidQuery dq) {
+      if (rel instanceof DruidQuery) {
+        DruidQuery dq = (DruidQuery) rel;
         aliases.add(((HiveTableScan) dq.getTableScan()).getTableAlias().toLowerCase());
         return dq;
       }

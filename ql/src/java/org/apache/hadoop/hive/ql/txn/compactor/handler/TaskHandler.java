@@ -123,7 +123,7 @@ public abstract class TaskHandler {
     assert rsp != null && rsp.getTblValidWriteIdsSize() == 1;
 
     ValidReaderWriteIdList validWriteIdList = TxnCommonUtils.createValidReaderWriteIdList(
-        rsp.getTblValidWriteIds().getFirst());
+        rsp.getTblValidWriteIds().get(0));
     return new ValidCleanerWriteIdList(validWriteIdList);
   }
 

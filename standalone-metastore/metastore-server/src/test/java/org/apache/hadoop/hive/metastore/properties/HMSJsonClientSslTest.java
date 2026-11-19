@@ -180,7 +180,8 @@ public class HMSJsonClientSslTest extends HMSTestBase {
    */
   private HttpURLConnection openConnection(URL url) throws IOException {
     HttpURLConnection con = (HttpURLConnection) url.openConnection();
-    if (con instanceof HttpsURLConnection httpsConnection) {
+    if (con instanceof HttpsURLConnection) {
+      HttpsURLConnection httpsConnection = (HttpsURLConnection) con;
       SSLContext sslContext = clientSSLContextFactory(conf);
       if (sslContext != null) {
         httpsConnection.setSSLSocketFactory(sslContext.getSocketFactory());

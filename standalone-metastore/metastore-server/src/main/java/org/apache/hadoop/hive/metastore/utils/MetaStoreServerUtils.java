@@ -267,12 +267,11 @@ public class MetaStoreServerUtils {
     String invalidPartitionVal = getPartitionValWithInvalidCharacter(partVals, partitionValidationPattern);
 
     if (invalidPartitionVal != null) {
-      String errorMsg =
-          ("Partition value '%s' contains a character not matched by whitelist pattern '%s'. Configure with %s")
-              .formatted(
-                  invalidPartitionVal,
-                  partitionValidationPattern.toString(),
-                  MetastoreConf.ConfVars.PARTITION_NAME_WHITELIST_PATTERN.getVarname());
+      String errorMsg = String.format(
+          "Partition value '%s' contains a character not matched by whitelist pattern '%s'. Configure with %s",
+          invalidPartitionVal,
+          partitionValidationPattern.toString(),
+          MetastoreConf.ConfVars.PARTITION_NAME_WHITELIST_PATTERN.getVarname());
 
       throw new MetaException(errorMsg);
     }
