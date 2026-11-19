@@ -104,7 +104,7 @@
 
 <property>
   <name>javax.jdo.option.ConnectionDriverName</name>
-  <value>org.apache.derby.iapi.jdbc.AutoloadedDriver</value>
+  <value>org.apache.derby.jdbc.EmbeddedDriver</value>
 </property>
 
 <property>
