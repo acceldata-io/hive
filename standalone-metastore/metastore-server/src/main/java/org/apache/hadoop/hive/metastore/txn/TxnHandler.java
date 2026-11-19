@@ -534,10 +534,10 @@ public abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
                                        List<TxnWriteDetails> txnWriteDetails, List<TransactionalMetaStoreEventListener> transactionalListeners) throws MetaException {
     List<Long> writeIds = txnWriteDetails.stream()
             .map(TxnWriteDetails::getWriteId)
-            .toList();
+            .collect(Collectors.toList());
     List<String> databases = txnWriteDetails.stream()
             .map(TxnWriteDetails::getDbName)
-            .toList();
+            .collect(Collectors.toList());
     ListenerEvent txnEvent;
     if (eventType.equals(EventMessage.EventType.ABORT_TXN)) {
       txnEvent = new AbortTxnEvent(txnId, txnType, null, databases, writeIds);

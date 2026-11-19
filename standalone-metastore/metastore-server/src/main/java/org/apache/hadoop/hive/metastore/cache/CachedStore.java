@@ -239,7 +239,7 @@ public class CachedStore implements RawStore, Configurable {
     boolean rename = !Objects.equals(before.getDbName(), dbName) ||
         !Objects.equals(before.getTableName(), tableName);
     if (rename) {
-      deletedCols = part.getSd().getCols().stream().map(FieldSchema::getName).toList();
+      deletedCols = part.getSd().getCols().stream().map(FieldSchema::getName).collect(Collectors.toList());
     } else {
       HiveAlterHandler
           .updateOrGetPartitionColumnStats(rawStore, catalogName, dbName, tableName, part.getValues(),
@@ -266,7 +266,7 @@ public class CachedStore implements RawStore, Configurable {
         !Objects.equals(tblBefore.getTableName(), tblAfter.getTableName());
     final List<String> deletedCols;
     if (rename) {
-      deletedCols = tblBefore.getSd().getCols().stream().map(FieldSchema::getName).toList();
+      deletedCols = tblBefore.getSd().getCols().stream().map(FieldSchema::getName).collect(Collectors.toList());
     } else {
       deletedCols = findStaleColumns(tblBefore.getSd().getCols(), tblAfter.getSd().getCols());
     }

@@ -52,6 +52,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.HIVE_COMPACTOR_CLEANER_RETENTION_TIME;
 import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.HIVE_COMPACTOR_DELAYED_CLEANUP_ENABLED;
@@ -88,7 +89,7 @@ class CompactionCleaner extends TaskHandler {
       return readyToClean.stream()
           .map(ci -> ThrowingRunnable.unchecked(
               () -> clean(ci, minTxnIdSeenOpen, metricsEnabled)))
-          .toList();
+          .collect(Collectors.toList());
     }
     return Collections.emptyList();
   }
