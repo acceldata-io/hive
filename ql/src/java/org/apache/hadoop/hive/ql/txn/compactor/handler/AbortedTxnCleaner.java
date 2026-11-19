@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static org.apache.hadoop.hive.conf.HiveConf.ConfVars.HIVE_COMPACTOR_ABORTEDTXN_THRESHOLD;
@@ -84,7 +85,7 @@ class AbortedTxnCleaner extends TaskHandler {
       return readyToCleanAborts.stream()
           .map(info -> ThrowingRunnable.unchecked(
               () -> clean(info, metricsEnabled)))
-          .toList();
+          .collect(Collectors.toList());
     }
     return Collections.emptyList();
   }
