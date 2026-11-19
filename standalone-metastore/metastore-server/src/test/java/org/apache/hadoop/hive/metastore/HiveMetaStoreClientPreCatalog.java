@@ -48,8 +48,6 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.security.auth.login.LoginException;
-
 import com.google.common.base.Preconditions;
 
 import org.apache.commons.lang3.NotImplementedException;
@@ -559,9 +557,6 @@ public class HiveMetaStoreClientPreCatalog implements IMetaStoreClient, AutoClos
             try {
               UserGroupInformation ugi = SecurityUtils.getUGI();
               client.set_ugi(ugi.getUserName(), Arrays.asList(ugi.getGroupNames()));
-            } catch (LoginException e) {
-              LOG.warn("Failed to do login. set_ugi() is not successful, " +
-                       "Continuing without it.", e);
             } catch (IOException e) {
               LOG.warn("Failed to find ugi of client set_ugi() is not successful, " +
                   "Continuing without it.", e);
