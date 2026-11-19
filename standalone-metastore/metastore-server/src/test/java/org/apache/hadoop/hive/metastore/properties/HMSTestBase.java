@@ -356,7 +356,8 @@ public abstract class HMSTestBase {
     Assert.assertNotNull(maps);
     Assert.assertEquals(5, maps.size());
 
-    if (client instanceof HttpPropertyClient httpClient) {
+    if (client instanceof HttpPropertyClient) {
+      HttpPropertyClient httpClient = (HttpPropertyClient) client;
       // get fillfactors using getProperties, create args array from previous result
       List<String> keys = new ArrayList<>(maps.keySet());
       keys.replaceAll(s -> s + ".fillFactor");

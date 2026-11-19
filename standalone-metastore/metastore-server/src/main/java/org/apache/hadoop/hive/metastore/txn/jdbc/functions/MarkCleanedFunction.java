@@ -60,25 +60,24 @@ public class MarkCleanedFunction implements TransactionalFunction<Void> {
       param = new MapSqlParameterSource()
           .addValue("id", info.id)
           .addValue("succeeded", Character.toString(SUCCEEDED_STATE), Types.CHAR);
-      jdbcTemplate.update("""
-          INSERT INTO "COMPLETED_COMPACTIONS"(
-            "CC_ID", "CC_DATABASE", "CC_TABLE", "CC_PARTITION",
-            "CC_STATE", "CC_TYPE", "CC_TBLPROPERTIES", "CC_WORKER_ID",
-            "CC_START", "CC_END", "CC_RUN_AS", "CC_HIGHEST_WRITE_ID", "CC_META_INFO",
-            "CC_HADOOP_JOB_ID", "CC_ERROR_MESSAGE", "CC_ENQUEUE_TIME",
-            "CC_WORKER_VERSION", "CC_INITIATOR_ID", "CC_INITIATOR_VERSION",
-            "CC_NEXT_TXN_ID", "CC_TXN_ID", "CC_COMMIT_TIME", "CC_POOL_NAME", "CC_NUMBER_OF_BUCKETS",
-            "CC_ORDER_BY")
-          SELECT
-            "CQ_ID", "CQ_DATABASE", "CQ_TABLE", "CQ_PARTITION",
-            :succeeded, "CQ_TYPE", "CQ_TBLPROPERTIES", "CQ_WORKER_ID",
-            "CQ_START", %s, "CQ_RUN_AS", "CQ_HIGHEST_WRITE_ID", "CQ_META_INFO",
-            "CQ_HADOOP_JOB_ID", "CQ_ERROR_MESSAGE", "CQ_ENQUEUE_TIME",
-            "CQ_WORKER_VERSION", "CQ_INITIATOR_ID", "CQ_INITIATOR_VERSION",
-            "CQ_NEXT_TXN_ID", "CQ_TXN_ID", "CQ_COMMIT_TIME", "CQ_POOL_NAME", "CQ_NUMBER_OF_BUCKETS",
-            "CQ_ORDER_BY"
-          FROM "COMPACTION_QUEUE"
-          WHERE "CQ_ID" = :id""".formatted(
+      jdbcTemplate.update(String.format("INSERT INTO \"COMPLETED_COMPACTIONS\"(\n" +
+          "  \"CC_ID\", \"CC_DATABASE\", \"CC_TABLE\", \"CC_PARTITION\",\n" +
+          "  \"CC_STATE\", \"CC_TYPE\", \"CC_TBLPROPERTIES\", \"CC_WORKER_ID\",\n" +
+          "  \"CC_START\", \"CC_END\", \"CC_RUN_AS\", \"CC_HIGHEST_WRITE_ID\", \"CC_META_INFO\",\n" +
+          "  \"CC_HADOOP_JOB_ID\", \"CC_ERROR_MESSAGE\", \"CC_ENQUEUE_TIME\",\n" +
+          "  \"CC_WORKER_VERSION\", \"CC_INITIATOR_ID\", \"CC_INITIATOR_VERSION\",\n" +
+          "  \"CC_NEXT_TXN_ID\", \"CC_TXN_ID\", \"CC_COMMIT_TIME\", \"CC_POOL_NAME\", \"CC_NUMBER_OF_BUCKETS\",\n" +
+          "  \"CC_ORDER_BY\")\n" +
+          "SELECT\n" +
+          "  \"CQ_ID\", \"CQ_DATABASE\", \"CQ_TABLE\", \"CQ_PARTITION\",\n" +
+          "  :succeeded, \"CQ_TYPE\", \"CQ_TBLPROPERTIES\", \"CQ_WORKER_ID\",\n" +
+          "  \"CQ_START\", %s, \"CQ_RUN_AS\", \"CQ_HIGHEST_WRITE_ID\", \"CQ_META_INFO\",\n" +
+          "  \"CQ_HADOOP_JOB_ID\", \"CQ_ERROR_MESSAGE\", \"CQ_ENQUEUE_TIME\",\n" +
+          "  \"CQ_WORKER_VERSION\", \"CQ_INITIATOR_ID\", \"CQ_INITIATOR_VERSION\",\n" +
+          "  \"CQ_NEXT_TXN_ID\", \"CQ_TXN_ID\", \"CQ_COMMIT_TIME\", \"CQ_POOL_NAME\", \"CQ_NUMBER_OF_BUCKETS\",\n" +
+          "  \"CQ_ORDER_BY\"\n" +
+          "FROM \"COMPACTION_QUEUE\"\n" +
+          "WHERE \"CQ_ID\" = :id",
               getEpochFn(jdbcResource.getDatabaseProduct())),
           param);
     }
@@ -95,18 +94,16 @@ public class MarkCleanedFunction implements TransactionalFunction<Void> {
       // Remove entries from completed_txn_components as well, so we don't start looking there
       // again but only up to the highest write ID include in this compaction job.
       //highestWriteId will be NULL in upgrade scenarios
-      String deleteQuery = """
-          DELETE FROM "COMPLETED_TXN_COMPONENTS" WHERE "CTC_DATABASE" = :db AND "CTC_TABLE" = :table
-          """;
+      String deleteQuery = "DELETE FROM \"COMPLETED_TXN_COMPONENTS\" WHERE \"CTC_DATABASE\" = :db AND \"CTC_TABLE\" = :table\n" +
+          "";
       if (info.partName != null) {
-        deleteQuery += """ 
-            AND "CTC_PARTITION" = :partition
-            """;
+        deleteQuery += " \n" +
+          "AND \"CTC_PARTITION\" = :partition\n" +
+          "";
       }
       if (info.highestWriteId != 0) {
-        deleteQuery += """
-            AND "CTC_WRITEID" <= :writeId
-            """;
+        deleteQuery += "AND \"CTC_WRITEID\" <= :writeId\n" +
+          "";
       }
       param = new MapSqlParameterSource()
           .addValue("db", info.dbname)
@@ -144,25 +141,24 @@ public class MarkCleanedFunction implements TransactionalFunction<Void> {
         .addValue("table", info.tableName)
         .addValue("partition", info.partName, Types.VARCHAR);
 
-    String deleteQuery = """
-        DELETE FROM "TXN_COMPONENTS"
-        WHERE "TC_TXNID" IN (
-            SELECT "TXN_ID" FROM "TXNS" WHERE "TXN_STATE" = :state
-          )
-          AND "TC_DATABASE" = :db AND "TC_TABLE" = :table
-          AND (:partition is NULL OR "TC_PARTITION" = :partition)
-          AND "TC_WRITEID" %s
-        """;
+    String deleteQuery = "DELETE FROM \"TXN_COMPONENTS\"\n" +
+          "WHERE \"TC_TXNID\" IN (\n" +
+          "    SELECT \"TXN_ID\" FROM \"TXNS\" WHERE \"TXN_STATE\" = :state\n" +
+          "  )\n" +
+          "  AND \"TC_DATABASE\" = :db AND \"TC_TABLE\" = :table\n" +
+          "  AND (:partition is NULL OR \"TC_PARTITION\" = :partition)\n" +
+          "  AND \"TC_WRITEID\" %s\n" +
+          "";
 
     int totalCount = 0;
     if (!info.hasUncompactedAborts && info.highestWriteId != 0) {
       totalCount = jdbcResource.getJdbcTemplate().update(
-          deleteQuery.formatted("<= :id"),
+          String.format(deleteQuery, "<= :id"),
           params.addValue("id", info.highestWriteId));
 
     } else if (CollectionUtils.isNotEmpty(info.writeIds)) {
       totalCount = jdbcResource.execute(new InClauseBatchCommand<>(
-          deleteQuery.formatted("IN (:ids)"),
+          String.format(deleteQuery, "IN (:ids)"),
           params.addValue("ids", new ArrayList<>(info.writeIds)),
           "ids",
           Long::compareTo));
@@ -178,15 +174,13 @@ public class MarkCleanedFunction implements TransactionalFunction<Void> {
     }
 
     MapSqlParameterSource params = new MapSqlParameterSource("id", info.id);
-    String deleteQuery = """
-        DELETE FROM "COMPACTION_QUEUE" WHERE "CQ_ID" = :id
-        """;
+    String deleteQuery = "DELETE FROM \"COMPACTION_QUEUE\" WHERE \"CQ_ID\" = :id\n" +
+          "";
     if (!info.isAbortedTxnCleanup()) {
-      deleteQuery += """
-          OR ("CQ_DATABASE" = :db AND "CQ_TABLE" = :table
-            AND (:partition is NULL OR "CQ_PARTITION" = :partition)
-            AND "CQ_TYPE" = :type)
-          """;
+      deleteQuery += "OR (\"CQ_DATABASE\" = :db AND \"CQ_TABLE\" = :table\n" +
+          "  AND (:partition is NULL OR \"CQ_PARTITION\" = :partition)\n" +
+          "  AND \"CQ_TYPE\" = :type)\n" +
+          "";
       params.addValue("db", info.dbname)
           .addValue("table", info.tableName)
           .addValue("partition", info.partName, Types.VARCHAR)

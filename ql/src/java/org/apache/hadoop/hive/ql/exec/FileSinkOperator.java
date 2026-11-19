@@ -1130,12 +1130,11 @@ public class FileSinkOperator extends TerminalOperator<FileSinkDesc> implements
                 dpVals, dpCtx.getWhiteListPattern());
 
         if (invalidPartitionVal != null) {
-          String errorMsg =
-              ("Partition value '%s' contains a character not matched by whitelist pattern '%s'. Configure with %s")
-                  .formatted(
-                      invalidPartitionVal,
-                      dpCtx.getWhiteListPattern().toString(),
-                      MetastoreConf.ConfVars.PARTITION_NAME_WHITELIST_PATTERN.getVarname());
+          String errorMsg = String.format(
+              "Partition value '%s' contains a character not matched by whitelist pattern '%s'. Configure with %s",
+              invalidPartitionVal,
+              dpCtx.getWhiteListPattern().toString(),
+              MetastoreConf.ConfVars.PARTITION_NAME_WHITELIST_PATTERN.getVarname());
 
           throw new HiveFatalException(errorMsg);
         }

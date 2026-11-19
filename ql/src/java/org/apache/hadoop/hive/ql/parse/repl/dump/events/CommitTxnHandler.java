@@ -90,7 +90,7 @@ class CommitTxnHandler extends AbstractEventHandler<CommitTxnMessage> {
 
     if ((null == qlPtns) || qlPtns.isEmpty()) {
       Path dataPath = new Path(withinContext.eventRoot, EximUtil.DATA_PATH_NAME);
-      writeDumpFiles(qlMdTable, null, fileListArray.getFirst(), withinContext, dataPath);
+      writeDumpFiles(qlMdTable, null, fileListArray.get(0), withinContext, dataPath);
     } else {
       for (int idx = 0; idx < qlPtns.size(); idx++) {
         Path dataPath = new Path(withinContext.eventRoot, EximUtil.DATA_PATH_NAME + File.separator
