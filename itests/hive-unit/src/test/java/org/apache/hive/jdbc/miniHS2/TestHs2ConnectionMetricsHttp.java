@@ -30,8 +30,9 @@ import org.apache.hive.service.rpc.thrift.TCloseSessionReq;
 import org.apache.hive.service.rpc.thrift.TOpenSessionReq;
 import org.apache.hive.service.rpc.thrift.TOpenSessionResp;
 import org.apache.hive.service.rpc.thrift.TSessionHandle;
-import org.apache.http.client.CookieStore;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.cookie.CookieStore;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.THttpClient;
@@ -89,12 +90,12 @@ public class TestHs2ConnectionMetricsHttp extends Hs2ConnectionMetrics {
   }
 
   private TCLIService.Client getHttpClient() throws Exception {
-    DefaultHttpClient httpClient = new DefaultHttpClient();
-
     Map<String, String> headers = new HashMap<>();
     headers.put("Connection", "close");
-    httpClient.addRequestInterceptor(new BasicHttpRequestInterceptor(USERNAME, PASSWORD, null,
-            null, false, headers));
+    HttpClient httpClient = HttpClientBuilder.create()
+        .addRequestInterceptorFirst(new BasicHttpRequestInterceptor(USERNAME, PASSWORD, null,
+            null, false, headers))
+        .build();
 
     TTransport transport = new THttpClient(getHttpUrl(), httpClient);
     TProtocol protocol = new TBinaryProtocol(transport);
