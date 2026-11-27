@@ -26,7 +26,7 @@
   <properties>
     <hive.path.to.root>..</hive.path.to.root>
     <reflections.version>0.10.2</reflections.version>
-    <atlas.version>2.4.0.3.4.3.1-SNAPSHOT</atlas.version>
+    <atlas.version>2.6.0.${odp.release.version}</atlas.version>
   </properties>
   <dependencies>
     <!-- dependencies are always listed in sorted order by groupId, artifactId -->
